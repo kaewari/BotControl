@@ -117,10 +117,12 @@ class DeviceManager:
         except Exception as e:
             logger.error(f"Lỗi gửi tap: {e}")
 
-    def tap_box(self, box: BoundingBox, normalized: bool = True):
-        """Taps the center of a bounding box."""
-        center = box.center
-        self.tap(center.x, center.y, normalized=normalized)
+    def tap_box(self, box, normalized: bool = True):
+        """Taps the center of a bounding box or directly at a point."""
+        if hasattr(box, "center"):
+            self.tap(box.center.x, box.center.y, normalized=normalized)
+        elif hasattr(box, "x") and hasattr(box, "y"):
+            self.tap(box.x, box.y, normalized=normalized)
 
     def swipe(self, x1: float, y1: float, x2: float, y2: float, duration: float = 0.5, normalized: bool = True):
         """Performs a swipe gesture between two points."""

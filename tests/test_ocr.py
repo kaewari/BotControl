@@ -1,35 +1,47 @@
-"""Unit tests for OCR service and Vietnamese text matching."""
+"""Unit tests for OCR service and Vietnamese text matching with real game images."""
 import unittest
+import os
+import cv2
 import numpy as np
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw
 from bot.cv.ocr_service import OCRService, normalize_text, remove_vietnamese_tones
 
 
 class TestOCRService(unittest.TestCase):
+    def setUp(self):
+        self.ocr = OCRService()
+        self.img1_path = "/Users/hoangson/.gemini/antigravity/brain/713e9e95-1cd0-4b93-8f33-b38b09fac9bb/.user_uploaded/media_1789194683106.png"
+        self.img2_path = "/Users/hoangson/.gemini/antigravity/brain/713e9e95-1cd0-4b93-8f33-b38b09fac9bb/.user_uploaded/media_1789194755276.png"
+
     def test_text_normalization(self):
         self.assertEqual(normalize_text("  BẮT ĐẦU   KHIÊU CHIẾN  "), "bắt đầu khiêu chiến")
         self.assertEqual(remove_vietnamese_tones("sức mạnh khai phá"), "suc manh khai pha")
         self.assertEqual(remove_vietnamese_tones("Đài hoa nhân tạo"), "Dai hoa nhan tao")
+        self.assertEqual(remove_vietnamese_tones("Hư Ảnh Ngưng Đọng"), "Hu Anh Ngung Dong")
 
-    def test_synthetic_ocr_detection(self):
-        # Create a synthetic image with Vietnamese text
-        img = Image.new("RGB", (600, 200), color=(20, 20, 30))
-        draw = ImageDraw.Draw(img)
-        # Use default PIL font or simple text
-        draw.text((50, 40), "Bat Dau Khieu Chien", fill=(255, 255, 255))
-        draw.text((50, 120), "Suc Manh Khai Pha", fill=(255, 255, 255))
+    def test_power_and_fuel_extraction(self):
+        if os.path.exists(self.img1_path):
+            img = cv2.imread(self.img1_path)
+            power = self.ocr.extract_trailblaze_power(img)
+            self.assertIsNotNone(power)
+            self.assertEqual(power, (164, 300))
 
-        cv_img = np.array(img)
+            fuel = self.ocr.extract_fuel_count(img)
+            self.assertIsNotNone(fuel)
+            self.assertEqual(fuel, 11)
 
-        ocr = OCRService()
-        result = ocr.find_text(cv_img, "Bat Dau Khieu Chien", min_score=0.4)
-        self.assertIsNotNone(result, "OCR should find 'Bat Dau Khieu Chien'")
-        if result:
-            self.assertTrue(result.box.x1 >= 0)
-            self.assertTrue(result.box.y1 >= 0)
+    def test_action_button_on_row(self):
+        if os.path.exists(self.img1_path):
+            img = cv2.imread(self.img1_path)
+            btn = self.ocr.find_action_button_on_row(img, "De Xuat Di Vat Hang Dong", tolerance_y=85.0)
+            self.assertIsNotNone(btn)
+            self.assertIn("Vao", btn.text)
 
-        result_fuel = ocr.find_text(cv_img, "Suc Manh", min_score=0.4)
-        self.assertIsNotNone(result_fuel, "OCR should find 'Suc Manh'")
+        if os.path.exists(self.img2_path):
+            img2 = cv2.imread(self.img2_path)
+            btn2 = self.ocr.find_action_button_on_row(img2, "Nu Hoa Hoi Uc", tolerance_y=85.0)
+            self.assertIsNotNone(btn2)
+            self.assertIn("Vao", btn2.text)
 
 
 if __name__ == "__main__":

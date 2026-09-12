@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="/static/style.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
   <div class="app-container">
@@ -17,60 +17,138 @@
         <div class="logo-icon">✦</div>
         <div>
           <h1 class="title">HSR BotControl</h1>
-          <p class="subtitle">Điều khiển iPad Pro 13-inch (M5) • Tiếng Việt</p>
+          <p class="subtitle">Trung Tâm Tự Động Hóa • iPad Pro 13" (M5) • Honkai: Star Rail</p>
         </div>
       </div>
-      <div class="status-group">
-        <div id="device-badge" class="badge badge-offline">
-          <span class="status-dot"></span>
-          <span id="device-status-text">Đang kiểm tra WDA...</span>
+
+      <!-- Telemetry Dashboard: Trailblaze Power & Devices -->
+      <div class="telemetry-bar">
+        <div class="telemetry-item" id="power-meter-box">
+          <div class="telemetry-label">⚡ Sức Mạnh Khai Phá</div>
+          <div class="telemetry-val-group">
+            <span class="telemetry-val" id="power-val">164 / 300</span>
+            <div class="mini-progress-track">
+              <div class="mini-progress-fill" id="power-progress-fill" style="width: 55%;"></div>
+            </div>
+          </div>
         </div>
-        <div id="task-badge" class="badge badge-idle">
-          <span id="task-status-text">Đang chờ tác vụ</span>
+
+        <div class="telemetry-item" id="fuel-box">
+          <div class="telemetry-label">🧪 Bình Năng Lượng</div>
+          <div class="telemetry-val" id="fuel-val">11 bình</div>
+        </div>
+
+        <div class="status-group">
+          <div id="device-badge" class="badge badge-offline">
+            <span class="status-dot"></span>
+            <span id="device-status-text">WDA: Đang kết nối...</span>
+          </div>
+          <div id="task-badge" class="badge badge-idle">
+            <span id="task-status-text">Đang chờ tác vụ</span>
+          </div>
         </div>
       </div>
     </header>
 
-    <!-- Main Content Grid -->
+    <!-- Main Layout -->
     <main class="main-layout">
-      <!-- Left: Screen Feed -->
+      <!-- Left: Screen Feed & Quick Controls -->
       <section class="screen-section">
         <div class="panel-header">
-          <h2>Màn hình iPad Pro Trực Tiếp</h2>
-          <span class="hint-text">💡 Bấm chuột trực tiếp vào màn hình để chạm cảm ứng</span>
+          <h2>Màn Hình iPad Trực Tiếp</h2>
+          <span class="hint-text">💡 Click trực tiếp lên màn hình để chạm cảm ứng</span>
         </div>
+
         <div class="screen-container" id="screen-wrapper">
           <img id="stream-img" src="/api/stream" alt="Live Stream Màn hình iPad" />
           <div id="touch-ripple" class="touch-ripple"></div>
         </div>
+
+        <!-- Quick Game Action Shortcuts -->
+        <div class="quick-toolbar">
+          <span class="quick-title">Phím tắt game:</span>
+          <button class="btn-quick" data-action="open_guidebook" title="Mở Sổ Tay Sinh Tồn">📖 Sổ Tay Sinh Tồn</button>
+          <button class="btn-quick" data-action="open_phone" title="Mở Menu Điện Thoại">📱 Điện Thoại</button>
+          <button class="btn-quick" data-action="open_map" title="Mở Bản Đồ">🗺️ Bản Đồ</button>
+          <button class="btn-quick" data-action="auto_battle" title="Bật/Tắt Auto Battle">⚔️ Auto Battle</button>
+          <button class="btn-quick" data-action="speed_2x" title="Bật Tốc Độ x2">⚡ Tốc Độ x2</button>
+          <button class="btn-quick btn-quick-danger" data-action="close_modal" title="Đóng cửa sổ / Back">❌ Đóng / Back</button>
+        </div>
+
         <div class="screen-footer">
           <span id="resolution-info">Độ phân giải: 2752 × 2064</span>
-          <button id="btn-refresh-stream" class="btn btn-sm btn-ghost">Làm mới luồng</button>
+          <div class="footer-actions">
+            <button id="btn-inspect-screen" class="btn btn-xs btn-secondary">🔍 Soi OCR màn hình</button>
+            <button id="btn-refresh-stream" class="btn btn-xs btn-ghost">Làm mới luồng</button>
+          </div>
         </div>
       </section>
 
-      <!-- Right: Control Panel & Logs -->
+      <!-- Right: Multifunctional Control Center -->
       <section class="control-section">
-        <!-- Task Selection Tabs -->
+        <!-- Navigation Tabs -->
         <div class="tabs">
-          <button class="tab-btn active" data-tab="resin">🌾 Xả Nhựa (Resin)</button>
+          <button class="tab-btn active" data-tab="resin">🌾 Xả Nhựa Chi Tiết</button>
+          <button class="tab-btn" data-tab="simulated">🌀 Vũ Trụ Mô Phỏng</button>
           <button class="tab-btn" data-tab="daily">📅 Daily Routine</button>
           <button class="tab-btn" data-tab="dialogue">⏩ Skip Hội Thoại</button>
+          <button class="tab-btn" data-tab="inspector">🔍 Soi Chi Tiết OCR</button>
         </div>
 
-        <!-- Tab 1: Resin -->
+        <!-- TAB 1: RESIN FARMING -->
         <div class="tab-content active" id="tab-resin">
-          <div class="form-group">
-            <label for="resin-category">Mục tiêu farm (Chỉ Số Sinh Tồn):</label>
-            <select id="resin-category" class="input-select">
-              <option value="calyx_golden" selected>Đài Hoa Nhân Tạo (Vàng) - EXP / Điểm Tín Dụng</option>
-              <option value="calyx_crimson">Đài Hoa Nhân Tạo (Đỏ) - Nguyên liệu Vết Tích</option>
-              <option value="cavern_corrosion">Vết Tích Xâm Thực - Farm Di Vật</option>
-              <option value="stagnant_shadow">Bóng Hình Ngưng Trệ - Nguyên liệu Đột Phá</option>
-              <option value="echo_of_war">Dư Âm Chiến Đấu - Boss Tuần</option>
-            </select>
+          <!-- Mode Switcher -->
+          <div class="mode-selector">
+            <button type="button" class="btn-mode active" id="mode-char-target">⚡ Theo Mục Tiêu Bồi Dưỡng (Robin)</button>
+            <button type="button" class="btn-mode" id="mode-category">🎯 Tự Chọn Danh Mục Chi Tiết</button>
           </div>
 
+          <!-- Sub-view 1: Character Target -->
+          <div id="view-char-target" class="nested-view active">
+            <div class="card-highlight">
+              <div class="char-header">
+                <span class="badge-tag">Nhân vật hiện tại</span>
+                <h4>Robin - Summeretto</h4>
+              </div>
+              <p class="hint-muted">Bot sẽ mở Sổ tay Sinh Tồn và tự động vào mục đề xuất bồi dưỡng của nhân vật này.</p>
+              
+              <div class="form-group mt-2">
+                <label>Chọn nội dung bồi dưỡng đề xuất:</label>
+                <select id="char-target-item" class="input-select">
+                  <option value="relic" selected>Đề Xuất Di Vật Hang Động (40 Nhựa/lần)</option>
+                  <option value="planar_1">Đề Xuất Phụ Kiện Vị Diện #1 (40 Nhựa hoặc 1 Xu)</option>
+                  <option value="planar_2">Đề Xuất Phụ Kiện Vị Diện #2 (40 Nhựa hoặc 1 Xu)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sub-view 2: Full Category Selector -->
+          <div id="view-category" class="nested-view">
+            <div class="form-group">
+              <label for="resin-category">Danh mục phó bản:</label>
+              <select id="resin-category" class="input-select">
+                <option value="calyx_golden" selected>Đài Hoa Nhân Tạo (Vàng) - EXP / Điểm Tín Dụng</option>
+                <option value="calyx_crimson">Đài Hoa Nhân Tạo (Đỏ) - Nguyên Liệu Vết Tích</option>
+                <option value="planar">Trích Xuất Phụ Kiện - Phụ Kiện Vị Diện</option>
+                <option value="stagnant_shadow">Hư Ảnh Ngưng Đọng - Đột Phá Nhân Vật</option>
+                <option value="cavern_corrosion">Vết Tích Xâm Thực - Di Vật Hang Động</option>
+                <option value="echo_of_war">Dư Âm Chiến Đấu - Boss Tuần</option>
+              </select>
+            </div>
+
+            <!-- Dynamic Sub-target Selector -->
+            <div class="form-group" id="subtarget-group">
+              <label id="subtarget-label">Loại cụ thể:</label>
+              <select id="resin-subtarget" class="input-select">
+                <option value="Nu Hoa Hoi Uc">EXP Nhân Vật (Nụ Hoa Hồi Ức - Sách EXP)</option>
+                <option value="Nu Hoa Bau Vat">Điểm Tín Dụng (Nụ Hoa Báu Vật - Tiền Credits)</option>
+                <option value="Nu Hoa Di Thai">EXP Nón Ánh Sáng (Nụ Hoa Dĩ Thái - Aether)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Wave Runs Selector -->
           <div class="form-group">
             <label>Số đợt khiêu chiến (Waves):</label>
             <div class="runs-selector">
@@ -78,22 +156,59 @@
               <button type="button" class="btn-run" data-runs="2">2</button>
               <button type="button" class="btn-run" data-runs="4">4</button>
               <button type="button" class="btn-run active" data-runs="6">6 (Tối đa)</button>
+              <button type="button" class="btn-run" data-runs="12">12 (Xả hết)</button>
             </div>
           </div>
 
           <div class="checkbox-group">
             <label class="checkbox-label">
               <input type="checkbox" id="resin-auto-battle" checked />
-              <span>Tự động bật Chiến đấu tự động (Auto Battle) & Tốc độ x2</span>
+              <span>Tự động kích hoạt Chiến Đấu Tự Động & Tốc độ x2</span>
             </label>
             <label class="checkbox-label">
               <input type="checkbox" id="resin-use-fuel" />
-              <span>Tự dùng Bình Năng Lượng dự phòng nếu hết nhựa</span>
+              <span>Tự động dùng Bình Năng Lượng khi hết Sức Mạnh Khai Phá</span>
             </label>
           </div>
         </div>
 
-        <!-- Tab 2: Daily -->
+        <!-- TAB 2: SIMULATED UNIVERSE -->
+        <div class="tab-content" id="tab-simulated">
+          <div class="form-group">
+            <label for="su-mode">Chế độ Vũ Trụ:</label>
+            <select id="su-mode" class="input-select">
+              <option value="divergent" selected>Vũ Trụ Sai Phân (Divergent Universe) - Cày điểm tuần</option>
+              <option value="classic">Vũ Trụ Mô Phỏng Cổ Điển (Thế Giới 3 - 9)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="su-path">Vận mệnh ưu tiên khi chọn Chúc Phúc:</label>
+            <select id="su-path" class="input-select">
+              <option value="Ký Ức" selected>🌸 Ký Ức (Remembrance)</option>
+              <option value="Hư Vô">🌌 Hư Vô (Nihility)</option>
+              <option value="Hủy Diệt">⚔️ Hủy Diệt (Destruction)</option>
+              <option value="Săn Bắn">🏹 Săn Bắn (The Hunt)</option>
+              <option value="Tri Thức">📜 Tri Thức (Erudition)</option>
+              <option value="Hòa Hợp">🎵 Hòa Hợp (Harmony)</option>
+              <option value="Trù Phú">🌿 Trù Phú (Abundance)</option>
+              <option value="Bảo Hộ">🛡️ Bảo Hộ (Preservation)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="su-runs">Số lượt chạy:</label>
+            <select id="su-runs" class="input-select">
+              <option value="1" selected>1 Lượt</option>
+              <option value="2">2 Lượt</option>
+              <option value="3">3 Lượt (Đủ mốc 14,000 điểm tuần)</option>
+            </select>
+          </div>
+
+          <p class="desc-box">Bot sẽ tự động chọn nhân vật, qua các phòng chiến đấu, tự động ưu tiên nhận Chúc Phúc của Vận Mệnh đã chọn và hoàn thành lượt chạy.</p>
+        </div>
+
+        <!-- TAB 3: DAILY ROUTINE -->
         <div class="tab-content" id="tab-daily">
           <div class="checkbox-group">
             <label class="checkbox-label">
@@ -105,29 +220,51 @@
               <span>Nhận thưởng mốc Huấn Luyện Thường Ngày (500 điểm = 60 Ngọc)</span>
             </label>
           </div>
-          <p class="desc-box">Bot sẽ tự động mở Menu điện thoại và Sổ tay hướng dẫn để hoàn thành các tác vụ hàng ngày của bạn trong 60 giây.</p>
+          <p class="desc-box">Hoàn tất toàn bộ chuỗi nhiệm vụ hàng ngày của Honkai: Star Rail trong vòng 60 giây.</p>
         </div>
 
-        <!-- Tab 3: Dialogue -->
+        <!-- TAB 4: DIALOGUE SKIPPER -->
         <div class="tab-content" id="tab-dialogue">
           <div class="form-group">
             <label for="dialogue-interval">Tốc độ nhấp tua nhanh:</label>
             <select id="dialogue-interval" class="input-select">
-              <option value="0.2">Cực nhanh (0.2s / lần tap)</option>
-              <option value="0.3" selected>Tiêu chuẩn (0.3s / lần tap)</option>
-              <option value="0.5">Vừa phải (0.5s / lần tap)</option>
+              <option value="0.15">Siêu tốc (0.15s / lần tap)</option>
+              <option value="0.25" selected>Tiêu chuẩn (0.25s / lần tap)</option>
+              <option value="0.40">Thư thả (0.40s / lần tap)</option>
             </select>
           </div>
           <div class="checkbox-group">
             <label class="checkbox-label">
               <input type="checkbox" id="dialogue-auto-skip" checked />
-              <span>Tự động tìm và bấm nút 'Bỏ qua / Skip' khi xuất hiện</span>
+              <span>Tự động bấm nút 'Bỏ qua / Skip' khi xuất hiện</span>
             </label>
           </div>
-          <p class="desc-box">Bật chế độ này khi bạn đang nhận nhiệm vụ, nói chuyện với NPC hoặc xem cốt truyện để bot tự động tua nhanh hội thoại mà không cần chạm tay vào màn hình.</p>
+          <p class="desc-box">Bật tính năng này khi xem cốt truyện hoặc nói chuyện với NPC để bot tự động tua nhanh và bỏ qua hội thoại giúp bạn.</p>
         </div>
 
-        <!-- Primary Action Buttons -->
+        <!-- TAB 5: OCR INSPECTOR -->
+        <div class="tab-content" id="tab-inspector">
+          <div class="inspector-controls">
+            <button id="btn-run-inspect" class="btn btn-sm btn-secondary">📸 Chụp và phân tích OCR ngay</button>
+            <span id="inspect-count" class="hint-muted">Chưa phân tích</span>
+          </div>
+          <div class="inspector-table-container">
+            <table class="inspector-table" id="inspector-table">
+              <thead>
+                <tr>
+                  <th>Nội dung chữ</th>
+                  <th>Độ tin cậy</th>
+                  <th>Tọa độ chuẩn hóa</th>
+                </tr>
+              </thead>
+              <tbody id="inspector-tbody">
+                <tr><td colspan="3" style="text-align: center; color: var(--text-muted);">Bấm nút trên để soi chi tiết chữ trên màn hình iPad</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
         <div class="action-buttons">
           <button id="btn-start" class="btn btn-primary">
             <span class="btn-icon">▶</span> Bắt Đầu Tác Vụ
@@ -144,10 +281,12 @@
         <div class="console-panel">
           <div class="console-header">
             <h3>Nhật Ký Hoạt Động (Live Logs)</h3>
-            <button id="btn-clear-logs" class="btn btn-xs btn-ghost">Xóa log</button>
+            <div class="console-actions">
+              <button id="btn-clear-logs" class="btn btn-xs btn-ghost">Xóa log</button>
+            </div>
           </div>
           <div class="console-body" id="console-logs">
-            <div class="log-entry log-info">[Hệ Thống] BotControl đã sẵn sàng. Chờ kết nối WDA...</div>
+            <div class="log-entry log-info">[Hệ Thống] BotControl đã sẵn sàng phục vụ.</div>
           </div>
         </div>
       </section>

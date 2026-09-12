@@ -1,4 +1,4 @@
-"""RapidOCR service with Vietnamese text normalization and fuzzy matching."""
+"""RapidOCR service with Vietnamese text normalization, fuzzy matching, and HSR data extraction."""
 import logging
 import re
 import unicodedata
@@ -16,9 +16,7 @@ def normalize_text(text: str) -> str:
     """Normalize text: strip, lowercase, convert to standard unicode form."""
     if not text:
         return ""
-    # NFKC normalizes unicode characters
     text = unicodedata.normalize("NFKC", text).strip().lower()
-    # Replace multiple whitespaces with single space
     text = re.sub(r"\s+", " ", text)
     return text
 
@@ -74,8 +72,6 @@ class OCRService:
 
             parsed_results: List[OCRResult] = []
             for item in results:
-                # item format: [box_points, text, score]
-                # box_points is [[x1, y1], [x2, y1], [x2, y2], [x1, y2]]
                 box_pts = item[0]
                 text = str(item[1]).strip()
                 score = float(item[2])
@@ -136,3 +132,80 @@ class OCRService:
             if match is not None:
                 return (target, match)
         return None
+
+    def extract_trailblaze_power(self, image: np.ndarray) -> Optional[Tuple[int, int]]:
+        """Extracts current and max Trailblaze Power from top bar (e.g. 164/300)."""
+        if image is None:
+            return None
+        h, w = image.shape[:2]
+        # Crop top region: x in [0.60, 0.95], y in [0.0, 0.15]
+        top_bar = BoundingBox(w * 0.60, 0, w * 0.95, h * 0.15)
+        results = self.recognize(image, region=top_bar)
+        for r in results:
+            # Pattern like 164/300 or 164/300+
+            m = re.search(r"(\d{1,3})\s*/\s*(\d{3})", r.text)
+            if m:
+                try:
+                    current = int(m.group(1))
+                    maximum = int(m.group(2))
+                    return (current, maximum)
+                except ValueError:
+                    pass
+        return None
+
+    def extract_fuel_count(self, image: np.ndarray) -> Optional[int]:
+        """Extracts fuel count from top bar (e.g. 11)."""
+        if image is None:
+            return None
+        h, w = image.shape[:2]
+        fuel_region = BoundingBox(w * 0.55, 0, w * 0.75, h * 0.15)
+        results = self.recognize(image, region=fuel_region)
+        for r in results:
+            if r.text.isdigit():
+                return int(r.text)
+        return None
+
+    def find_action_button_on_row(
+        self,
+        image: np.ndarray,
+        target_name: str,
+        button_labels: List[str] = ["Vào", "Vao", "Khiêu Chiến", "Dịch Chuyển"],
+        tolerance_y: float = 85.0,
+    ) -> Optional[OCRResult]:
+        """Finds a target label on the screen and returns the action button on the same horizontal row."""
+        if image is None:
+            return None
+
+        results = self.recognize(image)
+        norm_target = normalize_text(target_name)
+        unaccented_target = remove_vietnamese_tones(norm_target)
+
+        target_y: Optional[float] = None
+
+        # 1. Locate target row
+        for r in results:
+            norm_r = normalize_text(r.text)
+            unaccented_r = remove_vietnamese_tones(norm_r)
+            if norm_target in norm_r or unaccented_target in unaccented_r:
+                target_y = r.center.y
+                break
+
+        if target_y is None:
+            return None
+
+        # 2. Find button on the right side of that row (x > w * 0.7)
+        h, w = image.shape[:2]
+        best_btn = None
+        min_dy = float("inf")
+
+        for r in results:
+            if r.center.x > w * 0.70:
+                norm_r = normalize_text(r.text)
+                for btn_lbl in button_labels:
+                    if normalize_text(btn_lbl) in norm_r or remove_vietnamese_tones(btn_lbl) in remove_vietnamese_tones(norm_r):
+                        dy = abs(r.center.y - target_y)
+                        if dy <= tolerance_y and dy < min_dy:
+                            min_dy = dy
+                            best_btn = r
+
+        return best_btn

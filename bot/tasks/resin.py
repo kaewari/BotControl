@@ -1,4 +1,4 @@
-"""Resin (Sức Mạnh Khai Phá) spending automation for Calyx, Cavern of Corrosion, Bosses."""
+"""Comprehensive Resin (Sức Mạnh Khai Phá) spending automation for Honkai: Star Rail."""
 import time
 from typing import Optional
 from bot.core.coordinates import HSRZones, BoundingBox, Point
@@ -6,29 +6,36 @@ from bot.tasks.base import BaseTask
 
 
 class ResinFarmTask(BaseTask):
-    """Automates farming Calyx, Relics, and weekly bosses to spend Trailblaze Power."""
+    """Automates farming Calyx, Relics, Planar Ornaments, Stagnant Shadows, and Weekly Bosses."""
 
     def run(
         self,
+        mode: str = "character_target",  # "character_target" or "category"
         category: str = "calyx_golden",
         sub_target: str = "exp",
+        character_item: str = "relic",  # "relic", "planar_1", "planar_2"
         runs: int = 6,
         use_fuel: bool = False,
         max_fuel_count: int = 0,
     ):
         self.is_running = True
         self.stop_requested = False
-        self.log(f"Bắt đầu Xả Nhựa: Danh mục={category}, Loại={sub_target}, Số đợt={runs}, Dùng bình={use_fuel}")
+        self.log(f"Bắt đầu Xả Nhựa: Chế độ={mode}, Mục tiêu={character_item if mode == 'character_target' else f'{category}/{sub_target}'}, Số đợt={runs}, Dùng bình={use_fuel}")
 
         try:
-            # 1. Điều hướng mở Sổ Tay Hướng Dẫn -> Chỉ Số Sinh Tồn
+            # 1. Mở Sổ Tay Hướng Dẫn -> Tab Chỉ Số Sinh Tồn
             if not self.navigate_to_survival_index():
-                self.log("Không thể vào Chỉ Số Sinh Tồn", level="error")
+                self.log("Không thể vào Hướng Dẫn Sinh Tồn", level="error")
                 return
 
-            # 2. Chọn loại phó bản theo cấu hình
-            if not self.select_dungeon(category, sub_target):
-                self.log(f"Không thể chọn phó bản: {category}/{sub_target}", level="error")
+            # 2. Điều hướng tới phó bản tương ứng
+            if mode == "character_target":
+                success = self.select_character_target(character_item)
+            else:
+                success = self.select_dungeon_category(category, sub_target)
+
+            if not success:
+                self.log("Không thể chọn được phó bản yêu cầu", level="error")
                 return
 
             # 3. Chuẩn bị khiêu chiến: Điều chỉnh số đợt (1-6) và nhấn Bắt đầu
@@ -39,31 +46,34 @@ class ResinFarmTask(BaseTask):
             # 4. Vòng lặp giám sát trận đấu (Auto Battle + Lặp lại)
             completed_batches = 0
             while not self.stop_requested:
-                self.log("Đang trong trận chiến, theo dõi tiến độ...")
+                self.log(f"Đang trong trận chiến (Đợt {completed_batches + 1}/{runs}), theo dõi tiến độ...")
                 # Đảm bảo bật Auto Battle và 2x Speed
                 self.ensure_combat_settings()
 
                 # Chờ kết thúc trận
-                battle_ended = self.wait_for_battle_end(timeout_seconds=300)
+                battle_ended = self.wait_for_battle_end(timeout_seconds=360)
                 if not battle_ended:
                     self.log("Quá thời gian chờ trận đấu kết thúc (Timeout)", level="warning")
                     break
 
                 completed_batches += 1
-                self.log(f"Hoàn thành đợt chiến đấu thứ {completed_batches}!")
+                self.log(f"✅ Hoàn thành đợt chiến đấu thứ {completed_batches}!")
 
-                # Kiểm tra có tiếp tục Thách Đấu Lại không
-                if not self.stop_requested:
-                    repeat_result = self.handle_battle_result()
-                    if repeat_result == "repeat":
-                        self.log("Tiếp tục thách đấu lại đợt tiếp theo...")
-                        self.sleep_cancellable(2.0)
-                        continue
-                    else:
-                        self.log("Đã thoát khỏi phó bản sau khi hoàn thành.")
-                        break
+                if self.stop_requested:
+                    self.handle_battle_result(force_exit=True)
+                    break
 
-            self.log(f"✅ Hoàn tất chu trình xả nhựa! Tổng số đợt đã chạy: {completed_batches}")
+                # Kiểm tra tiếp tục Thách Đấu Lại
+                repeat_status = self.handle_battle_result(force_exit=(completed_batches >= runs))
+                if repeat_status == "repeat":
+                    self.log("Tiếp tục thách đấu lại đợt tiếp theo...")
+                    self.sleep_cancellable(2.5)
+                    continue
+                else:
+                    self.log("Đã hoàn thành tất cả các đợt hoặc đã thoát trận.")
+                    break
+
+            self.log(f"🎉 Hoàn tất chu trình xả nhựa! Tổng số đợt đã chạy thành công: {completed_batches}")
 
         except Exception as e:
             self.log(f"Lỗi trong quá trình xả nhựa: {e}", level="error")
@@ -80,87 +90,127 @@ class ResinFarmTask(BaseTask):
         if img is None:
             return False
 
-        # Chọn tab 'Chỉ Số Sinh Tồn' (Survival Index)
-        tab = self.ocr.find_any_text(
-            img,
-            ["Chỉ Số Sinh Tồn", "Chi So Sinh Ton", "Survival Index"]
-        )
-        if tab:
-            _, res = tab
-            self.log(f"Chọn tab '{res.text}'...")
-            self.device.tap(res.center.x, res.center.y, normalized=False)
-            self.sleep_cancellable(1.5)
+        # Kiểm tra xem đã ở trong Sổ tay chưa
+        if self.ocr.find_any_text(img, ["Huong Dan Sinh Ton", "Hướng Dẫn Sinh Tồn", "Huong Dan Hanh Tinh"]):
+            self.log("Đã mở Hướng Dẫn Sinh Tồn thành công.")
             return True
 
-        self.log("Không tìm thấy tab 'Chỉ Số Sinh Tồn', thử tìm lại...", level="warning")
-        return False
+        # Nhấn vào Tab 2 (Hướng Dẫn Sinh Tồn) trên thanh 5 tab
+        self.log("Chuyển sang Tab Hướng Dẫn Sinh Tồn...")
+        self.device.tap(HSRZones.TAB_SURVIVAL_INDEX.x, HSRZones.TAB_SURVIVAL_INDEX.y, normalized=True)
+        self.sleep_cancellable(1.5)
+        return True
 
-    def select_dungeon(self, category: str, sub_target: str) -> bool:
-        """Selects the requested dungeon category on the left and target on the right."""
+    def select_character_target(self, item_type: str = "relic") -> bool:
+        """Farms recommended relics or planar ornaments for the pinned character (e.g. Robin)."""
+        self.log(f"Chọn Mục Tiêu Bồi Dưỡng của nhân vật (loại: {item_type})...")
+        # Nhấn vào card Mục Tiêu Bồi Dưỡng ở cột trái
+        self.device.tap(HSRZones.LEFT_NAV_TARGET_CHARACTER.x, HSRZones.LEFT_NAV_TARGET_CHARACTER.y, normalized=True)
+        self.sleep_cancellable(1.5)
+
         img = self.capture()
         if img is None:
             return False
 
-        h, w = img.shape[:2]
-        left_col = BoundingBox(0, 0, w * 0.35, h)
-
-        # 1. Chọn danh mục bên trái
-        cat_keywords = {
-            "calyx_golden": ["Đài Hoa Nhân Tạo (Vàng)", "Dai Hoa Nhan Tao (Vang)", "Đài Hoa Vàng", "Golden"],
-            "calyx_crimson": ["Đài Hoa Nhân Tạo (Đỏ)", "Dai Hoa Nhan Tao (Do)", "Đài Hoa Đỏ", "Crimson"],
-            "cavern_corrosion": ["Vết Tích Xâm Thực", "Vet Tich Xam Thuc", "Cavern of Corrosion"],
-            "stagnant_shadow": ["Bóng Hình Ngưng Trệ", "Bong Hinh Ngung Tre", "Stagnant Shadow"],
-            "echo_of_war": ["Dư Âm Chiến Đấu", "Du Am Chien Dau", "Echo of War"],
-        }
-
-        keywords = cat_keywords.get(category, cat_keywords["calyx_golden"])
-        match = self.ocr.find_any_text(img, keywords, region=left_col)
-        if match:
-            _, m_res = match
-            self.log(f"Chọn danh mục: '{m_res.text}'")
-            self.device.tap(m_res.center.x, m_res.center.y, normalized=False)
-            self.sleep_cancellable(1.5)
-        else:
-            self.log(f"Không thấy danh mục {category} trong cột trái, dùng mặc định vị trí đầu tiên.")
-            self.device.tap(0.20, 0.25, normalized=True)
-            self.sleep_cancellable(1.5)
-
-        # 2. Bấm nút Dịch chuyển / Khiêu chiến ở góc dưới bên phải
-        img_btn = self.capture()
-        if img_btn is not None:
-            teleport_btn = self.ocr.find_any_text(
-                img_btn,
-                ["Dịch Chuyển", "Dich Chuyen", "Khiêu Chiến", "Khieu Chien", "Teleport"]
-            )
-            if teleport_btn:
-                _, tp_res = teleport_btn
-                self.log(f"Bấm '{tp_res.text}' để di chuyển đến phó bản...")
-                self.device.tap(tp_res.center.x, tp_res.center.y, normalized=False)
+        if item_type == "relic":
+            # Bấm nút Vào của Đề Xuất Di Vật Hang Động
+            btn = self.ocr.find_action_button_on_row(img, "De Xuat Di Vat Hang Dong", tolerance_y=85.0)
+            if btn:
+                self.log(f"Bấm '{btn.text}' tại Đề Xuất Di Vật...")
+                self.device.tap(btn.center.x, btn.center.y, normalized=False)
                 self.sleep_cancellable(3.0)
                 return True
+            # Fallback tọa độ
+            self.device.tap(HSRZones.TARGET_RELIC_ENTER.x, HSRZones.TARGET_RELIC_ENTER.y, normalized=True)
+            self.sleep_cancellable(3.0)
+            return True
+
+        elif item_type == "planar_1":
+            # Phụ kiện vị diện đề xuất 1
+            btn = self.ocr.find_action_button_on_row(img, "De Xuat Phu Kien Vi Dien", tolerance_y=85.0)
+            if btn:
+                self.log(f"Bấm '{btn.text}' tại Phụ Kiện Vị Diện 1...")
+                self.device.tap(btn.center.x, btn.center.y, normalized=False)
+                self.sleep_cancellable(3.0)
+                return True
+            self.device.tap(HSRZones.TARGET_PLANAR_ENTER_1.x, HSRZones.TARGET_PLANAR_ENTER_1.y, normalized=True)
+            self.sleep_cancellable(3.0)
+            return True
+
+        elif item_type == "planar_2":
+            self.device.tap(HSRZones.TARGET_PLANAR_ENTER_2.x, HSRZones.TARGET_PLANAR_ENTER_2.y, normalized=True)
+            self.sleep_cancellable(3.0)
+            return True
 
         return False
 
+    def select_dungeon_category(self, category: str, sub_target: str) -> bool:
+        """Selects category from left sidebar and specific dungeon on the right."""
+        self.log(f"Điều hướng danh mục: {category} (Mục tiêu: {sub_target})...")
+
+        # 1. Chọn mục bên trái
+        nav_points = {
+            "planar": HSRZones.LEFT_NAV_PLANAR,
+            "calyx_golden": HSRZones.LEFT_NAV_CALYX_GOLDEN,
+            "calyx_crimson": HSRZones.LEFT_NAV_CALYX_CRIMSON,
+            "stagnant_shadow": HSRZones.LEFT_NAV_STAGNANT_SHADOW,
+            "cavern_corrosion": HSRZones.LEFT_NAV_CAVERN_CORROSION,
+            "echo_of_war": HSRZones.LEFT_NAV_ECHO_OF_WAR,
+        }
+
+        # Nếu là phó bản ở dưới (Cavern / Echo of war), cuộn danh mục xuống trước
+        if category in ["cavern_corrosion", "echo_of_war"]:
+            self.device.swipe(0.20, 0.75, 0.20, 0.35, duration=0.4, normalized=True)
+            self.sleep_cancellable(1.0)
+
+        nav_pt = nav_points.get(category, HSRZones.LEFT_NAV_CALYX_GOLDEN)
+        self.device.tap(nav_pt.x, nav_pt.y, normalized=True)
+        self.sleep_cancellable(1.8)
+
+        img = self.capture()
+        if img is None:
+            return False
+
+        # 2. Tìm kiếm và bấm nút Vào tương ứng trên danh sách phó bản bên phải
+        if sub_target:
+            btn = self.ocr.find_action_button_on_row(img, sub_target, tolerance_y=75.0)
+            if btn:
+                self.log(f"Tìm thấy nút '{btn.text}' cho '{sub_target}', đang bấm...")
+                self.device.tap(btn.center.x, btn.center.y, normalized=False)
+                self.sleep_cancellable(3.0)
+                return True
+
+        # Nếu không tìm thấy tên cụ thể, bấm nút Vào đầu tiên (hàng 1)
+        self.log("Bấm nút Vào của hàng phó bản đầu tiên...")
+        self.device.tap(HSRZones.ENTER_ROW_1.x, HSRZones.ENTER_ROW_1.y, normalized=True)
+        self.sleep_cancellable(3.0)
+        return True
+
     def prepare_and_start_battle(self, runs: int) -> bool:
-        """Adjusts wave slider/buttons and clicks Start Challenge."""
-        self.log(f"Chuẩn bị vào trận, số đợt: {runs}...")
+        """Adjusts wave count and clicks Start Challenge."""
+        self.log(f"Chuẩn bị giao diện vào trận, số đợt thiết lập: {runs}...")
         self.sleep_cancellable(2.0)
 
         img = self.capture()
         if img is None:
             return False
 
-        # Tăng số đợt khiêu chiến nếu > 1 bằng nút '+'
+        # Đọc lượng nhựa hiện tại
+        power = self.ocr.extract_trailblaze_power(img)
+        if power:
+            curr, max_p = power
+            self.log(f"Sức Mạnh Khai Phá hiện có: {curr}/{max_p}")
+
+        # Tăng số đợt khiêu chiến nếu > 1
         if runs > 1:
             plus_btn = self.ocr.find_any_text(img, ["+", "＋"])
             if plus_btn:
                 _, p_res = plus_btn
-                # Nhấn dấu cộng nhiều lần tương ứng với runs
                 for _ in range(min(runs - 1, 5)):
                     self.device.tap(p_res.center.x, p_res.center.y, normalized=False)
-                    self.sleep_cancellable(0.3)
+                    self.sleep_cancellable(0.25)
 
-        # Tìm và nhấn nút 'Bắt đầu khiêu chiến'
+        # Nhấn 'Bắt đầu khiêu chiến'
         start_img = self.capture() or img
         start_btn = self.ocr.find_any_text(
             start_img,
@@ -168,22 +218,23 @@ class ResinFarmTask(BaseTask):
         )
         if start_btn:
             _, s_res = start_btn
-            self.log(f"Bấm '{s_res.text}'...")
+            self.log(f"Bấm '{s_res.text}' bắt đầu...")
             self.device.tap(s_res.center.x, s_res.center.y, normalized=False)
             self.sleep_cancellable(2.5)
 
-            # Kiểm tra xem có popup 'Bổ sung Sức Mạnh Khai Phá' (hết nhựa) không
-            fuel_popup = self.check_out_of_resin()
-            if fuel_popup:
+            # Kiểm tra popup hết nhựa
+            if self.check_out_of_resin():
                 self.log("Đã hết Sức Mạnh Khai Phá!", level="warning")
-                # Đóng popup
-                self.device.tap(0.04, 0.05, normalized=True)
+                self.device.tap(HSRZones.BACK_BUTTON.x, HSRZones.BACK_BUTTON.y, normalized=True)
                 return False
 
             return True
 
-        self.log("Không tìm thấy nút 'Bắt đầu khiêu chiến'", level="error")
-        return False
+        # Fallback nút Bắt đầu ở góc dưới phải
+        self.log("Dùng tọa độ dự phòng nút Bắt đầu...")
+        self.device.tap(0.85, 0.92, normalized=True)
+        self.sleep_cancellable(2.5)
+        return True
 
     def check_out_of_resin(self) -> bool:
         """Checks if out of resin popup appears."""
@@ -198,24 +249,15 @@ class ResinFarmTask(BaseTask):
 
     def ensure_combat_settings(self):
         """Verifies and turns on Auto-Battle and 2x Speed during combat."""
-        self.sleep_cancellable(3.0)
-        img = self.capture()
-        if img is None:
-            return
-
-        # Vùng góc trên bên phải hiển thị icon Auto Battle & 2x Speed
-        self.log("Đảm bảo bật Auto Battle và Tốc độ x2...")
-        # Bấm vào khu vực nút Auto Battle nếu chưa bật
+        self.sleep_cancellable(2.5)
         self.device.tap_box(HSRZones.BATTLE_AUTO_TOGGLE, normalized=True)
-        self.sleep_cancellable(0.4)
-        # Bấm khu vực nút 2x Speed
+        self.sleep_cancellable(0.3)
         self.device.tap_box(HSRZones.BATTLE_SPEED_TOGGLE, normalized=True)
-        self.sleep_cancellable(0.4)
+        self.sleep_cancellable(0.3)
 
-    def wait_for_battle_end(self, timeout_seconds: float = 300.0) -> bool:
+    def wait_for_battle_end(self, timeout_seconds: float = 360.0) -> bool:
         """Monitors screen until victory/defeat screen appears."""
         start_time = time.time()
-        self.log("Đang theo dõi trận chiến...")
 
         while time.time() - start_time < timeout_seconds:
             if self.stop_requested:
@@ -223,7 +265,6 @@ class ResinFarmTask(BaseTask):
 
             img = self.capture()
             if img is not None:
-                # Kiểm tra các chữ kết thúc trận
                 end_match = self.ocr.find_any_text(
                     img,
                     ["Thách Đấu Lại", "Thach Dau Lai", "Chiến Thắng", "Chien Thang", "Rút Lui", "Rut Lui", "Thoát"]
@@ -237,41 +278,41 @@ class ResinFarmTask(BaseTask):
 
         return False
 
-    def handle_battle_result(self) -> str:
+    def handle_battle_result(self, force_exit: bool = False) -> str:
         """Handles battle end screen: repeats challenge or exits."""
         img = self.capture()
         if img is None:
             return "exit"
 
-        # Tìm nút 'Thách Đấu Lại'
-        repeat_btn = self.ocr.find_any_text(
-            img,
-            ["Thách Đấu Lại", "Thach Dau Lai", "Khiêu Chiến Lại", "Repeat"]
-        )
-        if repeat_btn:
-            _, r_res = repeat_btn
-            self.log(f"Bấm '{r_res.text}' để tiếp tục đợt mới...")
-            self.device.tap(r_res.center.x, r_res.center.y, normalized=False)
-            self.sleep_cancellable(2.0)
+        if not force_exit:
+            repeat_btn = self.ocr.find_any_text(
+                img,
+                ["Thách Đấu Lại", "Thach Dau Lai", "Khiêu Chiến Lại", "Repeat"]
+            )
+            if repeat_btn:
+                _, r_res = repeat_btn
+                self.log(f"Bấm '{r_res.text}' để tiếp tục đợt mới...")
+                self.device.tap(r_res.center.x, r_res.center.y, normalized=False)
+                self.sleep_cancellable(2.0)
 
-            # Kiểm tra xem có bị hết nhựa sau trận không
-            if self.check_out_of_resin():
-                self.log("Hết nhựa khi bấm Thách đấu lại. Rút lui...", level="warning")
-                self.device.tap(0.04, 0.05, normalized=True)
-                self.sleep_cancellable(1.0)
-                return "exit"
+                if self.check_out_of_resin():
+                    self.log("Hết nhựa sau trận đấu. Thoát...", level="warning")
+                    self.device.tap(HSRZones.BACK_BUTTON.x, HSRZones.BACK_BUTTON.y, normalized=True)
+                    return "exit"
 
-            return "repeat"
+                return "repeat"
 
-        # Thoát nếu không tìm thấy Thách đấu lại
+        # Thoát trận
         exit_btn = self.ocr.find_any_text(
             img,
             ["Rút Lui", "Rut Lui", "Thoát", "Xác nhận", "Exit"]
         )
         if exit_btn:
             _, e_res = exit_btn
-            self.log(f"Bấm '{e_res.text}' để thoát trận...")
+            self.log(f"Bấm '{e_res.text}' để thoát...")
             self.device.tap(e_res.center.x, e_res.center.y, normalized=False)
-            self.sleep_cancellable(2.0)
+        else:
+            self.device.tap_box(HSRZones.EXIT_BATTLE_BUTTON, normalized=True)
 
+        self.sleep_cancellable(2.0)
         return "exit"

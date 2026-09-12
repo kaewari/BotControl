@@ -81,22 +81,56 @@ class CoordinateSystem:
         )
 
 
-# Common normalized zones for Honkai: Star Rail on iPad
 class HSRZones:
-    # Safe tap zone for skipping dialogues without accidentally clicking choices
+    """Accurate normalized coordinates derived from iPad Pro 13-inch (M5) screenshots."""
+
+    # Top-Level Main Screen Shortcuts
+    PHONE_MENU_ICON = Point(0.04, 0.05)       # Top-left Phone menu
+    BACK_BUTTON = Point(0.045, 0.055)         # Back arrow
+    GUIDEBOOK_ICON = Point(0.79, 0.05)        # Top-right Peace Guide icon
+    MAP_ICON = Point(0.92, 0.05)              # Top-right Map icon
+    INVENTORY_ICON = Point(0.85, 0.05)        # Top-right Bag icon
+
+    # Guidebook Top Bar
+    GUIDEBOOK_CLOSE = Point(0.963, 0.065)     # Close 'X' button
+    RESIN_COUNTER_BOX = BoundingBox(0.70, 0.03, 0.82, 0.09)  # Trailblaze Power indicator (e.g. 164/300)
+    FUEL_COUNTER_BOX = BoundingBox(0.62, 0.03, 0.68, 0.09)   # Fuel flasks indicator (e.g. 11)
+
+    # 5 Major Top Tabs inside Guidebook
+    TAB_DAILY_TRAINING = Point(0.148, 0.245)      # Huấn Luyện Thường Ngày
+    TAB_SURVIVAL_INDEX = Point(0.218, 0.245)      # Hướng Dẫn Sinh Tồn
+    TAB_SIMULATED_UNIVERSE = Point(0.288, 0.245)  # Vũ Trụ Mô Phỏng / Sai Phân
+    TAB_ENDGAME_CHALLENGE = Point(0.358, 0.245)   # Sảnh Đường / Kỷ Sự
+    TAB_EVENTS = Point(0.428, 0.245)              # Biến Cố / Sự Kiện
+
+    # Survival Index Left Category Items
+    LEFT_NAV_TARGET_CHARACTER = Point(0.20, 0.35)  # Mục Tiêu Bồi Dưỡng (Robin, v.v.)
+    LEFT_NAV_PLANAR = Point(0.20, 0.45)            # Trích Xuất Phụ Kiện
+    LEFT_NAV_CALYX_GOLDEN = Point(0.20, 0.55)      # Đài Hoa Nhân Tạo (Vàng)
+    LEFT_NAV_CALYX_CRIMSON = Point(0.20, 0.65)     # Đài Hoa Nhân Tạo (Đỏ)
+    LEFT_NAV_STAGNANT_SHADOW = Point(0.20, 0.75)   # Hư Ảnh Ngưng Đọng
+    LEFT_NAV_CAVERN_CORROSION = Point(0.20, 0.82)  # Vết Tích Xâm Thực (kéo xuống)
+    LEFT_NAV_ECHO_OF_WAR = Point(0.20, 0.90)       # Dư Âm Chiến Đấu (kéo xuống)
+
+    # Action Buttons on Dungeon Rows (Vào / Enter buttons are aligned at X ≈ 0.854)
+    ENTER_ROW_1 = Point(0.854, 0.399)             # Nút Vào hàng 1
+    ENTER_ROW_2 = Point(0.854, 0.548)             # Nút Vào hàng 2
+    ENTER_ROW_3 = Point(0.854, 0.653)             # Nút Vào hàng 3
+    ENTER_ROW_4 = Point(0.854, 0.760)             # Nút Vào hàng 4
+
+    # Character Target Quick Actions (Mục Tiêu Bồi Dưỡng)
+    TARGET_RELIC_ENTER = Point(0.854, 0.468)       # Vào Đề Xuất Di Vật Hang Động
+    TARGET_PLANAR_ENTER_1 = Point(0.854, 0.616)    # Vào Đề Xuất Phụ Kiện 1
+    TARGET_PLANAR_ENTER_2 = Point(0.849, 0.721)    # Vào Đề Xuất Phụ Kiện 2
+
+    # Dialogue Interaction
     DIALOGUE_SAFE_TAP = Point(0.85, 0.70)
-
-    # Top-right Skip button (Bỏ qua hội thoại)
     DIALOGUE_SKIP_BUTTON = BoundingBox(0.86, 0.03, 0.98, 0.10)
+    DIALOGUE_CHOICE_1 = Point(0.72, 0.50)
 
-    # Battle Top-Right: Auto-Battle Toggle & 2x Speed Toggle
+    # Battle Controls
     BATTLE_AUTO_TOGGLE = BoundingBox(0.88, 0.02, 0.95, 0.09)
     BATTLE_SPEED_TOGGLE = BoundingBox(0.82, 0.02, 0.88, 0.09)
     BATTLE_PAUSE_BUTTON = BoundingBox(0.95, 0.02, 0.99, 0.09)
-
-    # Top Navigation: Guidebook (Sổ tay hướng dẫn)
-    GUIDEBOOK_ICON = BoundingBox(0.78, 0.02, 0.84, 0.09)
-
-    # Battle End Results
     REPEAT_CHALLENGE_BUTTON = BoundingBox(0.55, 0.88, 0.88, 0.96)
     EXIT_BATTLE_BUTTON = BoundingBox(0.12, 0.88, 0.45, 0.96)
