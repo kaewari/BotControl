@@ -14,9 +14,10 @@ from bot.cv.ocr_service import OCRService, normalize_text, remove_vietnamese_ton
 
 logger = logging.getLogger("BotControl.Cache")
 
-CACHE_FILE = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "ui_cache.json"
-)
+_PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+_DATA_CACHE = os.path.join(_PROJECT_ROOT, "data", "ui_cache.json")
+_ROOT_CACHE = os.path.join(_PROJECT_ROOT, "ui_cache.json")
+CACHE_FILE = _DATA_CACHE if os.path.exists(_DATA_CACHE) else _ROOT_CACHE
 
 # Standard metadata for iPad Pro 13-inch (M5)
 DEFAULT_META: Dict[str, Any] = {

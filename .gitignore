@@ -23,6 +23,7 @@ WebDriverAgent/
 *.sqlite
 *.sqlite3
 *.png
+!assets/screenshots/real_ipad_screen.png
 
 # IDEs
 .idea/

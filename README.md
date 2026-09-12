@@ -60,36 +60,70 @@ Truy cập trình duyệt tại: **[http://localhost:8000](http://localhost:8000
 
 ---
 
-## ⚙️ Cấu Trúc Mã Nguồn
+## ⚙️ Cấu Trúc Thư Mục Chuẩn Software Development
 
-```
+```text
 BotControl/
-├── config.yaml               # File cấu hình thiết bị, tham số bot và web
-├── requirements.txt          # Các thư viện Python phụ thuộc
-├── run.py                    # Điểm khởi chạy chính (hỗ trợ cả Web Dashboard & CLI)
-├── scripts/
-│   ├── setup_wda.sh          # Tải và build WebDriverAgent cho iPad Pro M5
-│   ├── run_wda.sh            # Khởi chạy WDA Runner trên iPad qua USB
-│   └── start_dashboard.sh    # Khởi chạy Web Dashboard server
-├── bot/
-│   ├── core/
-│   │   ├── coordinates.py    # Hệ tọa độ chuẩn hóa, vùng bấm HSRZones
-│   │   └── device.py         # Kết nối WDA, chụp màn hình, gửi lệnh tap/swipe
-│   ├── cv/
-│   │   ├── ocr_service.py    # RapidOCR tiếng Việt, chuẩn hóa ký tự, fuzzy matching
-│   │   └── matcher.py        # OpenCV template matching đa tỉ lệ
-│   ├── tasks/
-│   │   ├── base.py           # BaseTask quản lý vòng đời, sleep_cancellable, log
-│   │   ├── daily.py          # Tự động nhận ủy thác và điểm năng động
-│   │   ├── resin.py          # Tự động xả nhựa Calyx, Di vật, Boss tuần
-│   │   └── dialogue.py       # Tự động tua và skip hội thoại cốt truyện
-│   └── web/
-│       ├── server.py         # FastAPI backend, MJPEG live stream, WebSockets
-│       └── static/
-│           ├── index.html    # Giao diện Web Dashboard Dark Mode
-│           ├── style.css     # Thiết kế giao diện hiện đại
-│           └── app.js        # Logic điều khiển và click-to-touch
-└── tests/                    # Bộ kiểm thử tự động
+├── assets/                           # Tài nguyên hình ảnh, media & asset kiểm thử
+│   └── screenshots/                  # Ảnh chụp màn hình iPad thật & audit log
+│       ├── audit_current_screen.png
+│       ├── live_screen.png
+│       ├── real_ipad_screen.png
+│       └── uy_thac_screen.png
+├── docs/                             # Tài liệu kỹ thuật chuyên sâu & hướng dẫn
+│   ├── audit_bug_log.md              # Nhật ký kiểm định lỗi thời gian thực (Live Bug Audit)
+│   └── TEST_READY.md                 # Hướng dẫn sẵn sàng kiểm thử phần cứng iPad Pro M5
+├── data/                             # Dữ liệu vận hành & bộ nhớ đệm cục bộ
+│   └── ui_cache.json                 # Bộ nhớ đệm tọa độ chuẩn hóa & bounding box UI
+├── bot/                              # Gói mã nguồn ứng dụng chính (Application Package)
+│   ├── core/                         # Module lõi hệ thống
+│   │   ├── cache.py                  # Persistent UI cache, micro-ROI verification & self-healing
+│   │   ├── coordinates.py            # Hệ tọa độ chuẩn hóa, vùng bấm HSRZones
+│   │   ├── device.py                 # Điều khiển phần cứng, WDA socket reader, frame producer
+│   │   ├── human_touch.py            # Mô phỏng sinh học 2D Gaussian, Bezier swipe, Captcha failsafe
+│   │   ├── resource_guard.py         # Zero-Spend ResourceGuard, reflex cancel <0.5s, pre-tap veto
+│   │   └── trigger.py                # ScreenStateTrigger phản xạ vi tuần hoàn, FreshFrameGuard
+│   ├── cv/                           # Module thị giác máy tính & nhận diện
+│   │   ├── matcher.py                # OpenCV template matching đa tỉ lệ
+│   │   └── ocr_service.py            # RapidOCR tiếng Việt, chuẩn hóa ký tự, single-pass OCR
+│   ├── tasks/                        # Các tác vụ tự động hóa game
+│   │   ├── base.py                   # BaseTask quản lý vòng đời, cognitive pause, log
+│   │   ├── daily.py                  # Tự động nhận ủy thác và điểm năng động
+│   │   ├── dialogue.py               # Tự động tua và skip hội thoại cốt truyện
+│   │   ├── fast_chain.py             # FastChainExecutor chuỗi tương tác siêu tốc
+│   │   ├── resin.py                  # Tự động xả nhựa Calyx, Di vật, Boss tuần
+│   │   ├── simulated_universe.py     # Tự động Vũ trụ Sai phân & Vũ trụ Mô phỏng
+│   │   └── smart_pipeline.py         # Lộ trình hợp nhất tối ưu Smart-Pipeline 3 pha
+│   └── web/                          # Giao diện Web Dashboard & WebSocket streaming
+│       ├── server.py                 # FastAPI backend, 60 FPS WebSocket stream, REST API
+│       └── static/                   # Static assets: HTML5 Canvas, Dark Mode UI, app.js
+├── scripts/                          # Script bash điều khiển thiết bị & cài đặt
+│   ├── check_device.sh               # Kiểm tra kết nối USB và nhận diện iPad M5
+│   ├── inspect_live_ui.py            # Script soi tọa độ và OCR trực tiếp
+│   ├── run_wda.sh                    # Khởi chạy WDA Runner trên iPad qua USB
+│   ├── run_wda_real_device.sh        # Khởi chạy WDA trên thiết bị vật lý
+│   └── setup_env.sh                  # Cài đặt môi trường ảo và dependencies
+├── tests/                            # Bộ kiểm thử tự động toàn diện (Unit, Integration, Benchmark)
+│   ├── mock_wda.py                   # Mock harness mô phỏng WDA không can thiệp phần cứng
+│   ├── test_cache.py                 # Kiểm thử UI Cache & Micro-ROI Self-Healing
+│   ├── test_coordinates.py           # Kiểm thử hệ tọa độ chuẩn hóa
+│   ├── test_daily_speed.py           # Benchmark tốc độ tác vụ Daily
+│   ├── test_fast_chain.py            # Kiểm thử chuỗi thao tác nhanh Fast-Chain
+│   ├── test_human_touch.py           # Kiểm thử phân phối 2D Gaussian & Bezier
+│   ├── test_ocr.py                   # Kiểm thử OCR tiếng Việt
+│   ├── test_resource_guard.py        # Kiểm thử bộ bảo vệ tài nguyên Zero-Spend
+│   ├── test_resource_guard_adversarial.py # Kiểm thử tấn công từ khóa nhạy cảm đa luồng
+│   ├── test_resource_guard_stress.py # Kiểm thử áp lực 100 lần độ trễ phản xạ hủy <0.5s
+│   ├── test_server.py                # Kiểm thử API Web Server
+│   ├── test_smart_pipeline_benchmark.py # Benchmark 10 vòng lộ trình Smart-Pipeline
+│   ├── test_stream.py                # Kiểm thử luồng phát video WebSocket 60 FPS
+│   └── test_trigger.py               # Kiểm thử bộ kích hoạt phản xạ ScreenStateTrigger
+├── WebDriverAgent/                   # XCUITest driver cho iPadOS
+├── config.yaml                       # File cấu hình thiết bị, tham số bot và web
+├── requirements.txt                  # Các thư viện Python phụ thuộc
+├── run.py                            # Điểm khởi chạy chính (CLI entrypoint & Web Server)
+├── README.md                         # Tài liệu giới thiệu tổng quan dự án
+└── .gitignore                        # Cấu hình loại trừ file git
 ```
 
 ---

@@ -173,10 +173,15 @@ class TestUICache(unittest.TestCase):
 
     def test_fast_path_real_screenshot(self):
         """Tests micro-ROI verification on actual iPad Pro 13" screenshot if present."""
-        if not os.path.exists("real_ipad_screen.png"):
-            self.skipTest("real_ipad_screen.png not present in repository")
+        img_path = (
+            "assets/screenshots/real_ipad_screen.png"
+            if os.path.exists("assets/screenshots/real_ipad_screen.png")
+            else "real_ipad_screen.png"
+        )
+        if not os.path.exists(img_path):
+            self.skipTest(f"{img_path} not present in repository")
 
-        img = cv2.imread("real_ipad_screen.png")
+        img = cv2.imread(img_path)
         self.assertIsNotNone(img)
 
         # Test chest 100 verification
