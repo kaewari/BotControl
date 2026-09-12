@@ -10,6 +10,7 @@ from typing import Optional, Tuple, Union, Any
 import cv2
 import numpy as np
 from PIL import Image
+import requests
 import wda
 
 from bot.core.coordinates import CoordinateSystem, Point, BoundingBox
@@ -148,28 +149,34 @@ class DeviceManager:
     def connect(self) -> bool:
         """Connects to WebDriverAgent and retrieves device dimensions."""
         try:
-            self._client = wda.Client(self.wda_url)
-            status = self._client.status()
-            if status.get("state") == "success" or "ready" in str(status):
-                self.connected = True
-                logger.info(f"Kết nối WDA thành công: {self.wda_url}")
-                return True
+            resp = requests.get(f"{self.wda_url}/status", timeout=2.0)
+            if resp.status_code == 200:
+                data = resp.json().get("value", {})
+                if data.get("state") == "success" or "ready" in str(data) or "sessionId" in data or bool(data):
+                    self._client = wda.Client(self.wda_url)
+                    self.connected = True
+                    logger.info(f"Kết nối WDA thành công: {self.wda_url}")
+                    return True
         except Exception as e:
             logger.debug(f"Chưa kết nối được WDA tại {self.wda_url}: {e}")
-            self.connected = False
+        self.connected = False
         return False
 
     def check_connection(self) -> bool:
-        """Lightweight check to see if WDA endpoint is alive."""
-        if self._client is None:
-            return self.connect()
+        """Lightweight non-blocking check to see if WDA endpoint is alive."""
         try:
-            status = self._client.status()
-            self.connected = (status.get("state") == "success" or "ready" in str(status))
+            resp = requests.get(f"{self.wda_url}/status", timeout=1.5)
+            if resp.status_code == 200:
+                data = resp.json().get("value", {})
+                is_ok = (data.get("state") == "success" or "ready" in str(data) or "sessionId" in data or bool(data))
+                self.connected = is_ok
+                if is_ok and self._client is None:
+                    self._client = wda.Client(self.wda_url)
+                return self.connected
         except Exception:
-            self.connected = False
-            self._client = None
-        return self.connected
+            pass
+        self.connected = False
+        return False
 
     def start_frame_producer(self):
         """Starts background worker to continuously stream frames into memory."""
