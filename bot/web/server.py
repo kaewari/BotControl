@@ -114,7 +114,15 @@ async def get_status():
         "task_paused": current_task.pause_requested if current_task else False,
         "trailblaze_power": cached_power,
         "fuel_count": cached_fuel,
+        "antiban_active": getattr(device, "enable_human_touch", True),
     }
+
+
+@app.post("/api/antiban/toggle")
+async def toggle_antiban():
+    device.enable_human_touch = not getattr(device, "enable_human_touch", True)
+    broadcast_log(f"🛡️ Anti-Ban Human Touch đã được {'BẬT' if device.enable_human_touch else 'TẮT'}.", "warning" if not device.enable_human_touch else "info")
+    return {"antiban_active": device.enable_human_touch}
 
 
 def generate_placeholder_frame(text: str = "iPad Đang Ngắt Kết Nối WDA") -> bytes:

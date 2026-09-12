@@ -86,19 +86,20 @@ class ResinFarmTask(BaseTask):
         self.device.tap_box(HSRZones.GUIDEBOOK_ICON, normalized=True)
         self.sleep_cancellable(2.0)
 
+        # Nhấn vào Tab 2 (Hướng Dẫn Sinh Tồn) trên thanh 5 tab
+        self.log("Chuyển sang Tab Hướng Dẫn Sinh Tồn (Tab 2)...")
+        self.device.tap(HSRZones.TAB_SURVIVAL_INDEX.x, HSRZones.TAB_SURVIVAL_INDEX.y, normalized=True)
+        self.sleep_cancellable(2.0)
+
         img = self.capture()
         if img is None:
             return False
 
-        # Kiểm tra xem đã ở trong Sổ tay chưa
-        if self.ocr.find_any_text(img, ["Huong Dan Sinh Ton", "Hướng Dẫn Sinh Tồn", "Huong Dan Hanh Tinh"]):
+        # Kiểm tra đã vào tab Hướng Dẫn Sinh Tồn
+        if self.ocr.find_any_text(img, ["Huong Dan Sinh Ton", "Hướng Dẫn Sinh Tồn", "Muc Tieu Boi Duong"]):
             self.log("Đã mở Hướng Dẫn Sinh Tồn thành công.")
             return True
 
-        # Nhấn vào Tab 2 (Hướng Dẫn Sinh Tồn) trên thanh 5 tab
-        self.log("Chuyển sang Tab Hướng Dẫn Sinh Tồn...")
-        self.device.tap(HSRZones.TAB_SURVIVAL_INDEX.x, HSRZones.TAB_SURVIVAL_INDEX.y, normalized=True)
-        self.sleep_cancellable(1.5)
         return True
 
     def select_character_target(self, item_type: str = "relic") -> bool:
@@ -243,9 +244,19 @@ class ResinFarmTask(BaseTask):
             return False
         popup = self.ocr.find_any_text(
             img,
-            ["Bổ sung", "Bo sung", "Bình Năng Lượng", "Ngọc Ánh Sao", "Khôi phục"]
+            ["Bổ sung", "Bo sung", "Bình Năng Lượng", "Ngọc Ánh Sao", "Khôi phục", "Moi ban chon cach"]
         )
-        return popup is not None
+        if popup:
+            self.dismiss_resin_popup()
+            return True
+        return False
+
+    def dismiss_resin_popup(self):
+        """Dismisses the resin replenishment popup by tapping 'Hủy'."""
+        self.log("Phát hiện popup bổ sung nhựa, bấm 'Hủy' để đóng...")
+        # Tọa độ nút Hủy trên popup (0.376, 0.667)
+        self.device.tap(0.376, 0.667, normalized=True)
+        self.sleep_cancellable(1.2)
 
     def ensure_combat_settings(self):
         """Verifies and turns on Auto-Battle and 2x Speed during combat."""

@@ -308,6 +308,21 @@ async function updateStatus() {
       fuelVal.textContent = `${data.fuel_count} bình`;
     }
 
+    // Anti-Ban Status Badge
+    const antibanBadge = document.getElementById('antiban-badge');
+    const antibanText = document.getElementById('antiban-status-text');
+    if (antibanBadge && antibanText) {
+      if (data.antiban_active) {
+        antibanBadge.className = 'badge badge-active';
+        antibanBadge.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+        antibanText.textContent = '🛡️ Anti-Ban: Bật';
+      } else {
+        antibanBadge.className = 'badge badge-offline';
+        antibanBadge.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+        antibanText.textContent = '🛡️ Anti-Ban: Tắt';
+      }
+    }
+
     // Task Status
     isTaskRunning = data.task_running;
     isTaskPaused = data.task_paused;
@@ -401,6 +416,19 @@ btnStop.addEventListener('click', async () => {
     updateStatus();
   }
 });
+
+// Anti-Ban Toggle Listener
+const antibanBadgeEl = document.getElementById('antiban-badge');
+if (antibanBadgeEl) {
+  antibanBadgeEl.addEventListener('click', async () => {
+    try {
+      await fetch('/api/antiban/toggle', { method: 'POST' });
+      updateStatus();
+    } catch (e) {
+      console.error('Lỗi toggle anti-ban:', e);
+    }
+  });
+}
 
 // Bootstrap
 initWebSocket();

@@ -52,51 +52,54 @@ class DailyTask(BaseTask):
             return
 
         # Tìm và bấm nút 'Ủy Thác'
-        uy_thac_match = self.ocr.find_any_text(img, ["Ủy Thác", "Uy Thac", "Assignments"])
+        uy_thac_match = self.ocr.find_any_text(
+            img, 
+            ["Ủy Thác", "Uy Thac", "Ủy thác", "Thác", "Thac", "Assignments"]
+        )
         if uy_thac_match:
             _, res = uy_thac_match
-            self.log(f"Tìm thấy '{res.text}', bấm vào...")
+            self.log(f"Tìm thấy '{res.text}' tại ({res.center.x:.0f}, {res.center.y:.0f}), bấm vào...")
             self.device.tap(res.center.x, res.center.y, normalized=False)
             self.sleep_cancellable(2.2)
-
-            # Tìm nút 'Nhận tất cả' hoặc 'Thu nhận'
-            assign_img = self.capture()
-            if assign_img is not None:
-                claim_all = self.ocr.find_any_text(
-                    assign_img,
-                    ["Nhận tất cả", "Nhan tat ca", "Thu nhận", "Claim All"]
-                )
-                if claim_all:
-                    _, c_res = claim_all
-                    self.log(f"Bấm '{c_res.text}'...")
-                    self.device.tap(c_res.center.x, c_res.center.y, normalized=False)
-                    self.sleep_cancellable(1.5)
-
-                    # Bấm 'Phái lại tất cả' / 'Phái lại'
-                    re_img = self.capture()
-                    if re_img is not None:
-                        redispatch = self.ocr.find_any_text(
-                            re_img,
-                            ["Phái lại", "Phai lai", "Phái lại tất cả", "Dispatch Again", "Xác nhận"]
-                        )
-                        if redispatch:
-                            _, r_res = redispatch
-                            self.log(f"Bấm '{r_res.text}' để tiếp tục gửi...")
-                            self.device.tap(r_res.center.x, r_res.center.y, normalized=False)
-                            self.sleep_cancellable(1.5)
-                else:
-                    self.log("Chưa có ủy thác hoàn thành hoặc đã nhận trước đó.")
-
-            # Đóng menu Ủy Thác (Bấm nút Back 2 lần)
-            self.log("Đóng menu Ủy Thác...")
-            self.device.tap(HSRZones.BACK_BUTTON.x, HSRZones.BACK_BUTTON.y, normalized=True)
-            self.sleep_cancellable(1.0)
-            self.device.tap(HSRZones.BACK_BUTTON.x, HSRZones.BACK_BUTTON.y, normalized=True)
-            self.sleep_cancellable(1.2)
         else:
-            self.log("Không tìm thấy mục 'Ủy Thác' trong menu điện thoại", level="warning")
-            self.device.tap(HSRZones.BACK_BUTTON.x, HSRZones.BACK_BUTTON.y, normalized=True)
-            self.sleep_cancellable(1.0)
+            self.log("Không nhận diện được chữ 'Ủy Thác', dùng tọa độ cố định menu (0.887, 0.354)...")
+            self.device.tap(0.887, 0.354, normalized=True)
+            self.sleep_cancellable(2.2)
+
+        # Tìm nút 'Nhận tất cả' hoặc 'Thu nhận' hoặc 'Nhận'
+        assign_img = self.capture()
+        if assign_img is not None:
+            claim_all = self.ocr.find_any_text(
+                assign_img,
+                ["Nhận tất cả", "Nhan tat ca", "Thu nhận", "Nhận", "Claim All", "Claim"]
+            )
+            if claim_all:
+                _, c_res = claim_all
+                self.log(f"Bấm '{c_res.text}'...")
+                self.device.tap(c_res.center.x, c_res.center.y, normalized=False)
+                self.sleep_cancellable(1.5)
+
+                # Bấm 'Phái lại tất cả' / 'Phái lại'
+                re_img = self.capture()
+                if re_img is not None:
+                    redispatch = self.ocr.find_any_text(
+                        re_img,
+                        ["Phái lại", "Phai lai", "Phái lại tất cả", "Dispatch Again", "Xác nhận"]
+                    )
+                    if redispatch:
+                        _, r_res = redispatch
+                        self.log(f"Bấm '{r_res.text}' để tiếp tục gửi...")
+                        self.device.tap(r_res.center.x, r_res.center.y, normalized=False)
+                        self.sleep_cancellable(1.5)
+            else:
+                self.log("Chưa có ủy thác hoàn thành hoặc đã nhận trước đó.")
+
+        # Đóng menu Ủy Thác (Bấm nút Back 2 lần)
+        self.log("Đóng menu Ủy Thác...")
+        self.device.tap(HSRZones.BACK_BUTTON.x, HSRZones.BACK_BUTTON.y, normalized=True)
+        self.sleep_cancellable(1.0)
+        self.device.tap(HSRZones.BACK_BUTTON.x, HSRZones.BACK_BUTTON.y, normalized=True)
+        self.sleep_cancellable(1.2)
 
     def process_daily_training(self):
         """Opens Guidebook and claims daily activity points rewards."""
@@ -126,24 +129,27 @@ class DailyTask(BaseTask):
 
         sub_img = self.capture()
         if sub_img is not None:
-            # 1. Thử bấm 'Nhận tất cả' nếu có
-            claim_btn = self.ocr.find_any_text(
-                sub_img,
-                ["Nhận tất cả", "Nhan tat ca", "Nhận", "Claim"]
-            )
-            if claim_btn:
-                _, btn_res = claim_btn
-                self.log(f"Bấm '{btn_res.text}' nhận thưởng năng động...")
-                self.device.tap(btn_res.center.x, btn_res.center.y, normalized=False)
-                self.sleep_cancellable(1.2)
+            # 1. Thu nhận tất cả các nhiệm vụ ngày đã hoàn thành (nút 'Nhận' bên dưới)
+            h, w = sub_img.shape[:2]
+            nhan_matches = self.ocr.find_all_text(sub_img, "Nhận")
+            # Lọc các nút Nhận ở nửa dưới màn hình (y > 0.60)
+            mission_claims = [r for r in nhan_matches if r.center.y > h * 0.60]
+            if mission_claims:
+                self.log(f"Tìm thấy {len(mission_claims)} nhiệm vụ có thể nhận thưởng...")
+                for c_btn in mission_claims:
+                    self.log(f"Bấm '{c_btn.text}' tại ({c_btn.center.x:.0f}, {c_btn.center.y:.0f})...")
+                    self.device.tap(c_btn.center.x, c_btn.center.y, normalized=False)
+                    self.sleep_cancellable(1.0)
+            else:
+                self.log("Không có nút 'Nhận' nhiệm vụ riêng lẻ nào.")
 
-            # 2. Nhấp vào 5 mốc rương (100, 200, 300, 400, 500 điểm) để đảm bảo nhận trọn vẹn
+            # 2. Nhấp vào 5 mốc rương (100, 200, 300, 400, 500 điểm)
             self.log("Thu thập các mốc rương tích lũy 100 - 500 điểm...")
-            chests_x = [0.31, 0.45, 0.60, 0.74, 0.88]
-            chest_y = 0.36
+            chests_x = [0.310, 0.454, 0.598, 0.742, 0.886]
+            chest_y = 0.358
             for cx in chests_x:
                 self.device.tap(cx, chest_y, normalized=True)
-                self.sleep_cancellable(0.4)
+                self.sleep_cancellable(0.5)
 
             # Bấm vào giữa màn hình để đóng popup nhận thưởng
             self.device.tap(0.50, 0.50, normalized=True)

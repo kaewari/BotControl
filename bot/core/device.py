@@ -8,25 +8,31 @@ import numpy as np
 from PIL import Image
 import wda
 
-from bot.core.coordinates import Point, BoundingBox, CoordinateSystem
+from bot.core.coordinates import CoordinateSystem, Point, BoundingBox
+from bot.core.human_touch import (
+    generate_gaussian_point,
+    generate_bezier_trajectory,
+    random_touch_duration,
+)
 
 logger = logging.getLogger("BotControl.Device")
 
 
 class DeviceManager:
-    """Manages WebDriverAgent connection, touch input, and screen streaming."""
+    """Manages iPad device connection via WebDriverAgent and screen interactions."""
 
-    def __init__(self, wda_url: str = "http://localhost:8100", udid: str = "00008142-001C64982E09401C"):
-        self.wda_url = wda_url.rstrip("/")
-        self.udid = udid
-        self._client: Optional[wda.Client] = None
+    def __init__(self, wda_url: str = "http://127.0.0.1:8100", timeout: float = 30.0):
+        self.wda_url = wda_url
+        self.timeout = timeout
         self.connected = False
-        self.pixel_width = 2752    # Pixels for CV & OCR
+        self._client: Optional[wda.Client] = None
+        self.pixel_width = 2752
         self.pixel_height = 2064
         self.coords = CoordinateSystem(self.pixel_width, self.pixel_height)
-        self.last_screenshot: Optional[np.ndarray] = None
-        self.last_screenshot_bytes: Optional[bytes] = None
-        self.last_screenshot_time: float = 0.0
+        self.last_screenshot = None
+        self.last_screenshot_time = 0.0
+        self.last_screenshot_bytes = None
+        self.enable_human_touch = True
 
     @property
     def width(self) -> int:
@@ -98,8 +104,8 @@ class DeviceManager:
                 return self.last_screenshot_bytes
         return self.last_screenshot_bytes
 
-    def tap(self, x: float, y: float, normalized: bool = True):
-        """Taps at coordinate. WDA accepts floats (0.0 - 1.0) as percentages."""
+    def tap(self, x: float, y: float, normalized: bool = True, box: Optional[BoundingBox] = None):
+        """Taps at coordinate with optional 2D Gaussian human dispersion and biological contact duration."""
         if not self.connected and not self.connect():
             logger.warning("Không thể gửi tap: WDA chưa kết nối")
             return
@@ -111,21 +117,35 @@ class DeviceManager:
             norm_x = float(max(0.0, min(1.0, x / self.pixel_width)))
             norm_y = float(max(0.0, min(1.0, y / self.pixel_height)))
 
-        logger.info(f"Thực hiện chạm tại tọa độ: ({norm_x:.3f}, {norm_y:.3f})")
+        # Áp dụng mô phỏng chạm người thật (Human-like touch)
+        if self.enable_human_touch:
+            hp = generate_gaussian_point(Point(norm_x, norm_y), box=box)
+            norm_x = float(max(0.005, min(0.995, hp.x)))
+            norm_y = float(max(0.005, min(0.995, hp.y)))
+            hold_dur = random_touch_duration()
+        else:
+            hold_dur = 0.0
+
+        logger.info(f"Thực hiện chạm tại ({norm_x:.4f}, {norm_y:.4f}) [giữ {hold_dur*1000:.0f}ms]")
         try:
-            self._client.click(norm_x, norm_y)
+            if hold_dur > 0.05:
+                self._client.tap_hold(norm_x, norm_y, duration=hold_dur)
+            else:
+                self._client.click(norm_x, norm_y)
         except Exception as e:
             logger.error(f"Lỗi gửi tap: {e}")
 
     def tap_box(self, box, normalized: bool = True):
-        """Taps the center of a bounding box or directly at a point."""
-        if hasattr(box, "center"):
+        """Taps inside a bounding box using 2D Gaussian distribution, or point."""
+        if isinstance(box, BoundingBox):
+            self.tap(box.center.x, box.center.y, normalized=normalized, box=box)
+        elif hasattr(box, "center"):
             self.tap(box.center.x, box.center.y, normalized=normalized)
         elif hasattr(box, "x") and hasattr(box, "y"):
             self.tap(box.x, box.y, normalized=normalized)
 
     def swipe(self, x1: float, y1: float, x2: float, y2: float, duration: float = 0.5, normalized: bool = True):
-        """Performs a swipe gesture between two points."""
+        """Performs a humanized swipe gesture between two points."""
         if not self.connected and not self.connect():
             return
 
@@ -136,6 +156,14 @@ class DeviceManager:
             ny1 = y1 / self.pixel_height
             nx2 = x2 / self.pixel_width
             ny2 = y2 / self.pixel_height
+
+        # Bổ sung jitter thời gian và vị trí điểm vuốt
+        if self.enable_human_touch:
+            import random
+            duration = duration * random.uniform(0.92, 1.15)
+            sp = generate_gaussian_point(Point(nx1, ny1))
+            ep = generate_gaussian_point(Point(nx2, ny2))
+            nx1, ny1, nx2, ny2 = sp.x, sp.y, ep.x, ep.y
 
         try:
             self._client.swipe(float(nx1), float(ny1), float(nx2), float(ny2), duration=duration)

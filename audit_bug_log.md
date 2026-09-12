@@ -1,0 +1,50 @@
+# Nhật Ký Theo Dõi & Sửa Lỗi Trực Tiếp (Live Audit & Bug Log)
+
+Tài liệu này ghi lại chi tiết quá trình vận hành, giám sát tương tác trực tiếp trên màn hình iPad Pro 13" (M5), phát hiện lỗi và áp dụng các giải pháp sửa lỗi song song (Real-time Audit & Fix).
+
+---
+
+## Bảng Tổng Hợp Lỗi Phát Hiện & Giải Pháp Sửa Chữa
+
+| ID | Thời Gian | Tình Huống / Hiện Tượng | Nguyên Nhân Gốc | Giải Pháp Đã Triển Khai | Trạng Thái |
+|---|---|---|---|---|---|
+| **BUG-01** | 15:43 | Bot báo hoàn thành Daily nhưng không có gì xảy ra trên iPad | `DeviceManager` decode ảnh JSON base64 trả về `None`, `DailyTask` bỏ qua không báo lỗi | Dùng `facebook-wda` chụp PIL RGB -> OpenCV BGR, thêm kiểm tra `check_connection()` | ✅ Đã khắc phục |
+| **BUG-02** | 15:46 | Gửi lệnh cảm ứng tap bị `AssertionError` | `wda.click` chỉ nhận tọa độ float `[0.0 - 1.0]`. Code cũ truyền pixel dạng float | Chuẩn hóa toàn bộ tọa độ tap thành tỷ lệ phần trăm `[0.0 - 1.0]` | ✅ Đã khắc phục |
+| **BUG-03** | 15:44 | `iproxy` không chuyển tiếp được cổng 8100 | Dùng CoreDevice ID tạm thời của Xcode thay vì UDID phần cứng thật | Đổi sang UDID vật lý: `00008142-001C64982E09401C` | ✅ Đã khắc phục |
+| **BUG-04** | 15:48 | Màn hình bị kẹt ở popup "Bổ Sung Sức Mạnh Khai Phá" | Khi click vào biểu tượng nhựa hoặc hết nhựa, xuất hiện popup "Hủy" / "Xác Nhận" | Bổ sung `dismiss_resin_popup()` tự động bấm "Hủy" tại `(0.376, 0.667)` | ✅ Đã khắc phục |
+| **BUG-05** | 15:52 | Không mở được mục Ủy Thác trong menu điện thoại | OCR nhận diện từ "Ủy Thác" thành "Thác", match danh sách cũ bị `None` | Bổ sung biến thể tìm kiếm `["Ủy Thác", "Uy Thac", "Thác", "Thac"]` và tọa độ dự phòng `(0.887, 0.354)` | ✅ Đã khắc phục |
+| **BUG-06** | 15:57 | Không chuyển được sang Tab 2 Hướng Dẫn Sinh Tồn | Thanh tiêu đề chung của Sổ Tay luôn chứa chữ "Huong Dan Hanh Tinh Hoa Binh" trên mọi tab khiến điều kiện nhận diện nhầm tưởng đã ở Tab 2 | Bỏ kiểm tra tiêu đề chung, luôn tap Tab 2 tại `(0.215, 0.245)` và kiểm tra dòng phụ "Huong Dan Sinh Ton" | ✅ Đã khắc phục |
+| **BUG-07** | 16:00 | Không nhận diện được nút "Vào" của dòng phó bản Di Vật | `find_action_button_on_row` đặt `tolerance_y=85.0` (pixel), quá nhỏ so với chiều cao card 150px trên màn hình 2064px của iPad Pro 13" | Tự động thích ứng tolerance theo độ phân giải: `max(180.0, height * 0.09)` | ✅ Đã khắc phục |
+| **BUG-08** | 16:05 | Kẹt tại màn hình xếp đội (Lineup), không vào được trận chiến | Honkai: Star Rail yêu cầu 2 bước: 1. Bấm "Khiêu Chiến" trên thẻ phó bản -> 2. Bấm "Bắt Đầu Khiêu Chiến" trên màn hình đội hình | Cải tiến `prepare_and_start_battle()` hỗ trợ tuần tự cả 2 màn hình để vào chiến đấu thực tế | ✅ Đã khắc phục |
+| **SYS-01** | 16:03 | Nguy cơ bị phát hiện / cấm tài khoản khi chạy bot tự động | Tọa độ click cố định pixel, thời gian giữ click 0ms, không có nhịp nghỉ suy nghĩ, cử chỉ vuốt thẳng cơ học | Triển khai module `human_touch.py`: Phân phối chuẩn 2D Gaussian, thời gian giữ 85-210ms, đường vuốt Bezier, nhịp nghỉ 0.5-2.5s, và Failsafe Kill-Switch Captcha | ✅ Đã khắc phục |
+
+---
+
+## Chi Tiết Các Phiên Test Trực Tiếp Trên Thiết Bị
+
+### 1. Phiên Test Daily Routine (Ủy Thác & Huấn Luyện Thường Ngày)
+- **Thời gian**: 15:53 - 15:57
+- **Quy trình kiểm tra**:
+  - Mở menu điện thoại -> Phát hiện và bấm "Ủy Thác" tại `(0.887, 0.354)` -> Thu nhận phần thưởng và phái lại thành công 4/4 ủy thác.
+  - Mở Sổ tay Hướng dẫn -> Tab 1 (Huấn Luyện Thường Ngày) -> Nhận thưởng 2 nhiệm vụ ngày -> Thu nhận trọn vẹn 5 mốc rương tích lũy (100, 200, 300, 400, 500 điểm) -> Đóng Sổ tay về thế giới 3D.
+- **Kết quả**: Hoàn tất 100% không lỗi.
+
+### 2. Phiên Test Xả Nhựa (Resin Spending & Cavern of Corrosion)
+- **Thời gian**: 16:04 - 16:06
+- **Quy trình kiểm tra**:
+  - Mở Sổ tay -> Tab 2 Hướng Dẫn Sinh Tồn -> Chọn Mục Tiêu Bồi Dưỡng (Robin) -> Bấm nút "Vào" tại Đề Xuất Di Vật Hang Động (`0.854, 0.536`).
+  - Thiết lập 1 lượt khiêu chiến (40 nhựa) -> Bấm "Khiêu Chiến" (`0.869, 0.910`) -> Bấm "Bắt Đầu Khiêu Chiến" (`0.841, 0.909`).
+  - Vào trận chiến "Thẩm Án Xâm Thực" -> Bật Auto Battle & Tốc độ x2 -> Giám sát trận đấu đến khi kết thúc.
+  - Phát hiện màn hình Chiến Thắng -> Tự động bấm "Rút Lui" -> Trở về giao diện phó bản.
+  - Sức Mạnh Khai Phá tiêu thụ chính xác từ **170/300** xuống **130/300**.
+  - Bấm đóng phó bản an toàn về thế giới 3D.
+- **Kết quả**: Hoàn tất 100% trận chiến thực tế.
+
+### 3. Phiên Test Hệ Thống Anti-Ban & Human-Like Simulation
+- **Thời gian**: 16:03 - 16:08
+- **Các thành phần đã xác thực**:
+  - `generate_gaussian_point`: Kiểm thử 1000 mẫu ngẫu nhiên, 100% nằm trong vùng an toàn của bounding box, độ phân tán tự nhiên (test pass).
+  - `random_touch_duration`: Thời gian giữ ngón tay ngẫu nhiên trong khoảng 85ms - 210ms (test pass).
+  - `generate_bezier_trajectory`: Quỹ đạo đường cong Bezier bậc 3 với vi gia tốc ease-in ease-out (test pass).
+  - `ThreatDetector`: Phát hiện chính xác 4/4 mẫu Captcha/màn hình xác minh bảo mật và kích hoạt ngắt an toàn (test pass).
+  - Tích hợp trực tiếp vào `DeviceManager.tap`, `DeviceManager.swipe`, `BaseTask.sleep_cancellable` và Web Dashboard toggle (17/17 unit test pass).

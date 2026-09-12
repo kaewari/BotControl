@@ -119,6 +119,31 @@ class OCRService:
 
         return None
 
+    def find_all_text(
+        self,
+        image: np.ndarray,
+        target: str,
+        min_score: float = 0.5,
+        region: Optional[BoundingBox] = None,
+        ignore_tones: bool = True,
+    ) -> List[OCRResult]:
+        """Finds all matching text entries in image."""
+        results = self.recognize(image, region=region)
+        norm_target = normalize_text(target)
+        unaccented_target = remove_vietnamese_tones(norm_target) if ignore_tones else ""
+        matches = []
+        for res in results:
+            if res.score < min_score:
+                continue
+            norm_res_text = normalize_text(res.text)
+            if norm_target in norm_res_text:
+                matches.append(res)
+            elif ignore_tones:
+                unaccented_res = remove_vietnamese_tones(norm_res_text)
+                if unaccented_target in unaccented_res:
+                    matches.append(res)
+        return matches
+
     def find_any_text(
         self,
         image: np.ndarray,
@@ -170,12 +195,14 @@ class OCRService:
         image: np.ndarray,
         target_name: str,
         button_labels: List[str] = ["Vào", "Vao", "Khiêu Chiến", "Dịch Chuyển"],
-        tolerance_y: float = 85.0,
+        tolerance_y: float = 180.0,
     ) -> Optional[OCRResult]:
         """Finds a target label on the screen and returns the action button on the same horizontal row."""
         if image is None:
             return None
 
+        h, w = image.shape[:2]
+        eff_tolerance = max(tolerance_y, h * 0.09)
         results = self.recognize(image)
         norm_target = normalize_text(target_name)
         unaccented_target = remove_vietnamese_tones(norm_target)

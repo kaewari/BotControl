@@ -18,13 +18,13 @@ class BaseTask:
     def __init__(
         self,
         device: DeviceManager,
-        ocr: OCRService,
-        matcher: TemplateMatcher,
+        ocr: Optional[OCRService] = None,
+        matcher: Optional[TemplateMatcher] = None,
         log_callback: Optional[Callable[[str, str], None]] = None,
     ):
         self.device = device
-        self.ocr = ocr
-        self.matcher = matcher
+        self.ocr = ocr if ocr is not None else OCRService()
+        self.matcher = matcher if matcher is not None else TemplateMatcher()
         self.log_callback = log_callback
         self.is_running = False
         self.stop_requested = False
@@ -63,17 +63,46 @@ class BaseTask:
         self.pause_requested = False
         self.log("Tiếp tục tác vụ.", "info")
 
-    def sleep_cancellable(self, seconds: float, step: float = 0.1) -> bool:
-        """Sleeps in small increments, checking for stop/pause requests. Returns False if stopped."""
+    def sleep_cancellable(self, seconds: float, step: float = 0.1, jitter: bool = True) -> bool:
+        """Sleeps in small increments with cognitive jitter, checking for stop/pause requests."""
+        import random
+        # Bổ sung timing jitter tự nhiên (±12% thời gian)
+        if jitter and seconds > 0.3:
+            actual_seconds = max(0.1, seconds + random.gauss(0, seconds * 0.12))
+        else:
+            actual_seconds = seconds
+
         elapsed = 0.0
-        while elapsed < seconds:
+        while elapsed < actual_seconds:
             if self.stop_requested:
                 return False
             while self.pause_requested and not self.stop_requested:
                 time.sleep(0.2)
-            time.sleep(min(step, seconds - elapsed))
+            time.sleep(min(step, actual_seconds - elapsed))
             elapsed += step
         return not self.stop_requested
+
+    def cognitive_pause(self, mean: float = 1.2, std: float = 0.35) -> bool:
+        """Pauses execution to simulate a human reading the screen or thinking before clicking."""
+        import random
+        delay = max(0.4, min(3.5, random.gauss(mean, std)))
+        self.log(f"Khoảng nghỉ suy nghĩ tự nhiên ({delay:.2f}s)...")
+        return self.sleep_cancellable(delay, jitter=False)
+
+    def check_threats(self, image: np.ndarray) -> bool:
+        """Scans screen for Captchas or security checks, halting execution if detected."""
+        from bot.core.human_touch import ThreatDetector
+        if image is None:
+            return False
+        results = self.ocr.recognize(image)
+        texts = [r.text for r in results]
+        threat_detected, reason = ThreatDetector.check_for_threats(texts)
+        if threat_detected:
+            self.log(f"🚨 CẢNH BÁO NGUY CƠ: {reason}!", level="error")
+            self.log("Lập tức kích hoạt Failsafe Kill-Switch ngắt toàn bộ thao tác!", level="error")
+            self.stop_requested = True
+            return True
+        return False
 
     def capture(self) -> Optional[np.ndarray]:
         """Captures fresh screenshot from iPad."""
