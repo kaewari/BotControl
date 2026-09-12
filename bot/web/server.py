@@ -14,7 +14,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from bot.core.coordinates import HSRZones, Point, BoundingBox
-from bot.core.device import DeviceManager
+from bot.core.device import DeviceManager, VideoFrame
 from bot.cv.ocr_service import OCRService
 from bot.cv.matcher import TemplateMatcher
 from bot.tasks.base import BaseTask
@@ -115,6 +115,7 @@ async def get_status():
         "trailblaze_power": cached_power,
         "fuel_count": cached_fuel,
         "antiban_active": getattr(device, "enable_human_touch", True),
+        "active_stream_clients": get_active_stream_clients(),
     }
 
 
@@ -188,12 +189,41 @@ def telemetry_worker_loop():
         time.sleep(8.0)
 
 
-def mjpeg_frame_generator():
-    """High-speed generator streaming pre-rendered JPEG frames from memory at 20-25 FPS."""
-    while True:
-        try:
-            if device.connected:
-                frame_bytes = device.get_screenshot_jpeg_bytes()
+active_stream_clients = 0
+active_stream_clients_lock = threading.Lock()
+
+
+def get_active_stream_clients() -> int:
+    with active_stream_clients_lock:
+        return active_stream_clients
+
+
+def mjpeg_frame_generator(max_frames: Optional[int] = None):
+    """High-speed generator streaming pre-rendered JPEG frames from RAM at 18-25 FPS (~22 FPS).
+    
+    Decoupled from WDA USB traffic: all clients read the pre-encoded frame buffer in RAM.
+    Handles client disconnects cleanly without resource or socket leaks.
+    """
+    global active_stream_clients
+    with active_stream_clients_lock:
+        active_stream_clients += 1
+    logger.debug(f"Stream client connected. Total active clients: {active_stream_clients}")
+
+    frames_sent = 0
+    try:
+        while True:
+            if max_frames is not None and frames_sent >= max_frames:
+                break
+
+            try:
+                frame_bytes = None
+                if device.connected:
+                    vf = device.get_video_frame()
+                    if vf is not None and vf.jpeg_bytes:
+                        frame_bytes = vf.jpeg_bytes
+                    else:
+                        frame_bytes = device.get_screenshot_jpeg_bytes()
+
                 if frame_bytes:
                     header = (
                         b"--frame\r\n"
@@ -201,29 +231,50 @@ def mjpeg_frame_generator():
                         + f"Content-Length: {len(frame_bytes)}\r\n\r\n".encode("ascii")
                     )
                     yield header + frame_bytes + b"\r\n"
-                    time.sleep(0.045)  # ~22 FPS buttery smooth
+                    frames_sent += 1
+                    time.sleep(0.045)  # ~22.2 FPS buttery smooth
                     continue
 
-            placeholder = generate_placeholder_frame(
-                "Chờ kết nối WDA qua cổng USB: localhost:8100"
-            )
-            header = (
-                b"--frame\r\n"
-                b"Content-Type: image/jpeg\r\n"
-                + f"Content-Length: {len(placeholder)}\r\n\r\n".encode("ascii")
-            )
-            yield header + placeholder + b"\r\n"
-            time.sleep(0.5)
-        except Exception:
-            time.sleep(0.5)
+                # Placeholder when not connected or no frame available
+                placeholder = generate_placeholder_frame(
+                    "Chờ kết nối WDA qua cổng USB: localhost:8100"
+                )
+                header = (
+                    b"--frame\r\n"
+                    b"Content-Type: image/jpeg\r\n"
+                    + f"Content-Length: {len(placeholder)}\r\n\r\n".encode("ascii")
+                )
+                yield header + placeholder + b"\r\n"
+                frames_sent += 1
+                time.sleep(0.5)
+
+            except (GeneratorExit, asyncio.CancelledError, BrokenPipeError, ConnectionResetError):
+                logger.debug("Stream client connection closed by client.")
+                break
+            except Exception as e:
+                logger.debug(f"Stream generation tick exception: {e}")
+                time.sleep(0.1)
+
+    except (GeneratorExit, asyncio.CancelledError):
+        logger.debug("Stream generator exited cleanly.")
+    finally:
+        with active_stream_clients_lock:
+            active_stream_clients = max(0, active_stream_clients - 1)
+        logger.debug(f"Stream client disconnected. Total active clients: {active_stream_clients}")
 
 
 @app.get("/api/stream")
 async def video_feed():
-    """MJPEG screen stream endpoint."""
+    """MJPEG screen stream endpoint serving pre-encoded frames from RAM at 18-25 FPS."""
     return StreamingResponse(
         mjpeg_frame_generator(),
         media_type="multipart/x-mixed-replace; boundary=frame",
+        headers={
+            "Cache-Control": "no-cache, no-store, must-revalidate, pre-check=0, post-check=0, max-age=0",
+            "Pragma": "no-cache",
+            "Expires": "0",
+            "Connection": "close",
+        },
     )
 
 

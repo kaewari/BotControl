@@ -1,97 +1,488 @@
 {
-  "phone_menu_icon": {
-    "x": 0.04,
-    "y": 0.05,
-    "label": "Menu Điện Thoại"
+  "_meta": {
+    "version": "2.0.0",
+    "device": "iPad Pro 13-inch (M5)",
+    "screen_width": 2752,
+    "screen_height": 2064,
+    "aspect_ratio": "4:3",
+    "updated_at": "2026-09-12 16:24:40"
   },
-  "phone_assignments": {
-    "x": 0.887,
-    "y": 0.354,
-    "label": "Ủy Thác"
-  },
-  "guidebook_icon": {
-    "x": 0.79,
-    "y": 0.05,
-    "label": "Sổ Tay Sinh Tồn"
-  },
-  "guidebook_close": {
-    "x": 0.963,
-    "y": 0.065,
-    "label": "Đóng Sổ Tay"
-  },
-  "tab_daily_training": {
-    "x": 0.15,
-    "y": 0.245,
-    "label": "Tab Huấn Luyện Thường Ngày"
-  },
-  "tab_survival_index": {
-    "x": 0.215,
-    "y": 0.245,
-    "label": "Tab Hướng Dẫn Sinh Tồn"
-  },
-  "tab_simulated_universe": {
-    "x": 0.285,
-    "y": 0.245,
-    "label": "Tab Vũ Trụ Mô Phỏng"
-  },
-  "chest_100": {
-    "x": 0.31,
-    "y": 0.358,
-    "label": "Mốc Rương 100"
-  },
-  "chest_200": {
-    "x": 0.454,
-    "y": 0.357,
-    "label": "Mốc Rương 200"
-  },
-  "chest_300": {
-    "x": 0.598,
-    "y": 0.357,
-    "label": "Mốc Rương 300"
-  },
-  "chest_400": {
-    "x": 0.742,
-    "y": 0.358,
-    "label": "Mốc Rương 400"
-  },
-  "chest_500": {
-    "x": 0.886,
-    "y": 0.357,
-    "label": "Mốc Rương 500"
-  },
-  "target_relic_enter": {
-    "x": 0.854,
-    "y": 0.536,
-    "label": "Vào Di Vật Hang Động"
-  },
-  "target_planar_enter_1": {
-    "x": 0.871,
-    "y": 0.684,
-    "label": "Vào Phụ Kiện Vị Diện 1"
-  },
-  "dungeon_challenge_btn": {
-    "x": 0.869,
-    "y": 0.91,
-    "label": "Nút Khiêu Chiến (Phó bản)"
-  },
-  "team_start_battle_btn": {
-    "x": 0.841,
-    "y": 0.909,
-    "label": "Nút Bắt Đầu Khiêu Chiến (Đội hình)"
-  },
-  "battle_retreat_btn": {
-    "x": 0.35,
-    "y": 0.9,
-    "label": "Nút Rút Lui (Chiến thắng)"
-  },
-  "resin_popup_cancel": {
-    "x": 0.376,
-    "y": 0.667,
-    "label": "Nút Hủy (Popup bổ sung nhựa)"
-  },
-  "back_button": {
-    "x": 0.045,
-    "y": 0.055,
-    "label": "Nút Quay Lại"
+  "elements": {
+    "phone_menu_icon": {
+      "x": 0.04,
+      "y": 0.05,
+      "label": "Menu Điện Thoại",
+      "expected_keywords": [],
+      "verified_count": 0,
+      "last_verified": "",
+      "box": [
+        0.015,
+        0.025,
+        0.065,
+        0.075
+      ]
+    },
+    "phone_assignments": {
+      "x": 0.887,
+      "y": 0.354,
+      "label": "Ủy Thác",
+      "expected_keywords": [
+        "Ủy Thác",
+        "Uy Thac",
+        "Thác"
+      ],
+      "verified_count": 1,
+      "last_verified": "2026-09-12 16:24:29",
+      "box": [
+        0.835,
+        0.32,
+        0.94,
+        0.388
+      ]
+    },
+    "assignment_claim_all": {
+      "x": 0.798,
+      "y": 0.784,
+      "label": "Nhận Tất Cả",
+      "expected_keywords": [
+        "Nhận Tất Cả",
+        "Nhan Tat Ca",
+        "Nhận Thưởng",
+        "Nhan Thuong",
+        "Nhận",
+        "Nhan"
+      ],
+      "verified_count": 0,
+      "last_verified": "",
+      "box": [
+        0.742,
+        0.77,
+        0.854,
+        0.798
+      ]
+    },
+    "assignment_redispatch": {
+      "x": 0.81,
+      "y": 0.86,
+      "label": "Phái Lại Tất Cả",
+      "expected_keywords": [
+        "Phái Lại",
+        "Phai Lai",
+        "Phái lại tất cả",
+        "Phái",
+        "Phai"
+      ],
+      "verified_count": 0,
+      "last_verified": "",
+      "box": [
+        0.73,
+        0.83,
+        0.89,
+        0.89
+      ]
+    },
+    "guidebook_icon": {
+      "x": 0.79,
+      "y": 0.05,
+      "label": "Sổ Tay Sinh Tồn",
+      "expected_keywords": [],
+      "verified_count": 0,
+      "last_verified": "",
+      "box": [
+        0.76,
+        0.025,
+        0.82,
+        0.075
+      ]
+    },
+    "guidebook_close": {
+      "x": 0.963,
+      "y": 0.065,
+      "label": "Đóng Sổ Tay",
+      "expected_keywords": [],
+      "verified_count": 0,
+      "last_verified": "",
+      "box": [
+        0.94,
+        0.04,
+        0.985,
+        0.09
+      ]
+    },
+    "tab_daily_training": {
+      "x": 0.248,
+      "y": 0.1436,
+      "label": "Tab Huấn Luyện Thường Ngày",
+      "expected_keywords": [
+        "Huấn Luyện",
+        "Huan Luyen",
+        "Thường Ngày",
+        "Thuong Ngay"
+      ],
+      "verified_count": 1,
+      "last_verified": "2026-09-12 16:24:40",
+      "box": [
+        0.1487,
+        0.1297,
+        0.3473,
+        0.1576
+      ]
+    },
+    "tab_survival_index": {
+      "x": 0.215,
+      "y": 0.245,
+      "label": "Tab Hướng Dẫn Sinh Tồn",
+      "expected_keywords": [
+        "Hướng Dẫn",
+        "Huong Dan",
+        "Sinh Tồn",
+        "Sinh Ton"
+      ],
+      "verified_count": 0,
+      "last_verified": "",
+      "box": [
+        0.18,
+        0.22,
+        0.255,
+        0.27
+      ]
+    },
+    "tab_simulated_universe": {
+      "x": 0.285,
+      "y": 0.245,
+      "label": "Tab Vũ Trụ Mô Phỏng",
+      "expected_keywords": [
+        "Vũ Trụ",
+        "Vu Tru",
+        "Mô Phỏng",
+        "Mo Phong"
+      ],
+      "verified_count": 0,
+      "last_verified": "",
+      "box": [
+        0.25,
+        0.22,
+        0.32,
+        0.27
+      ]
+    },
+    "chest_100": {
+      "x": 0.3105,
+      "y": 0.3577,
+      "label": "Mốc Rương 100",
+      "expected_keywords": [
+        "100"
+      ],
+      "verified_count": 0,
+      "last_verified": "",
+      "box": [
+        0.2969,
+        0.3464,
+        0.3241,
+        0.369
+      ]
+    },
+    "chest_200": {
+      "x": 0.4536,
+      "y": 0.3574,
+      "label": "Mốc Rương 200",
+      "expected_keywords": [
+        "200"
+      ],
+      "verified_count": 0,
+      "last_verified": "",
+      "box": [
+        0.4395,
+        0.3464,
+        0.4677,
+        0.3684
+      ]
+    },
+    "chest_300": {
+      "x": 0.5978,
+      "y": 0.3574,
+      "label": "Mốc Rương 300",
+      "expected_keywords": [
+        "300"
+      ],
+      "verified_count": 0,
+      "last_verified": "",
+      "box": [
+        0.5837,
+        0.3464,
+        0.6119,
+        0.3684
+      ]
+    },
+    "chest_400": {
+      "x": 0.7419,
+      "y": 0.3577,
+      "label": "Mốc Rương 400",
+      "expected_keywords": [
+        "400"
+      ],
+      "verified_count": 0,
+      "last_verified": "",
+      "box": [
+        0.7278,
+        0.3464,
+        0.756,
+        0.369
+      ]
+    },
+    "chest_500": {
+      "x": 0.8861,
+      "y": 0.3574,
+      "label": "Mốc Rương 500",
+      "expected_keywords": [
+        "500"
+      ],
+      "verified_count": 0,
+      "last_verified": "",
+      "box": [
+        0.872,
+        0.3464,
+        0.9002,
+        0.3684
+      ]
+    },
+    "daily_mission_claim": {
+      "x": 0.1915,
+      "y": 0.7294,
+      "label": "Nhận Thưởng Nhiệm Vụ",
+      "expected_keywords": [
+        "Nhận",
+        "Nhan"
+      ],
+      "verified_count": 0,
+      "last_verified": "",
+      "box": [
+        0.1719,
+        0.7174,
+        0.2112,
+        0.7414
+      ]
+    },
+    "target_character_card": {
+      "x": 0.1772,
+      "y": 0.3665,
+      "label": "Thẻ Nhân Vật (Robin)",
+      "expected_keywords": [
+        "Robin",
+        "Mục Tiêu",
+        "Muc Tieu"
+      ],
+      "verified_count": 0,
+      "last_verified": "",
+      "box": [
+        0.1123,
+        0.3555,
+        0.2422,
+        0.3776
+      ]
+    },
+    "target_relic_enter": {
+      "x": 0.854,
+      "y": 0.4681,
+      "label": "Vào Di Vật Hang Động (Robin)",
+      "expected_keywords": [
+        "Vào",
+        "Vao"
+      ],
+      "verified_count": 0,
+      "last_verified": "",
+      "box": [
+        0.8379,
+        0.4557,
+        0.8701,
+        0.4805
+      ]
+    },
+    "target_planar_enter_1": {
+      "x": 0.8594,
+      "y": 0.6159,
+      "label": "Vào Phụ Kiện Vị Diện 1 (Robin)",
+      "expected_keywords": [
+        "Vào",
+        "Vao"
+      ],
+      "verified_count": 0,
+      "last_verified": "",
+      "box": [
+        0.832,
+        0.6042,
+        0.8867,
+        0.6276
+      ]
+    },
+    "target_planar_enter_2": {
+      "x": 0.8491,
+      "y": 0.7214,
+      "label": "Vào Phụ Kiện Vị Diện 2 (Robin)",
+      "expected_keywords": [
+        "Vào",
+        "Vao"
+      ],
+      "verified_count": 0,
+      "last_verified": "",
+      "box": [
+        0.8096,
+        0.707,
+        0.8887,
+        0.7357
+      ]
+    },
+    "enter_row_1": {
+      "x": 0.8545,
+      "y": 0.3991,
+      "label": "Vào Hàng 1",
+      "expected_keywords": [
+        "Vào",
+        "Vao"
+      ],
+      "verified_count": 0,
+      "last_verified": "",
+      "box": [
+        0.8389,
+        0.3867,
+        0.8701,
+        0.4115
+      ]
+    },
+    "enter_row_2": {
+      "x": 0.855,
+      "y": 0.5475,
+      "label": "Vào Hàng 2",
+      "expected_keywords": [
+        "Vào",
+        "Vao"
+      ],
+      "verified_count": 0,
+      "last_verified": "",
+      "box": [
+        0.8389,
+        0.5339,
+        0.8711,
+        0.5612
+      ]
+    },
+    "enter_row_3": {
+      "x": 0.8545,
+      "y": 0.653,
+      "label": "Vào Hàng 3",
+      "expected_keywords": [
+        "Vào",
+        "Vao"
+      ],
+      "verified_count": 0,
+      "last_verified": "",
+      "box": [
+        0.8389,
+        0.6406,
+        0.8701,
+        0.6654
+      ]
+    },
+    "enter_row_4": {
+      "x": 0.8545,
+      "y": 0.7598,
+      "label": "Vào Hàng 4",
+      "expected_keywords": [
+        "Vào",
+        "Vao"
+      ],
+      "verified_count": 0,
+      "last_verified": "",
+      "box": [
+        0.8389,
+        0.7474,
+        0.8701,
+        0.7721
+      ]
+    },
+    "dungeon_challenge_btn": {
+      "x": 0.869,
+      "y": 0.91,
+      "label": "Nút Khiêu Chiến (Phó bản)",
+      "expected_keywords": [
+        "Khiêu Chiến",
+        "Khieu Chien"
+      ],
+      "verified_count": 0,
+      "last_verified": "",
+      "box": [
+        0.82,
+        0.88,
+        0.92,
+        0.94
+      ]
+    },
+    "team_start_battle_btn": {
+      "x": 0.841,
+      "y": 0.909,
+      "label": "Nút Bắt Đầu Khiêu Chiến (Đội hình)",
+      "expected_keywords": [
+        "Bắt Đầu",
+        "Bat Dau",
+        "Khiêu Chiến",
+        "Khieu Chien"
+      ],
+      "verified_count": 0,
+      "last_verified": "",
+      "box": [
+        0.79,
+        0.88,
+        0.895,
+        0.94
+      ]
+    },
+    "battle_retreat_btn": {
+      "x": 0.35,
+      "y": 0.9,
+      "label": "Nút Rút Lui (Chiến thắng)",
+      "expected_keywords": [
+        "Rút Lui",
+        "Rut Lui"
+      ],
+      "verified_count": 0,
+      "last_verified": "",
+      "box": [
+        0.25,
+        0.87,
+        0.45,
+        0.93
+      ]
+    },
+    "resin_popup_cancel": {
+      "x": 0.376,
+      "y": 0.667,
+      "label": "Nút Hủy (Popup bổ sung nhựa)",
+      "expected_keywords": [
+        "Hủy",
+        "Huy"
+      ],
+      "verified_count": 0,
+      "last_verified": "",
+      "box": [
+        0.32,
+        0.645,
+        0.435,
+        0.69
+      ]
+    },
+    "back_button": {
+      "x": 0.045,
+      "y": 0.055,
+      "label": "Nút Quay Lại",
+      "expected_keywords": [],
+      "verified_count": 0,
+      "last_verified": "",
+      "box": [
+        0.02,
+        0.03,
+        0.07,
+        0.08
+      ]
+    }
   }
 }

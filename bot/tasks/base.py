@@ -6,6 +6,7 @@ import numpy as np
 
 from bot.core.coordinates import BoundingBox, Point, HSRZones
 from bot.core.device import DeviceManager
+from bot.core.cache import ui_cache
 from bot.cv.ocr_service import OCRService, OCRResult
 from bot.cv.matcher import TemplateMatcher
 
@@ -172,6 +173,112 @@ class BaseTask:
         """Taps normalized bounding box center."""
         self.device.tap_box(box, normalized=True)
 
+    def wait_for_condition(
+        self,
+        condition_fn: Callable[[np.ndarray], bool],
+        timeout: float = 3.0,
+        check_interval: float = 0.08,
+    ) -> bool:
+        """Event-driven trigger: polls fresh frames until condition returns True or timeout."""
+        start = time.time()
+        while time.time() - start < timeout:
+            if self.stop_requested:
+                return False
+            img = self.capture()
+            if img is not None and condition_fn(img):
+                return True
+            if not self.sleep_cancellable(check_interval, jitter=False):
+                return False
+        return False
+
+    def wait_for_roi_text(
+        self,
+        roi: BoundingBox,
+        expected_texts: List[str],
+        timeout: float = 3.0,
+        check_interval: float = 0.08,
+    ) -> bool:
+        """Event-driven trigger: polls Micro-ROI until expected text appears or timeout."""
+        return self.wait_for_condition(
+            lambda img: self.ocr.verify_roi_text(img, roi, expected_texts),
+            timeout=timeout,
+            check_interval=check_interval,
+        )
+
+    def tap_cached_or_learn(
+        self,
+        key: str,
+        expected_texts: Optional[List[str]] = None,
+        fallback_targets: Optional[List[str]] = None,
+        padding_x: float = 0.08,
+        padding_y: float = 0.05,
+        verify_first: bool = True,
+    ) -> bool:
+        """Executes Fast-Path with Micro-ROI verification (<30ms) and Self-Healing Auto-Learn fallback.
+
+        1. Fast-Path: Reads coordinate from ui_cache.
+        2. Micro-ROI: Verifies expected text exists in small sub-box around coordinate.
+        3. Self-Healing & Auto-Learn: If verification fails, scans screen, updates ui_cache.json,
+           and taps new position.
+        """
+        img = self.capture()
+        if img is not None and verify_first:
+            # If expected_texts is explicitly passed, ensure cache knows them
+            if expected_texts:
+                elem = ui_cache.get_element(key)
+                if elem and not elem.expected_keywords:
+                    elem.expected_keywords = list(expected_texts)
+
+            pt, box, is_fast = ui_cache.verify_and_get(
+                key=key,
+                image=img,
+                ocr=self.ocr,
+                roi_radius=max(padding_x, padding_y),
+                auto_heal=True,
+            )
+            if pt is not None:
+                if is_fast:
+                    self.log(f"Fast-Path (Micro-ROI OK): Tap '{key}' tại ({pt.x:.3f}, {pt.y:.3f})")
+                else:
+                    self.log(f"Self-Healing thành công: Tap '{key}' tại tọa độ mới ({pt.x:.3f}, {pt.y:.3f})")
+                self.device.tap(pt.x, pt.y, normalized=True)
+                return True
+            else:
+                self.log(f"Cache miss / vị trí cũ '{key}' không khớp text {expected_texts}. Thử quét dự phòng...", level="warning")
+
+        # Fallback to cached point if verification not required
+        pt = ui_cache.get_point(key)
+        if pt is not None and not verify_first:
+            self.log(f"Fast-Path: Tap '{key}' tại ({pt.x:.3f}, {pt.y:.3f})")
+            self.device.tap(pt.x, pt.y, normalized=True)
+            return True
+
+        # Fallback OCR scan for targets
+        targets = fallback_targets or expected_texts or []
+        if targets:
+            self.log(f"Self-Healing: Đang quét tìm lại vị trí cho '{key}' (từ khóa: {targets})...")
+            match = self.wait_for_any_text(targets, timeout=3.0, check_interval=0.15)
+            if match is not None:
+                _, res = match
+                w = getattr(self.device, "pixel_width", 2752) or 2752
+                h = getattr(self.device, "pixel_height", 2064) or 2064
+                norm_x = round(res.center.x / w, 4)
+                norm_y = round(res.center.y / h, 4)
+                ui_cache.update(key, norm_x, norm_y, label=res.text)
+                self.log(f"Auto-Learn thành công: Đã học vị trí mới của '{key}' tại ({norm_x}, {norm_y}) và lưu vào cache!")
+                self.device.tap(norm_x, norm_y, normalized=True)
+                return True
+
+        # Fallback to cached point if exists
+        if pt is not None:
+            self.log(f"Fallback cuối: Bấm vị trí đã lưu của '{key}' tại ({pt.x:.3f}, {pt.y:.3f})", level="warning")
+            self.device.tap(pt.x, pt.y, normalized=True)
+            return True
+
+        self.log(f"Không thể định vị hoặc tự học vị trí cho '{key}'", level="error")
+        return False
+
     def run(self, **kwargs):
         """Main execution method to be overridden by subclasses."""
         raise NotImplementedError
+

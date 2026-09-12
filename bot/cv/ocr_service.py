@@ -44,8 +44,10 @@ class OCRService:
     """Provides high-performance OCR recognition and text location."""
 
     def __init__(self):
-        logger.info("Khởi tạo RapidOCR engine...")
-        self.engine = RapidOCR()
+        try:
+            self.engine = RapidOCR(use_angle_cls=False, intra_op_num_threads=4)
+        except Exception:
+            self.engine = RapidOCR()
 
     def recognize(self, image: np.ndarray, region: Optional[BoundingBox] = None) -> List[OCRResult]:
         """Runs OCR on image (or cropped region) and returns recognized text items with boxes."""
@@ -187,12 +189,24 @@ class OCRService:
         targets: List[str],
         min_score: float = 0.5,
         region: Optional[BoundingBox] = None,
+        ignore_tones: bool = True,
     ) -> Optional[Tuple[str, OCRResult]]:
-        """Finds any matching text from target list."""
-        for target in targets:
-            match = self.find_text(image, target, min_score=min_score, region=region)
-            if match is not None:
-                return (target, match)
+        """Finds any matching text from target list in a SINGLE OCR pass."""
+        results = self.recognize(image, region=region)
+        norm_targets = [normalize_text(t) for t in targets]
+        unacc_targets = [remove_vietnamese_tones(nt) for nt in norm_targets] if ignore_tones else []
+
+        for res in results:
+            if res.score < min_score:
+                continue
+            norm_res = normalize_text(res.text)
+            unacc_res = remove_vietnamese_tones(norm_res) if ignore_tones else ""
+            for idx, target in enumerate(targets):
+                nt = norm_targets[idx]
+                if nt in norm_res:
+                    return (target, res)
+                if ignore_tones and unacc_targets and unacc_targets[idx] in unacc_res:
+                    return (target, res)
         return None
 
     def extract_trailblaze_power(self, image: np.ndarray) -> Optional[Tuple[int, int]]:
@@ -273,3 +287,72 @@ class OCRService:
                             best_btn = r
 
         return best_btn
+
+    def verify_roi_text(
+        self,
+        image: np.ndarray,
+        target_or_roi,
+        expected_texts_or_pt,
+        min_score: float = 0.40,
+        normalized: bool = True,
+        roi_radius_norm: float = 0.15,
+    ) -> bool:
+        """Verifies if any expected text exists within the Micro-ROI bounding box.
+        Supports both (image, roi: BoundingBox, expected_texts: list)
+        and (image, expected_texts: list, center: Point, roi_radius_norm: float).
+        Execution takes only 15-30ms because only a tiny cropped region is processed.
+        """
+        if image is None:
+            return False
+
+        if isinstance(target_or_roi, list):
+            expected_texts = target_or_roi
+            if isinstance(expected_texts_or_pt, Point):
+                pt = expected_texts_or_pt
+                roi = BoundingBox(
+                    max(0.0, pt.x - roi_radius_norm),
+                    max(0.0, pt.y - roi_radius_norm),
+                    min(1.0, pt.x + roi_radius_norm),
+                    min(1.0, pt.y + roi_radius_norm),
+                )
+            elif isinstance(expected_texts_or_pt, BoundingBox):
+                roi = expected_texts_or_pt
+            else:
+                return False
+        elif isinstance(target_or_roi, BoundingBox):
+            roi = target_or_roi
+            expected_texts = expected_texts_or_pt if isinstance(expected_texts_or_pt, list) else [str(expected_texts_or_pt)]
+        else:
+            return False
+
+        h, w = image.shape[:2]
+        if normalized:
+            x1 = max(0, int(roi.x1 * w))
+            y1 = max(0, int(roi.y1 * h))
+            x2 = min(w, int(roi.x2 * w))
+            y2 = min(h, int(roi.y2 * h))
+        else:
+            x1 = max(0, int(roi.x1))
+            y1 = max(0, int(roi.y1))
+            x2 = min(w, int(roi.x2))
+            y2 = min(h, int(roi.y2))
+
+        if x2 <= x1 or y2 <= y1:
+            return False
+
+        crop = image[y1:y2, x1:x2]
+        results = self.recognize(crop)
+        norm_expected = [normalize_text(t) for t in expected_texts]
+        unacc_expected = [remove_vietnamese_tones(t) for t in norm_expected]
+
+        for r in results:
+            if r.score < min_score:
+                continue
+            nr = normalize_text(r.text)
+            ur = remove_vietnamese_tones(nr)
+            for ne, ue in zip(norm_expected, unacc_expected):
+                if ne in nr or ue in ur or nr in ne or ur in ue:
+                    return True
+        return False
+
+

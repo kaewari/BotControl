@@ -115,24 +115,43 @@ class ResinFarmTask(BaseTask):
             return False
 
         if item_type == "relic":
-            # Fast-Path: Bấm trực tiếp nút Vào từ cache
-            cache_pt = ui_cache.get_point("target_relic_enter") or Point(0.854, 0.536)
-            self.log(f"Fast-Path: Bấm nút 'Vào' Di Vật tại ({cache_pt.x:.3f}, {cache_pt.y:.3f})...")
-            self.device.tap(cache_pt.x, cache_pt.y, normalized=True)
-            self.sleep_cancellable(2.5)
+            # Fast-Path + Micro-ROI + Auto-Learn: Bấm nút 'Vào' Di Vật
+            self.tap_cached_or_learn(
+                key="target_relic_enter",
+                expected_texts=["Vào", "Vao", "Khiêu Chiến"],
+                fallback_targets=["Vào", "Vao", "Khiêu Chiến", "Khieu Chien"],
+                padding_x=0.08,
+                padding_y=0.05,
+                verify_first=True,
+            )
+            # Event-driven Trigger: Chờ giao diện phó bản xuất hiện
+            self.wait_for_condition(
+                lambda img: self.ocr.find_any_text(img, ["Khiêu Chiến", "Khieu Chien", "Sức Mạnh Khai Phá"]) is not None,
+                timeout=3.0,
+                check_interval=0.1,
+            )
             return True
 
         elif item_type == "planar_1":
-            cache_pt = ui_cache.get_point("target_planar_enter_1") or Point(0.871, 0.684)
-            self.log(f"Fast-Path: Bấm nút 'Vào' Phụ Kiện 1 tại ({cache_pt.x:.3f}, {cache_pt.y:.3f})...")
-            self.device.tap(cache_pt.x, cache_pt.y, normalized=True)
-            self.sleep_cancellable(2.5)
+            self.tap_cached_or_learn(
+                key="target_planar_enter_1",
+                expected_texts=["Vào", "Vao", "Khiêu Chiến"],
+                fallback_targets=["Vào", "Vao", "Khiêu Chiến", "Khieu Chien"],
+                padding_x=0.08,
+                padding_y=0.05,
+                verify_first=True,
+            )
+            self.wait_for_condition(
+                lambda img: self.ocr.find_any_text(img, ["Khiêu Chiến", "Khieu Chien", "Sức Mạnh Khai Phá"]) is not None,
+                timeout=3.0,
+                check_interval=0.1,
+            )
             return True
 
         elif item_type == "planar_2":
             cache_pt = ui_cache.get_point("target_planar_enter_2") or Point(0.849, 0.721)
             self.device.tap(cache_pt.x, cache_pt.y, normalized=True)
-            self.sleep_cancellable(2.5)
+            self.sleep_cancellable(1.5)
             return True
 
         return False
@@ -200,11 +219,22 @@ class ResinFarmTask(BaseTask):
                     self.device.tap(p_res.center.x, p_res.center.y, normalized=False)
                     self.sleep_cancellable(0.20)
 
-        # Bước 1: Nhấn 'Khiêu Chiến' trên thẻ phó bản
-        ch_pt = ui_cache.get_point("dungeon_challenge_btn") or Point(0.869, 0.910)
-        self.log(f"Bấm 'Khiêu Chiến' tại ({ch_pt.x:.3f}, {ch_pt.y:.3f})...")
-        self.device.tap(ch_pt.x, ch_pt.y, normalized=True)
-        self.sleep_cancellable(1.8)
+        # Bước 1: Nhấn 'Khiêu Chiến' trên thẻ phó bản qua Micro-ROI & Auto-Learn
+        self.tap_cached_or_learn(
+            key="dungeon_challenge_btn",
+            expected_texts=["Khiêu Chiến", "Khieu Chien"],
+            fallback_targets=["Khiêu Chiến", "Khieu Chien"],
+            padding_x=0.08,
+            padding_y=0.04,
+            verify_first=True,
+        )
+
+        # Event-driven Trigger: Chờ màn hình xếp đội hoặc popup hết nhựa
+        self.wait_for_condition(
+            lambda img: self.ocr.find_any_text(img, ["Bắt Đầu Khiêu Chiến", "Bat Dau Khieu Chien", "Xuất Phát", "Bổ sung", "Bo sung"]) is not None,
+            timeout=2.5,
+            check_interval=0.1,
+        )
 
         # Kiểm tra popup hết nhựa
         if self.check_out_of_resin():
@@ -213,10 +243,20 @@ class ResinFarmTask(BaseTask):
             return False
 
         # Bước 2: Nhấn 'Bắt Đầu Khiêu Chiến' trên màn hình xếp đội
-        team_pt = ui_cache.get_point("team_start_battle_btn") or Point(0.841, 0.909)
-        self.log(f"Bấm 'Bắt Đầu Khiêu Chiến' tại ({team_pt.x:.3f}, {team_pt.y:.3f})...")
-        self.device.tap(team_pt.x, team_pt.y, normalized=True)
-        self.sleep_cancellable(2.5)
+        self.tap_cached_or_learn(
+            key="team_start_battle_btn",
+            expected_texts=["Bắt Đầu Khiêu Chiến", "Bat Dau Khieu Chien", "Xuất Phát"],
+            fallback_targets=["Bắt Đầu Khiêu Chiến", "Bat Dau Khieu Chien", "Khiêu Chiến"],
+            padding_x=0.08,
+            padding_y=0.04,
+            verify_first=True,
+        )
+        # Event-driven Trigger: Chờ vào trận chiến
+        self.wait_for_condition(
+            lambda img: self.ocr.find_any_text(img, ["Auto", "Tự động", "Chiến đấu", "Wave", "Đợt"]) is not None,
+            timeout=4.0,
+            check_interval=0.15,
+        )
         return True
 
     def check_out_of_resin(self) -> bool:
@@ -236,13 +276,19 @@ class ResinFarmTask(BaseTask):
     def dismiss_resin_popup(self):
         """Dismisses the resin replenishment popup by tapping 'Hủy'."""
         self.log("Phát hiện popup bổ sung nhựa, bấm 'Hủy' để đóng...")
-        # Tọa độ nút Hủy trên popup (0.376, 0.667)
-        self.device.tap(0.376, 0.667, normalized=True)
-        self.sleep_cancellable(1.2)
+        self.tap_cached_or_learn(
+            key="resin_popup_cancel",
+            expected_texts=["Hủy", "Huy", "Cancel"],
+            fallback_targets=["Hủy", "Huy", "Cancel"],
+            padding_x=0.08,
+            padding_y=0.05,
+            verify_first=True,
+        )
+        self.sleep_cancellable(0.4)
 
     def ensure_combat_settings(self):
         """Verifies and turns on Auto-Battle and 2x Speed during combat."""
-        self.sleep_cancellable(2.5)
+        self.sleep_cancellable(2.0)
         self.device.tap_box(HSRZones.BATTLE_AUTO_TOGGLE, normalized=True)
         self.sleep_cancellable(0.3)
         self.device.tap_box(HSRZones.BATTLE_SPEED_TOGGLE, normalized=True)
@@ -267,7 +313,7 @@ class ResinFarmTask(BaseTask):
                     self.log(f"Trận đấu kết thúc: Nhận diện '{res.text}'")
                     return True
 
-            self.sleep_cancellable(2.5)
+            self.sleep_cancellable(1.5)
 
         return False
 
@@ -286,7 +332,7 @@ class ResinFarmTask(BaseTask):
                 _, r_res = repeat_btn
                 self.log(f"Bấm '{r_res.text}' để tiếp tục đợt mới...")
                 self.device.tap(r_res.center.x, r_res.center.y, normalized=False)
-                self.sleep_cancellable(2.0)
+                self.sleep_cancellable(1.5)
 
                 if self.check_out_of_resin():
                     self.log("Hết nhựa sau trận đấu. Thoát...", level="warning")
@@ -295,17 +341,19 @@ class ResinFarmTask(BaseTask):
 
                 return "repeat"
 
-        # Thoát trận
-        exit_btn = self.ocr.find_any_text(
-            img,
-            ["Rút Lui", "Rut Lui", "Thoát", "Xác nhận", "Exit"]
+        # Thoát trận (Bấm Rút Lui qua Micro-ROI & Auto-Learn)
+        self.tap_cached_or_learn(
+            key="battle_retreat_btn",
+            expected_texts=["Rút Lui", "Rut Lui", "Thoát", "Exit"],
+            fallback_targets=["Rút Lui", "Rut Lui", "Thoát", "Xác nhận", "Exit"],
+            padding_x=0.08,
+            padding_y=0.05,
+            verify_first=True,
         )
-        if exit_btn:
-            _, e_res = exit_btn
-            self.log(f"Bấm '{e_res.text}' để thoát...")
-            self.device.tap(e_res.center.x, e_res.center.y, normalized=False)
-        else:
-            self.device.tap_box(HSRZones.EXIT_BATTLE_BUTTON, normalized=True)
-
-        self.sleep_cancellable(2.0)
+        # Event-driven Trigger: Chờ thoát khỏi trận đấu về giao diện ngoài
+        self.wait_for_condition(
+            lambda img: self.ocr.find_any_text(img, ["Khiêu Chiến", "Khieu Chien", "Sổ Tay", "Huong Dan"]) is not None,
+            timeout=3.0,
+            check_interval=0.1,
+        )
         return "exit"

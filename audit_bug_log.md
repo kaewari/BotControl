@@ -20,6 +20,8 @@ Tài liệu này ghi lại chi tiết quá trình vận hành, giám sát tươn
 | **SYS-01** | 16:03 | Nguy cơ bị phát hiện / cấm tài khoản khi chạy bot tự động | Tọa độ click cố định pixel, thời gian giữ click 0ms, không có nhịp nghỉ suy nghĩ, cử chỉ vuốt thẳng cơ học | Triển khai module `human_touch.py`: Phân phối chuẩn 2D Gaussian, thời gian giữ 85-210ms, đường vuốt Bezier, nhịp nghỉ 0.5-2.5s, và Failsafe Kill-Switch Captcha | ✅ Đã khắc phục |
 | **PERF-01** | 16:10 | Màn hình Live Stream trên Web Dashboard bị giật lag (1.2 FPS) | Mỗi frame HTTP stream gọi WDA screenshot đồng bộ (chờ ~800ms) và chạy OCR trong generator luồng stream | Tái cấu trúc Async Double-Buffered Frame Producer chạy nền liên tục cập nhật RAM; stream đọc thẳng từ RAM đạt **21.1 FPS** không độ trễ | ✅ Đã khắc phục |
 | **PERF-02** | 16:12 | Bot thao tác quá chậm do quét OCR toàn màn hình 2752x2064 mỗi bước | Mỗi bước dò tìm OCR toàn khung hình tiêu tốn 2.0s - 2.5s CPU | Triển khai `ui_cache.json` lưu tọa độ chuẩn hóa các nút bấm, thực thi Fast-Path và Micro-ROI cục bộ < 30ms, tăng tốc gấp 3 lần | ✅ Đã khắc phục |
+| **PERF-03** | 16:20 | `OCRService.find_any_text` lặp OCR toàn màn hình nhiều lần | Mỗi từ khóa trong danh sách gọi `self.find_text()` riêng biệt, tốn 15s-20s với danh sách 6 từ khóa | Tối ưu hóa Single-Pass OCR: gọi `self.recognize()` 1 lần duy nhất và khớp từ khóa trong RAM; tắt `use_angle_cls` và đặt 4 luồng xử lý CPU | ✅ Đã khắc phục |
+| **PERF-04** | 16:25 | Vẫn còn các khoảng chờ `time.sleep` tĩnh rải rác trong `daily.py` và `resin.py` | Chờ cứng thời gian dài gây lãng phí chu kỳ khi giao diện đã sẵn sàng | Tích hợp `ScreenStateTrigger` thăm dò phản xạ vi tuần hoàn (< 40ms) và Micro-ROI event trigger, loại bỏ hoàn toàn sleep tĩnh | ✅ Đã khắc phục |
 
 ---
 
@@ -63,3 +65,15 @@ Tài liệu này ghi lại chi tiết quá trình vận hành, giám sát tươn
   - Kiểm tra hiệu năng luồng Live Stream:
     - Đo thực tế trên luồng `/api/stream`: **21.1 FPS** (30 frames trong 1.42s), nén JPEG tối ưu, không có bất kỳ hiện tượng giật lag nào.
   - Toàn bộ 20/20 unit test chạy hoàn tất và pass 100%.
+
+### 5. Phiên Test Kiểm Thử Toàn Diện 70/70 Unit Tests & Micro-ROI Self-Healing
+- **Thời gian**: 16:25 - 16:33
+- **Quy trình kiểm tra**:
+  - `test_trigger.py` (13 tests): Kiểm thử bộ kích hoạt phản xạ `ScreenStateTrigger`, `FreshFrameGuard`, và `FastChainExecutor`.
+  - `test_fast_chain.py` (11 tests): Kiểm thử chuỗi thao tác nhanh, xử lý ngắt, timeout và bỏ qua nút không bắt buộc.
+  - `test_daily_speed.py` (5 tests): Xác thực tác vụ Daily hoàn thành siêu tốc (< 3s trên giả lập, < 8s trên thiết bị thật) với Fast-Path Micro-ROI.
+  - `test_stream.py` (14 tests): Kiểm thử luồng phát video RAM MJPEG, bộ đệm kép, đo đạc FPS ổn định $\ge 20$ FPS.
+  - `test_cache.py` (8 tests): Xác thực đọc/ghi `ui_cache.json`, cơ chế Micro-ROI verification và Self-Healing cập nhật lại vị trí nút khi game thay đổi.
+  - `test_human_touch.py` (11 tests): Kiểm thử thuật toán phân phối 2D Gaussian, đường cong Bezier, và ThreatDetector Captcha.
+  - `test_server.py` (8 tests): Kiểm thử toàn diện API Web Dashboard (`/api/status`, `/api/antiban/toggle`, `/api/stream`, `/api/task/start`).
+- **Kết quả**: **70/70 tests pass 100% trong 18.3s**, sẵn sàng vận hành ổn định trên iPad Pro 13" M5.
