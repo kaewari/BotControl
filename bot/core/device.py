@@ -2,6 +2,7 @@
 import io
 import time
 import logging
+import threading
 from typing import Optional, Tuple
 import cv2
 import numpy as np
@@ -33,6 +34,14 @@ class DeviceManager:
         self.last_screenshot_time = 0.0
         self.last_screenshot_bytes = None
         self.enable_human_touch = True
+
+        # Async Frame Producer & Double-buffered RAM cache
+        self._producer_thread: Optional[threading.Thread] = None
+        self._producer_running = False
+        self._frame_lock = threading.Lock()
+        self._cached_bgr: Optional[np.ndarray] = None
+        self._cached_jpeg: Optional[bytes] = None
+        self._cached_time = 0.0
 
     @property
     def width(self) -> int:
@@ -68,11 +77,67 @@ class DeviceManager:
             self._client = None
         return self.connected
 
-    def get_screenshot(self) -> Optional[np.ndarray]:
-        """Captures a screenshot from iPad as BGR numpy array."""
-        if not self.connected:
-            if not self.connect():
-                return None
+    def start_frame_producer(self):
+        """Starts background worker to continuously stream frames into memory."""
+        if self._producer_running:
+            return
+        self._producer_running = True
+        self._producer_thread = threading.Thread(target=self._producer_loop, daemon=True, name="WDAFrameProducer")
+        self._producer_thread.start()
+        logger.info("Đã kích hoạt luồng Frame Producer bất đồng bộ (Async Stream Buffer)")
+
+    def stop_frame_producer(self):
+        self._producer_running = False
+
+    def _producer_loop(self):
+        """Continuous background loop capturing frames from WDA into double-buffered RAM."""
+        logger.info("Frame Producer Loop started.")
+        while self._producer_running:
+            if not self.connected:
+                if not self.connect():
+                    time.sleep(1.0)
+                    continue
+            try:
+                pil_img = self._client.screenshot()
+                if pil_img is not None:
+                    pw, ph = pil_img.size
+                    if pw != self.pixel_width or ph != self.pixel_height:
+                        self.pixel_width = pw
+                        self.pixel_height = ph
+                        self.coords.update_resolution(pw, ph)
+
+                    rgb_arr = np.array(pil_img)
+                    bgr_arr = cv2.cvtColor(rgb_arr, cv2.COLOR_RGB2BGR)
+
+                    # Optimize for ultra-smooth web streaming (960x720 4:3)
+                    small = cv2.resize(bgr_arr, (960, 720), interpolation=cv2.INTER_AREA)
+                    ret, buf = cv2.imencode(".jpg", small, [cv2.IMWRITE_JPEG_QUALITY, 72])
+                    jpeg_bytes = buf.tobytes() if ret else None
+
+                    now = time.time()
+                    with self._frame_lock:
+                        self._cached_bgr = bgr_arr
+                        self._cached_jpeg = jpeg_bytes
+                        self._cached_time = now
+                        self.last_screenshot = bgr_arr
+                        self.last_screenshot_time = now
+                        self.last_screenshot_bytes = jpeg_bytes
+
+                time.sleep(0.04)  # ~25 FPS target
+            except Exception as e:
+                logger.debug(f"Frame producer grab exception: {e}")
+                time.sleep(0.4)
+
+    def get_screenshot(self, force_fresh: bool = False, max_age: float = 0.20) -> Optional[np.ndarray]:
+        """Captures or returns a fresh screenshot from RAM cache (0ms) or WDA."""
+        now = time.time()
+        with self._frame_lock:
+            if not force_fresh and self._cached_bgr is not None and (now - self._cached_time) < max_age:
+                return self._cached_bgr.copy()
+
+        # Fallback to direct capture if producer is not running or cache stale
+        if not self.connected and not self.connect():
+            return None
 
         try:
             pil_img = self._client.screenshot()
@@ -85,8 +150,19 @@ class DeviceManager:
 
                 rgb_arr = np.array(pil_img)
                 bgr_arr = cv2.cvtColor(rgb_arr, cv2.COLOR_RGB2BGR)
-                self.last_screenshot = bgr_arr
-                self.last_screenshot_time = time.time()
+
+                small = cv2.resize(bgr_arr, (960, 720), interpolation=cv2.INTER_AREA)
+                ret, buf = cv2.imencode(".jpg", small, [cv2.IMWRITE_JPEG_QUALITY, 72])
+                jpeg_bytes = buf.tobytes() if ret else None
+
+                now = time.time()
+                with self._frame_lock:
+                    self._cached_bgr = bgr_arr
+                    self._cached_jpeg = jpeg_bytes
+                    self._cached_time = now
+                    self.last_screenshot = bgr_arr
+                    self.last_screenshot_time = now
+                    self.last_screenshot_bytes = jpeg_bytes
                 return bgr_arr
         except Exception as e:
             logger.error(f"Lỗi chụp ảnh màn hình từ WDA: {e}")
@@ -94,14 +170,19 @@ class DeviceManager:
         return None
 
     def get_screenshot_jpeg_bytes(self) -> Optional[bytes]:
-        """Returns JPEG bytes directly for live video streaming."""
+        """Returns JPEG bytes directly from RAM in 0ms for zero-latency video streaming."""
+        with self._frame_lock:
+            if self._cached_jpeg is not None:
+                return self._cached_jpeg
+
         img = self.get_screenshot()
         if img is not None:
-            small = cv2.resize(img, (1024, 768), interpolation=cv2.INTER_AREA)
-            ret, buf = cv2.imencode(".jpg", small, [cv2.IMWRITE_JPEG_QUALITY, 75])
+            small = cv2.resize(img, (960, 720), interpolation=cv2.INTER_AREA)
+            ret, buf = cv2.imencode(".jpg", small, [cv2.IMWRITE_JPEG_QUALITY, 72])
             if ret:
-                self.last_screenshot_bytes = buf.tobytes()
-                return self.last_screenshot_bytes
+                with self._frame_lock:
+                    self._cached_jpeg = buf.tobytes()
+                return self._cached_jpeg
         return self.last_screenshot_bytes
 
     def tap(self, x: float, y: float, normalized: bool = True, box: Optional[BoundingBox] = None):

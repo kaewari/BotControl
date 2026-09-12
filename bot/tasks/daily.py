@@ -1,16 +1,17 @@
 """Daily tasks automation: Assignments (Ủy thác) and Daily Training rewards (Huấn luyện thường ngày)."""
 import time
 from bot.core.coordinates import HSRZones, BoundingBox, Point
+from bot.core.cache import ui_cache
 from bot.tasks.base import BaseTask
 
 
 class DailyTask(BaseTask):
-    """Automates daily routine in Honkai: Star Rail."""
+    """Automates daily routine in Honkai: Star Rail with persistent coordinate caching."""
 
     def run(self, claim_assignments: bool = True, claim_training: bool = True):
         self.is_running = True
         self.stop_requested = False
-        self.log("Bắt đầu chuỗi tác vụ Daily...")
+        self.log("Bắt đầu chuỗi tác vụ Daily (Chế độ Tốc Độ Cao & Cache)...")
 
         # 0. Kiểm tra kết nối thiết bị
         if not self.device.check_connection():
@@ -27,44 +28,32 @@ class DailyTask(BaseTask):
             if claim_training and not self.stop_requested:
                 self.process_daily_training()
 
-            self.log("✅ Hoàn thành toàn bộ tác vụ Daily!")
+            self.log("✅ Hoàn thành toàn bộ tác vụ Daily siêu tốc!")
         except Exception as e:
             self.log(f"Lỗi khi thực hiện Daily: {e}", level="error")
         finally:
             self.is_running = False
 
     def process_assignments(self):
-        """Claims completed assignments and re-dispatches them."""
+        """Claims completed assignments and re-dispatches them using fast cache."""
         self.log("=== [1/2] Kiểm tra Ủy Thác (Assignments) ===")
 
-        # Đóng cửa sổ hiện tại (nếu đang ở trong Sổ tay)
-        self.device.tap(HSRZones.GUIDEBOOK_CLOSE.x, HSRZones.GUIDEBOOK_CLOSE.y, normalized=True)
-        self.sleep_cancellable(1.2)
+        # Đóng cửa sổ hiện tại nếu có
+        close_pt = ui_cache.get_point("guidebook_close") or HSRZones.GUIDEBOOK_CLOSE
+        self.device.tap(close_pt.x, close_pt.y, normalized=True)
+        self.sleep_cancellable(0.8)
 
         # Mở menu điện thoại (Góc trên bên trái màn hình)
         self.log("Mở menu điện thoại...")
-        self.device.tap(HSRZones.PHONE_MENU_ICON.x, HSRZones.PHONE_MENU_ICON.y, normalized=True)
-        self.sleep_cancellable(1.8)
+        phone_pt = ui_cache.get_point("phone_menu_icon") or HSRZones.PHONE_MENU_ICON
+        self.device.tap(phone_pt.x, phone_pt.y, normalized=True)
+        self.sleep_cancellable(1.2)
 
-        img = self.capture()
-        if img is None:
-            self.log("Không chụp được màn hình menu điện thoại", level="warning")
-            return
-
-        # Tìm và bấm nút 'Ủy Thác'
-        uy_thac_match = self.ocr.find_any_text(
-            img, 
-            ["Ủy Thác", "Uy Thac", "Ủy thác", "Thác", "Thac", "Assignments"]
-        )
-        if uy_thac_match:
-            _, res = uy_thac_match
-            self.log(f"Tìm thấy '{res.text}' tại ({res.center.x:.0f}, {res.center.y:.0f}), bấm vào...")
-            self.device.tap(res.center.x, res.center.y, normalized=False)
-            self.sleep_cancellable(2.2)
-        else:
-            self.log("Không nhận diện được chữ 'Ủy Thác', dùng tọa độ cố định menu (0.887, 0.354)...")
-            self.device.tap(0.887, 0.354, normalized=True)
-            self.sleep_cancellable(2.2)
+        # Fast-Path: Bấm trực tiếp nút 'Ủy Thác' từ cache
+        assign_pt = ui_cache.get_point("phone_assignments") or Point(0.887, 0.354)
+        self.log(f"Fast-Path: Bấm nút 'Ủy Thác' tại ({assign_pt.x:.3f}, {assign_pt.y:.3f})...")
+        self.device.tap(assign_pt.x, assign_pt.y, normalized=True)
+        self.sleep_cancellable(1.5)
 
         # Tìm nút 'Nhận tất cả' hoặc 'Thu nhận' hoặc 'Nhận'
         assign_img = self.capture()
@@ -77,7 +66,7 @@ class DailyTask(BaseTask):
                 _, c_res = claim_all
                 self.log(f"Bấm '{c_res.text}'...")
                 self.device.tap(c_res.center.x, c_res.center.y, normalized=False)
-                self.sleep_cancellable(1.5)
+                self.sleep_cancellable(1.0)
 
                 # Bấm 'Phái lại tất cả' / 'Phái lại'
                 re_img = self.capture()
@@ -90,72 +79,60 @@ class DailyTask(BaseTask):
                         _, r_res = redispatch
                         self.log(f"Bấm '{r_res.text}' để tiếp tục gửi...")
                         self.device.tap(r_res.center.x, r_res.center.y, normalized=False)
-                        self.sleep_cancellable(1.5)
+                        self.sleep_cancellable(1.0)
             else:
                 self.log("Chưa có ủy thác hoàn thành hoặc đã nhận trước đó.")
 
-        # Đóng menu Ủy Thác (Bấm nút Back 2 lần)
+        # Đóng menu Ủy Thác (Bấm nút Close / Back)
         self.log("Đóng menu Ủy Thác...")
-        self.device.tap(HSRZones.BACK_BUTTON.x, HSRZones.BACK_BUTTON.y, normalized=True)
-        self.sleep_cancellable(1.0)
-        self.device.tap(HSRZones.BACK_BUTTON.x, HSRZones.BACK_BUTTON.y, normalized=True)
-        self.sleep_cancellable(1.2)
+        self.device.tap(close_pt.x, close_pt.y, normalized=True)
+        self.sleep_cancellable(0.8)
+        self.device.tap(0.20, 0.85, normalized=True)  # Đóng menu điện thoại về overworld
+        self.sleep_cancellable(0.8)
 
     def process_daily_training(self):
-        """Opens Guidebook and claims daily activity points rewards."""
+        """Opens Guidebook and claims daily activity points rewards with fast cache."""
         self.log("=== [2/2] Nhận thưởng Huấn Luyện Thường Ngày ===")
 
-        img = self.capture()
-        if img is None:
-            self.log("Không chụp được màn hình iPad", level="error")
-            return
-
-        # Kiểm tra xem đã mở Sổ tay chưa
-        in_guidebook = self.ocr.find_any_text(
-            img,
-            ["Huong Dan Hanh Tinh", "Huong Dan Sinh Ton", "Huan Luyen Moi Ngay", "Huan Luyen"]
-        )
-
-        if not in_guidebook:
-            self.log("Mở Sổ tay Hướng dẫn...")
-            self.device.tap_box(HSRZones.GUIDEBOOK_ICON, normalized=True)
-            self.sleep_cancellable(2.0)
-            img = self.capture()
+        # Mở Sổ tay Hướng dẫn qua cache
+        guide_pt = ui_cache.get_point("guidebook_icon") or HSRZones.GUIDEBOOK_ICON
+        self.log("Mở Sổ tay Hướng dẫn...")
+        self.device.tap(guide_pt.x, guide_pt.y, normalized=True)
+        self.sleep_cancellable(1.5)
 
         # Chọn tab 'Huấn Luyện Thường Ngày' (Tab 1)
+        tab_pt = ui_cache.get_point("tab_daily_training") or HSRZones.TAB_DAILY_TRAINING
         self.log("Vào tab Huấn Luyện Thường Ngày...")
-        self.device.tap(HSRZones.TAB_DAILY_TRAINING.x, HSRZones.TAB_DAILY_TRAINING.y, normalized=True)
-        self.sleep_cancellable(1.5)
+        self.device.tap(tab_pt.x, tab_pt.y, normalized=True)
+        self.sleep_cancellable(1.0)
 
         sub_img = self.capture()
         if sub_img is not None:
             # 1. Thu nhận tất cả các nhiệm vụ ngày đã hoàn thành (nút 'Nhận' bên dưới)
             h, w = sub_img.shape[:2]
             nhan_matches = self.ocr.find_all_text(sub_img, "Nhận")
-            # Lọc các nút Nhận ở nửa dưới màn hình (y > 0.60)
             mission_claims = [r for r in nhan_matches if r.center.y > h * 0.60]
             if mission_claims:
                 self.log(f"Tìm thấy {len(mission_claims)} nhiệm vụ có thể nhận thưởng...")
                 for c_btn in mission_claims:
-                    self.log(f"Bấm '{c_btn.text}' tại ({c_btn.center.x:.0f}, {c_btn.center.y:.0f})...")
                     self.device.tap(c_btn.center.x, c_btn.center.y, normalized=False)
-                    self.sleep_cancellable(1.0)
-            else:
-                self.log("Không có nút 'Nhận' nhiệm vụ riêng lẻ nào.")
+                    self.sleep_cancellable(0.6)
 
-            # 2. Nhấp vào 5 mốc rương (100, 200, 300, 400, 500 điểm)
-            self.log("Thu thập các mốc rương tích lũy 100 - 500 điểm...")
-            chests_x = [0.310, 0.454, 0.598, 0.742, 0.886]
-            chest_y = 0.358
-            for cx in chests_x:
-                self.device.tap(cx, chest_y, normalized=True)
-                self.sleep_cancellable(0.5)
+            # 2. Nhấp nhanh vào 5 mốc rương (100, 200, 300, 400, 500 điểm) qua cache
+            self.log("Fast-Chain: Thu thập các mốc rương tích lũy 100 - 500 điểm...")
+            chest_keys = ["chest_100", "chest_200", "chest_300", "chest_400", "chest_500"]
+            for ck in chest_keys:
+                c_pt = ui_cache.get_point(ck)
+                if c_pt:
+                    self.device.tap(c_pt.x, c_pt.y, normalized=True)
+                    self.sleep_cancellable(0.20, step=0.05)
 
             # Bấm vào giữa màn hình để đóng popup nhận thưởng
             self.device.tap(0.50, 0.50, normalized=True)
-            self.sleep_cancellable(0.8)
+            self.sleep_cancellable(0.5)
 
         # Đóng Sổ tay Hướng dẫn
         self.log("Đóng Sổ tay...")
-        self.device.tap(HSRZones.GUIDEBOOK_CLOSE.x, HSRZones.GUIDEBOOK_CLOSE.y, normalized=True)
-        self.sleep_cancellable(1.2)
+        close_pt = ui_cache.get_point("guidebook_close") or HSRZones.GUIDEBOOK_CLOSE
+        self.device.tap(close_pt.x, close_pt.y, normalized=True)
+        self.sleep_cancellable(0.8)

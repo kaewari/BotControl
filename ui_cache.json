@@ -1,0 +1,97 @@
+{
+  "phone_menu_icon": {
+    "x": 0.04,
+    "y": 0.05,
+    "label": "Menu Điện Thoại"
+  },
+  "phone_assignments": {
+    "x": 0.887,
+    "y": 0.354,
+    "label": "Ủy Thác"
+  },
+  "guidebook_icon": {
+    "x": 0.79,
+    "y": 0.05,
+    "label": "Sổ Tay Sinh Tồn"
+  },
+  "guidebook_close": {
+    "x": 0.963,
+    "y": 0.065,
+    "label": "Đóng Sổ Tay"
+  },
+  "tab_daily_training": {
+    "x": 0.15,
+    "y": 0.245,
+    "label": "Tab Huấn Luyện Thường Ngày"
+  },
+  "tab_survival_index": {
+    "x": 0.215,
+    "y": 0.245,
+    "label": "Tab Hướng Dẫn Sinh Tồn"
+  },
+  "tab_simulated_universe": {
+    "x": 0.285,
+    "y": 0.245,
+    "label": "Tab Vũ Trụ Mô Phỏng"
+  },
+  "chest_100": {
+    "x": 0.31,
+    "y": 0.358,
+    "label": "Mốc Rương 100"
+  },
+  "chest_200": {
+    "x": 0.454,
+    "y": 0.357,
+    "label": "Mốc Rương 200"
+  },
+  "chest_300": {
+    "x": 0.598,
+    "y": 0.357,
+    "label": "Mốc Rương 300"
+  },
+  "chest_400": {
+    "x": 0.742,
+    "y": 0.358,
+    "label": "Mốc Rương 400"
+  },
+  "chest_500": {
+    "x": 0.886,
+    "y": 0.357,
+    "label": "Mốc Rương 500"
+  },
+  "target_relic_enter": {
+    "x": 0.854,
+    "y": 0.536,
+    "label": "Vào Di Vật Hang Động"
+  },
+  "target_planar_enter_1": {
+    "x": 0.871,
+    "y": 0.684,
+    "label": "Vào Phụ Kiện Vị Diện 1"
+  },
+  "dungeon_challenge_btn": {
+    "x": 0.869,
+    "y": 0.91,
+    "label": "Nút Khiêu Chiến (Phó bản)"
+  },
+  "team_start_battle_btn": {
+    "x": 0.841,
+    "y": 0.909,
+    "label": "Nút Bắt Đầu Khiêu Chiến (Đội hình)"
+  },
+  "battle_retreat_btn": {
+    "x": 0.35,
+    "y": 0.9,
+    "label": "Nút Rút Lui (Chiến thắng)"
+  },
+  "resin_popup_cancel": {
+    "x": 0.376,
+    "y": 0.667,
+    "label": "Nút Hủy (Popup bổ sung nhựa)"
+  },
+  "back_button": {
+    "x": 0.045,
+    "y": 0.055,
+    "label": "Nút Quay Lại"
+  }
+}

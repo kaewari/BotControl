@@ -163,44 +163,59 @@ def generate_placeholder_frame(text: str = "iPad Đang Ngắt Kết Nối WDA") 
     return buf.tobytes() if ret else b""
 
 
-def mjpeg_frame_generator():
-    """Generator streaming JPEG frames for MJPEG video stream."""
-    global cached_power, cached_fuel
-    frame_counter = 0
+def start_background_workers():
+    """Starts frame producer and telemetry monitor in the background."""
+    device.start_frame_producer()
+    t = threading.Thread(target=telemetry_worker_loop, daemon=True, name="TelemetryWorker")
+    t.start()
 
+
+def telemetry_worker_loop():
+    """Out-of-band telemetry monitor: samples Trailblaze Power & Fuel without lagging the video stream."""
+    global cached_power, cached_fuel
+    while True:
+        try:
+            if device.connected and device.last_screenshot is not None:
+                ocr = get_ocr()
+                p = ocr.extract_trailblaze_power(device.last_screenshot)
+                if p:
+                    cached_power = {"current": p[0], "max": p[1]}
+                f = ocr.extract_fuel_count(device.last_screenshot)
+                if f is not None:
+                    cached_fuel = f
+        except Exception:
+            pass
+        time.sleep(8.0)
+
+
+def mjpeg_frame_generator():
+    """High-speed generator streaming pre-rendered JPEG frames from memory at 20-25 FPS."""
     while True:
         try:
             if device.connected:
                 frame_bytes = device.get_screenshot_jpeg_bytes()
                 if frame_bytes:
-                    yield (
+                    header = (
                         b"--frame\r\n"
-                        b"Content-Type: image/jpeg\r\n\r\n" + frame_bytes + b"\r\n"
+                        b"Content-Type: image/jpeg\r\n"
+                        + f"Content-Length: {len(frame_bytes)}\r\n\r\n".encode("ascii")
                     )
-                    frame_counter += 1
-                    # Every 40 frames (~4s), sample power metrics if in guidebook
-                    if frame_counter % 40 == 0 and device.last_screenshot is not None:
-                        ocr = get_ocr()
-                        p = ocr.extract_trailblaze_power(device.last_screenshot)
-                        if p:
-                            cached_power = {"current": p[0], "max": p[1]}
-                        f = ocr.extract_fuel_count(device.last_screenshot)
-                        if f is not None:
-                            cached_fuel = f
-
-                    time.sleep(0.08)
+                    yield header + frame_bytes + b"\r\n"
+                    time.sleep(0.045)  # ~22 FPS buttery smooth
                     continue
 
             placeholder = generate_placeholder_frame(
                 "Chờ kết nối WDA qua cổng USB: localhost:8100"
             )
-            yield (
+            header = (
                 b"--frame\r\n"
-                b"Content-Type: image/jpeg\r\n\r\n" + placeholder + b"\r\n"
+                b"Content-Type: image/jpeg\r\n"
+                + f"Content-Length: {len(placeholder)}\r\n\r\n".encode("ascii")
             )
-            time.sleep(1.0)
+            yield header + placeholder + b"\r\n"
+            time.sleep(0.5)
         except Exception:
-            time.sleep(1.0)
+            time.sleep(0.5)
 
 
 @app.get("/api/stream")
@@ -397,6 +412,11 @@ async def websocket_logs(websocket: WebSocket):
     except WebSocketDisconnect:
         if websocket in websocket_clients:
             websocket_clients.remove(websocket)
+
+
+@app.on_event("startup")
+async def on_startup():
+    start_background_workers()
 
 
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")

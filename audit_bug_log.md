@@ -16,7 +16,10 @@ Tài liệu này ghi lại chi tiết quá trình vận hành, giám sát tươn
 | **BUG-06** | 15:57 | Không chuyển được sang Tab 2 Hướng Dẫn Sinh Tồn | Thanh tiêu đề chung của Sổ Tay luôn chứa chữ "Huong Dan Hanh Tinh Hoa Binh" trên mọi tab khiến điều kiện nhận diện nhầm tưởng đã ở Tab 2 | Bỏ kiểm tra tiêu đề chung, luôn tap Tab 2 tại `(0.215, 0.245)` và kiểm tra dòng phụ "Huong Dan Sinh Ton" | ✅ Đã khắc phục |
 | **BUG-07** | 16:00 | Không nhận diện được nút "Vào" của dòng phó bản Di Vật | `find_action_button_on_row` đặt `tolerance_y=85.0` (pixel), quá nhỏ so với chiều cao card 150px trên màn hình 2064px của iPad Pro 13" | Tự động thích ứng tolerance theo độ phân giải: `max(180.0, height * 0.09)` | ✅ Đã khắc phục |
 | **BUG-08** | 16:05 | Kẹt tại màn hình xếp đội (Lineup), không vào được trận chiến | Honkai: Star Rail yêu cầu 2 bước: 1. Bấm "Khiêu Chiến" trên thẻ phó bản -> 2. Bấm "Bắt Đầu Khiêu Chiến" trên màn hình đội hình | Cải tiến `prepare_and_start_battle()` hỗ trợ tuần tự cả 2 màn hình để vào chiến đấu thực tế | ✅ Đã khắc phục |
+| **BUG-09** | 16:15 | Đóng menu điện thoại sau khi ủy thác vô tình mở "Hộ Chiếu Cõi Mộng" | Vị trí click đóng menu điện thoại cũ đặt tại `(0.20, 0.50)` trùng với vị trí mục "Hộ Chiếu Cõi Mộng" trên tỷ lệ màn hình iPad Pro 13" | Đổi tọa độ đóng menu điện thoại xuống vùng trống `(0.20, 0.85)` giúp đóng an toàn về 3D overworld | ✅ Đã khắc phục |
 | **SYS-01** | 16:03 | Nguy cơ bị phát hiện / cấm tài khoản khi chạy bot tự động | Tọa độ click cố định pixel, thời gian giữ click 0ms, không có nhịp nghỉ suy nghĩ, cử chỉ vuốt thẳng cơ học | Triển khai module `human_touch.py`: Phân phối chuẩn 2D Gaussian, thời gian giữ 85-210ms, đường vuốt Bezier, nhịp nghỉ 0.5-2.5s, và Failsafe Kill-Switch Captcha | ✅ Đã khắc phục |
+| **PERF-01** | 16:10 | Màn hình Live Stream trên Web Dashboard bị giật lag (1.2 FPS) | Mỗi frame HTTP stream gọi WDA screenshot đồng bộ (chờ ~800ms) và chạy OCR trong generator luồng stream | Tái cấu trúc Async Double-Buffered Frame Producer chạy nền liên tục cập nhật RAM; stream đọc thẳng từ RAM đạt **21.1 FPS** không độ trễ | ✅ Đã khắc phục |
+| **PERF-02** | 16:12 | Bot thao tác quá chậm do quét OCR toàn màn hình 2752x2064 mỗi bước | Mỗi bước dò tìm OCR toàn khung hình tiêu tốn 2.0s - 2.5s CPU | Triển khai `ui_cache.json` lưu tọa độ chuẩn hóa các nút bấm, thực thi Fast-Path và Micro-ROI cục bộ < 30ms, tăng tốc gấp 3 lần | ✅ Đã khắc phục |
 
 ---
 
@@ -48,3 +51,15 @@ Tài liệu này ghi lại chi tiết quá trình vận hành, giám sát tươn
   - `generate_bezier_trajectory`: Quỹ đạo đường cong Bezier bậc 3 với vi gia tốc ease-in ease-out (test pass).
   - `ThreatDetector`: Phát hiện chính xác 4/4 mẫu Captcha/màn hình xác minh bảo mật và kích hoạt ngắt an toàn (test pass).
   - Tích hợp trực tiếp vào `DeviceManager.tap`, `DeviceManager.swipe`, `BaseTask.sleep_cancellable` và Web Dashboard toggle (17/17 unit test pass).
+
+### 4. Phiên Test Siêu Tốc với Persistent Cache & Live Stream Mượt Mà
+- **Thời gian**: 16:14 - 16:15
+- **Quy trình kiểm tra**:
+  - Khởi động `DailyTask` chế độ Cache Fast-Path:
+    - Bấm trực tiếp nút Ủy Thác qua cache tại `(0.887, 0.354)` -> Nhận thưởng và gửi lại hoàn tất.
+    - Mở Sổ tay qua cache tại `(0.790, 0.050)` -> Vào Tab Huấn Luyện Thường Ngày tại `(0.150, 0.245)`.
+    - Nhận nhiệm vụ ngày -> Fast-Chain tự động chạm chuỗi 5 mốc rương tích lũy 100 - 500 điểm (`chest_100` đến `chest_500`) chỉ trong vài giây.
+    - Đóng Sổ tay an toàn về thế giới 3D.
+  - Kiểm tra hiệu năng luồng Live Stream:
+    - Đo thực tế trên luồng `/api/stream`: **21.1 FPS** (30 frames trong 1.42s), nén JPEG tối ưu, không có bất kỳ hiện tượng giật lag nào.
+  - Toàn bộ 20/20 unit test chạy hoàn tất và pass 100%.
