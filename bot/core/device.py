@@ -388,8 +388,14 @@ class DeviceManager:
             norm_x = float(max(0.0, min(1.0, x)))
             norm_y = float(max(0.0, min(1.0, y)))
         else:
-            norm_x = float(max(0.0, min(1.0, x / self.pixel_width)))
-            norm_y = float(max(0.0, min(1.0, y / self.pixel_height)))
+            target_w = self.pixel_width
+            target_h = self.pixel_height
+            if self._front_frame is not None and self._front_frame.bgr is not None:
+                fh, fw = self._front_frame.bgr.shape[:2]
+                if x <= fw and y <= fh:
+                    target_w, target_h = fw, fh
+            norm_x = float(max(0.0, min(1.0, x / target_w)))
+            norm_y = float(max(0.0, min(1.0, y / target_h)))
 
         # ResourceGuard pre-tap veto check
         if self.resource_guard is not None:
@@ -426,8 +432,14 @@ class DeviceManager:
             norm_x = float(max(0.0, min(1.0, x)))
             norm_y = float(max(0.0, min(1.0, y)))
         else:
-            norm_x = float(max(0.0, min(1.0, x / self.pixel_width)))
-            norm_y = float(max(0.0, min(1.0, y / self.pixel_height)))
+            target_w = self.pixel_width
+            target_h = self.pixel_height
+            if self._front_frame is not None and self._front_frame.bgr is not None:
+                fh, fw = self._front_frame.bgr.shape[:2]
+                if x <= fw and y <= fh:
+                    target_w, target_h = fw, fh
+            norm_x = float(max(0.0, min(1.0, x / target_w)))
+            norm_y = float(max(0.0, min(1.0, y / target_h)))
 
         # ResourceGuard pre-tap veto check
         if self.resource_guard is not None:

@@ -5,7 +5,7 @@
     "screen_width": 2752,
     "screen_height": 2064,
     "aspect_ratio": "4:3",
-    "updated_at": "2026-09-12 16:24:40"
+    "updated_at": "2026-09-12 17:47:11"
   },
   "elements": {
     "phone_menu_icon": {
@@ -110,8 +110,8 @@
       ]
     },
     "tab_daily_training": {
-      "x": 0.248,
-      "y": 0.1436,
+      "x": 0.1515,
+      "y": 0.0763,
       "label": "Tab Huấn Luyện Thường Ngày",
       "expected_keywords": [
         "Huấn Luyện",
@@ -119,13 +119,13 @@
         "Thường Ngày",
         "Thuong Ngay"
       ],
-      "verified_count": 1,
-      "last_verified": "2026-09-12 16:24:40",
+      "verified_count": 2,
+      "last_verified": "2026-09-12 17:47:11",
       "box": [
-        0.1487,
-        0.1297,
-        0.3473,
-        0.1576
+        0.0635,
+        0.0581,
+        0.2396,
+        0.0944
       ]
     },
     "tab_survival_index": {

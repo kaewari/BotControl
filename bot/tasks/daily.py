@@ -72,6 +72,7 @@ class DailyTask(BaseTask):
         # Tìm nút 'Nhận tất cả' hoặc 'Thu nhận' hoặc 'Nhận'
         assign_img = self.capture()
         if assign_img is not None:
+            ah, aw = assign_img.shape[:2]
             claim_all = self.ocr.find_any_text(
                 assign_img,
                 ["Nhận tất cả", "Nhan tat ca", "Thu nhận", "Nhận", "Claim All", "Claim"]
@@ -79,7 +80,7 @@ class DailyTask(BaseTask):
             if claim_all:
                 _, c_res = claim_all
                 self.log(f"Bấm '{c_res.text}'...")
-                self.device.tap(c_res.center.x, c_res.center.y, normalized=False)
+                self.device.tap(c_res.center.x / aw, c_res.center.y / ah, normalized=True)
 
                 # Event-driven Trigger: Chờ nút 'Phái lại tất cả' xuất hiện
                 redispatch_match = self.wait_for_any_text(
@@ -90,7 +91,7 @@ class DailyTask(BaseTask):
                 if redispatch_match:
                     _, r_res = redispatch_match
                     self.log(f"Bấm '{r_res.text}' để tiếp tục gửi...")
-                    self.device.tap(r_res.center.x, r_res.center.y, normalized=False)
+                    self.device.tap(r_res.center.x / aw, r_res.center.y / ah, normalized=True)
                     self.sleep_cancellable(0.2)
             else:
                 self.log("Chưa có ủy thác hoàn thành hoặc đã nhận trước đó.")
@@ -147,7 +148,7 @@ class DailyTask(BaseTask):
             if mission_claims:
                 self.log(f"Tìm thấy {len(mission_claims)} nhiệm vụ có thể nhận thưởng...")
                 for c_btn in mission_claims:
-                    self.device.tap(c_btn.center.x, c_btn.center.y, normalized=False)
+                    self.device.tap(c_btn.center.x / w, c_btn.center.y / h, normalized=True)
                     self.sleep_cancellable(0.20)
 
             # 2. Nhấp nhanh vào 5 mốc rương (100, 200, 300, 400, 500 điểm) qua cache

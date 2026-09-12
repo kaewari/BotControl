@@ -246,7 +246,7 @@ class SmartPipelineTask(BaseTask):
             nhan_matches = self.ocr.find_all_text(guide_img, "Nhận")
             mission_claims = [r for r in nhan_matches if r.center.y > h * 0.60]
             for c_btn in mission_claims[:4]:
-                self.device.tap(c_btn.center.x, c_btn.center.y, normalized=False)
+                self.device.tap(c_btn.center.x / w, c_btn.center.y / h, normalized=True)
                 self.sleep_cancellable(0.1)
 
         # Fast-Chain 5 mốc rương (100 -> 500 điểm)
