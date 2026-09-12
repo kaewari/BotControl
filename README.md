@@ -1,0 +1,2 @@
+# BotControl
+Bot Control Hoyoverse
