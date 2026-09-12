@@ -1,0 +1,57 @@
+# BotControl - Honkai: Star Rail Automation Config (iPad Pro 13" M5)
+
+device:
+  # Unique Device Identifier (iPad Pro 13" M5)
+  udid: "00008142-001C64982E09401C"
+  # WebDriverAgent Local URL
+  wda_url: "http://localhost:8100"
+  # WDA MJPEG Stream port
+  mjpeg_port: 9100
+  # Honkai Star Rail iOS Bundle ID (Global / VN / SEA)
+  bundle_id: "com.HoYoverse.hkrpgoversea"
+  # Reference resolution for iPad Pro 13"
+  reference_width: 2752
+  reference_height: 2064
+  # Screenshot format: png or jpeg
+  screenshot_quality: 75
+
+daemon:
+  auto_start_wda: true
+  auto_restart_wda: true
+  wda_port: 8100
+  mjpeg_port: 9100
+  wda_ready_timeout: 45.0
+  health_check_interval: 5.0
+
+tasks:
+  daily:
+    claim_assignments: true
+    dispatch_assignments: true
+    claim_training_rewards: true
+    claim_daily_checkin: true
+
+  resin:
+    # Selected category: calyx_golden, calyx_crimson, cavern_corrosion, stagnant_shadow, echo_of_war
+    category: "calyx_golden"
+    # Sub-target: exp (Nhân vật), credits (Điểm tín dụng), aether (Nón ánh sáng)
+    sub_target: "exp"
+    # Wave / Run count (1 - 6)
+    runs: 6
+    # Allow consuming fuel / trailblaze power replenishment
+    use_fuel: false
+    # Maximum fuel items to consume
+    max_fuel_count: 0
+    # Auto battle & 2x speed verification
+    ensure_auto_battle: true
+    ensure_speed_2x: true
+
+  dialogue:
+    # Tap interval in seconds for fast-forwarding
+    click_interval: 0.3
+    # Click skip button when available
+    auto_skip: true
+
+server:
+  host: "0.0.0.0"
+  port: 8000
+  stream_fps: 12
