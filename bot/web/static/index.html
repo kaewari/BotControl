@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Honkai: Star Rail - BotControl (iPad Pro M5)</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Header -->
+    <header class="header">
+      <div class="logo-group">
+        <div class="logo-icon">✦</div>
+        <div>
+          <h1 class="title">HSR BotControl</h1>
+          <p class="subtitle">Điều khiển iPad Pro 13-inch (M5) • Tiếng Việt</p>
+        </div>
+      </div>
+      <div class="status-group">
+        <div id="device-badge" class="badge badge-offline">
+          <span class="status-dot"></span>
+          <span id="device-status-text">Đang kiểm tra WDA...</span>
+        </div>
+        <div id="task-badge" class="badge badge-idle">
+          <span id="task-status-text">Đang chờ tác vụ</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main class="main-layout">
+      <!-- Left: Screen Feed -->
+      <section class="screen-section">
+        <div class="panel-header">
+          <h2>Màn hình iPad Pro Trực Tiếp</h2>
+          <span class="hint-text">💡 Bấm chuột trực tiếp vào màn hình để chạm cảm ứng</span>
+        </div>
+        <div class="screen-container" id="screen-wrapper">
+          <img id="stream-img" src="/api/stream" alt="Live Stream Màn hình iPad" />
+          <div id="touch-ripple" class="touch-ripple"></div>
+        </div>
+        <div class="screen-footer">
+          <span id="resolution-info">Độ phân giải: 2752 × 2064</span>
+          <button id="btn-refresh-stream" class="btn btn-sm btn-ghost">Làm mới luồng</button>
+        </div>
+      </section>
+
+      <!-- Right: Control Panel & Logs -->
+      <section class="control-section">
+        <!-- Task Selection Tabs -->
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="resin">🌾 Xả Nhựa (Resin)</button>
+          <button class="tab-btn" data-tab="daily">📅 Daily Routine</button>
+          <button class="tab-btn" data-tab="dialogue">⏩ Skip Hội Thoại</button>
+        </div>
+
+        <!-- Tab 1: Resin -->
+        <div class="tab-content active" id="tab-resin">
+          <div class="form-group">
+            <label for="resin-category">Mục tiêu farm (Chỉ Số Sinh Tồn):</label>
+            <select id="resin-category" class="input-select">
+              <option value="calyx_golden" selected>Đài Hoa Nhân Tạo (Vàng) - EXP / Điểm Tín Dụng</option>
+              <option value="calyx_crimson">Đài Hoa Nhân Tạo (Đỏ) - Nguyên liệu Vết Tích</option>
+              <option value="cavern_corrosion">Vết Tích Xâm Thực - Farm Di Vật</option>
+              <option value="stagnant_shadow">Bóng Hình Ngưng Trệ - Nguyên liệu Đột Phá</option>
+              <option value="echo_of_war">Dư Âm Chiến Đấu - Boss Tuần</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Số đợt khiêu chiến (Waves):</label>
+            <div class="runs-selector">
+              <button type="button" class="btn-run" data-runs="1">1</button>
+              <button type="button" class="btn-run" data-runs="2">2</button>
+              <button type="button" class="btn-run" data-runs="4">4</button>
+              <button type="button" class="btn-run active" data-runs="6">6 (Tối đa)</button>
+            </div>
+          </div>
+
+          <div class="checkbox-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="resin-auto-battle" checked />
+              <span>Tự động bật Chiến đấu tự động (Auto Battle) & Tốc độ x2</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="resin-use-fuel" />
+              <span>Tự dùng Bình Năng Lượng dự phòng nếu hết nhựa</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Tab 2: Daily -->
+        <div class="tab-content" id="tab-daily">
+          <div class="checkbox-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="daily-assignments" checked />
+              <span>Tự động nhận và phái lại tất cả Ủy Thác (Assignments)</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="daily-training" checked />
+              <span>Nhận thưởng mốc Huấn Luyện Thường Ngày (500 điểm = 60 Ngọc)</span>
+            </label>
+          </div>
+          <p class="desc-box">Bot sẽ tự động mở Menu điện thoại và Sổ tay hướng dẫn để hoàn thành các tác vụ hàng ngày của bạn trong 60 giây.</p>
+        </div>
+
+        <!-- Tab 3: Dialogue -->
+        <div class="tab-content" id="tab-dialogue">
+          <div class="form-group">
+            <label for="dialogue-interval">Tốc độ nhấp tua nhanh:</label>
+            <select id="dialogue-interval" class="input-select">
+              <option value="0.2">Cực nhanh (0.2s / lần tap)</option>
+              <option value="0.3" selected>Tiêu chuẩn (0.3s / lần tap)</option>
+              <option value="0.5">Vừa phải (0.5s / lần tap)</option>
+            </select>
+          </div>
+          <div class="checkbox-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="dialogue-auto-skip" checked />
+              <span>Tự động tìm và bấm nút 'Bỏ qua / Skip' khi xuất hiện</span>
+            </label>
+          </div>
+          <p class="desc-box">Bật chế độ này khi bạn đang nhận nhiệm vụ, nói chuyện với NPC hoặc xem cốt truyện để bot tự động tua nhanh hội thoại mà không cần chạm tay vào màn hình.</p>
+        </div>
+
+        <!-- Primary Action Buttons -->
+        <div class="action-buttons">
+          <button id="btn-start" class="btn btn-primary">
+            <span class="btn-icon">▶</span> Bắt Đầu Tác Vụ
+          </button>
+          <button id="btn-pause" class="btn btn-secondary" disabled>
+            <span class="btn-icon">⏸</span> Tạm Dừng
+          </button>
+          <button id="btn-stop" class="btn btn-danger" disabled>
+            <span class="btn-icon">⏹</span> Dừng Khẩn Cấp
+          </button>
+        </div>
+
+        <!-- Live Console Logs -->
+        <div class="console-panel">
+          <div class="console-header">
+            <h3>Nhật Ký Hoạt Động (Live Logs)</h3>
+            <button id="btn-clear-logs" class="btn btn-xs btn-ghost">Xóa log</button>
+          </div>
+          <div class="console-body" id="console-logs">
+            <div class="log-entry log-info">[Hệ Thống] BotControl đã sẵn sàng. Chờ kết nối WDA...</div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
