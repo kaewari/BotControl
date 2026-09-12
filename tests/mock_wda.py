@@ -404,6 +404,12 @@ class MockDeviceManager:
         end_y = max(zone.y1, min(zone.y2, start_y + dy))
         self.swipe(start_x, start_y, end_x, end_y, duration=duration, normalized=True)
 
+    def get_current_app(self) -> Optional[str]:
+        return "com.HoYoverse.hkrpgoversea"
+
+    def activate_game(self, bundle_id: str = "com.HoYoverse.hkrpgoversea") -> bool:
+        return True
+
     def clear_history(self):
         self.tap_history.clear()
         self.swipe_history.clear()

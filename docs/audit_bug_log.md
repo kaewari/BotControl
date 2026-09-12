@@ -25,6 +25,9 @@ Tài liệu này ghi lại chi tiết quá trình vận hành, giám sát tươn
 | **PERF-05** | 16:45 | Màn hình Web Dashboard hiển thị bằng `<img>` bị giật lag trên màn hình tần số quét cao | Thẻ `<img>` MJPEG HTTP multipart không đồng bộ VSYNC, giải mã JPEG trên main thread gây đơ khung hình | Nối trực tiếp cổng 9100 WDA Hardware Broadcaster, tạo WebSocket `/ws/stream` nhị phân và render Canvas `requestAnimationFrame` đạt **51.2 - 60.0 FPS** | ✅ Đã khắc phục |
 | **SEC-01** | 16:48 | Nguy cơ vô tình tiêu tốn Ngọc Ánh Sao / Vé Roll khi hết nhựa hoặc thao tác nhầm | Không có cơ chế nhận diện popup nạp ngọc và thiếu rào chắn bảo vệ click nút "Xác Nhận" | Xây dựng `ResourceGuard`: Nhận diện từ khóa nhạy cảm, phản xạ hủy < 0.5s bấm "Hủy" `(0.376, 0.667)`, pre-tap veto chặn click `CONFIRMATION_ZONE` | ✅ Đã khắc phục |
 | **PERF-06** | 16:52 | Chạy Daily và Resin riêng biệt làm tăng số lần mở/đóng Sổ Tay gây tốn thời gian | Hai tác vụ riêng biệt lặp lại việc mở và đóng Sổ Tay | Tái cấu trúc `SmartPipelineTask`: Xả nhựa ➔ Fast-Chain nhận 5 mốc rương trong cùng 1 lần mở Sổ Tay ➔ 4/4 Ủy Thác, giảm > 35% chuyển cảnh | ✅ Đã khắc phục |
+| **VIS-01** | 18:30 | Bot chưa thể tự điều hướng không gian 3D và giải các câu đố/event | Thiếu thuật toán bám mục tiêu thế giới mở và thiếu mô hình VLM đa phương thức | Phát triển Visual Servoing (Minimap heading + Quest Marker HSV) & Tích hợp Gemini 3.8 Flash qua OmniRoute giải đố | ✅ Đã khắc phục |
+| **SYS-02** | 19:30 | Quá nhiều tiến trình độc lập (iproxy 8100, WDA, iproxy 9100, run.py) dễ gây lỗi cổng và zombie | Phải mở nhiều cửa sổ terminal, không tự hồi phục khi ngắt kết nối | Hợp nhất thành 1 Unified Daemon (`bot/core/daemon.py`): Auto UDID discovery, process-group teardown, auto-healing watchdog | ✅ Đã khắc phục |
+| **SYS-03** | 19:33 | Khi iPad chuyển sang app khác (YouTube), bot không tự kích hoạt lại game | Thiếu phương thức điều khiển vòng đời ứng dụng trên WDA | Bổ sung `activate_game()` và `get_current_app()` vào `DeviceManager` và nút điều khiển trên Web Dashboard | ✅ Đã khắc phục |
 
 ---
 
@@ -118,4 +121,24 @@ Tài liệu này ghi lại chi tiết quá trình vận hành, giám sát tươn
   - **Tiêu hao Ngọc Ánh Sao & Vé Roll**: **CHÍNH XÁC 0 NGỌC / 0 VÉ TRONG TOÀN BỘ 10 VÒNG (100% ZERO-SPEND)**
   - **Tỷ lệ hoàn thành thành công**: **10/10 (100.0%)**
 - **Toàn bộ Test Suite Dự Án**: **108/108 tests pass 100% không lỗi**.
+
+### 9. Phiên Kiểm Thử Nâng Cấp Vision AI (3D Overworld Navigation & Gemini 3.8 Flash VLM)
+- **Thời gian**: 18:30 - 18:45
+- **Quy trình kiểm tra**:
+  - `test_navigation.py`: Kiểm thử phát hiện góc xoay la bàn minimap và nhận diện Quest Marker HSV vàng 3D.
+  - `test_vlm_solver.py`: Kiểm thử bộ giải đố đa phương thức `OmniRouteVLMSolver` kết nối Gemini 3.8 Flash, cơ chế tự động thử lại khi gặp HTTP 429.
+  - `test_story_task.py`: Kiểm thử tác vụ cốt truyện `StoryQuestTask`, thuật toán tự giải vây kẹt vật cản (Anti-stuck) và bộ lọc đối thoại bảo vệ tài nguyên.
+- **Kết quả**: 20/20 tests thành phần và 165/165 toàn bộ test suite pass 100%.
+
+### 10. Phiên Hợp Nhất 1 Unified Daemon & Vận Hành Trực Tiếp Trên iPad Pro 13" (M5)
+- **Thời gian**: 19:26 - 19:35
+- **Quy trình kiểm tra**:
+  - Hợp nhất toàn bộ chuỗi tiến trình (`iproxy 8100`, `xcodebuild WDA Runner`, `iproxy 9100`, `FastAPI Server 8000`) vào 1 lớp duy nhất `UnifiedDaemon` (`bot/core/daemon.py`).
+  - Khởi chạy bằng một lệnh duy nhất: `./scripts/start_daemon.sh` (hoặc `python run.py --host 0.0.0.0 --port 8000`).
+  - Tự động nhận diện thiết bị qua `idevice_id -l`: `00008142-001C64982E09401C`.
+  - Tích hợp luồng Watchdog tự động kiểm tra tiến trình con và khởi động lại nếu bị ngắt.
+  - Thêm API `/api/app/activate_game` và nút "🎮 Mở Game HSR" trên web dashboard.
+  - Chụp ảnh màn hình thực tế từ iPad, nhận diện góc quay Minimap $120.4^\circ$, Quest Marker tại $(0.635, 0.353)$ độ tin cậy $100\%$, OCR trích xuất nhiệm vụ *"Vì Sao Mọi Thứ Chưa Biến Mất?"* thành công.
+- **Kết quả**: **175 / 175 tests PASS 100% không một lỗi nào (78.2s)**. Hệ thống đang vận hành trực tiếp mượt mà.
+
 

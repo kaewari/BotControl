@@ -1,10 +1,12 @@
 # BotControl - Honkai: Star Rail Automation Config (iPad Pro 13" M5)
 
 device:
-  # Unique Device Identifier (SonnoiPad)
-  udid: "A5AE3F5C-F3CB-5152-AF24-043877300989"
+  # Unique Device Identifier (iPad Pro 13" M5)
+  udid: "00008142-001C64982E09401C"
   # WebDriverAgent Local URL
   wda_url: "http://localhost:8100"
+  # WDA MJPEG Stream port
+  mjpeg_port: 9100
   # Honkai Star Rail iOS Bundle ID (Global / VN / SEA)
   bundle_id: "com.HoYoverse.hkrpgoversea"
   # Reference resolution for iPad Pro 13"
@@ -12,6 +14,14 @@ device:
   reference_height: 2064
   # Screenshot format: png or jpeg
   screenshot_quality: 75
+
+daemon:
+  auto_start_wda: true
+  auto_restart_wda: true
+  wda_port: 8100
+  mjpeg_port: 9100
+  wda_ready_timeout: 45.0
+  health_check_interval: 5.0
 
 tasks:
   daily:

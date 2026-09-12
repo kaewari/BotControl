@@ -43,6 +43,10 @@
             <span class="status-dot"></span>
             <span id="antiban-status-text">🛡️ Anti-Ban: Bật</span>
           </div>
+          <div id="daemon-badge" class="badge badge-active" style="border-color: rgba(59, 130, 246, 0.4);" title="Trạng thái Unified Daemon">
+            <span class="status-dot" style="background: #3b82f6;"></span>
+            <span id="daemon-status-text">Daemon: Active</span>
+          </div>
           <div id="device-badge" class="badge badge-offline">
             <span class="status-dot"></span>
             <span id="device-status-text">WDA: Đang kết nối...</span>
@@ -50,7 +54,10 @@
           <div id="task-badge" class="badge badge-idle">
             <span id="task-status-text">Đang chờ tác vụ</span>
           </div>
+          <button id="btn-daemon-restart" class="btn btn-secondary" style="padding: 4px 9px; font-size: 11px; height: 26px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px;" title="Khởi động lại WDA Runner">🔄 WDA</button>
+          <button id="btn-daemon-safemode" class="btn btn-danger" style="padding: 4px 9px; font-size: 11px; height: 26px; background: #dc2626; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px;" title="Kích hoạt Safe Mode dừng khẩn cấp">🛑 Safe Mode</button>
         </div>
+
       </div>
     </header>
 
@@ -76,6 +83,7 @@
         <!-- Quick Game Action Shortcuts -->
         <div class="quick-toolbar">
           <span class="quick-title">Phím tắt game:</span>
+          <button class="btn-quick" id="btn-activate-hsr" style="border-color: #8b5cf6; color: #c4b5fd; font-weight: 600;" title="Đưa Honkai: Star Rail lên màn hình">🎮 Mở Game HSR</button>
           <button class="btn-quick" data-action="open_guidebook" title="Mở Sổ Tay Sinh Tồn">📖 Sổ Tay Sinh Tồn</button>
           <button class="btn-quick" data-action="open_phone" title="Mở Menu Điện Thoại">📱 Điện Thoại</button>
           <button class="btn-quick" data-action="open_map" title="Mở Bản Đồ">🗺️ Bản Đồ</button>

@@ -25,6 +25,7 @@ from bot.tasks.simulated_universe import SimulatedUniverseTask
 from bot.tasks.smart_pipeline import SmartPipelineTask
 from bot.tasks.story import StoryQuestTask
 from bot.cv.vlm_solver import OmniRouteVLMSolver
+from bot.core.daemon import get_global_daemon
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("BotControl.Web")
@@ -108,6 +109,8 @@ async def get_status():
     connected = device.check_connection()
     is_task_running = current_task.is_running if current_task else False
     task_name = current_task.task_name if current_task else None
+    daemon = get_global_daemon()
+    daemon_info = daemon.health_check() if daemon else None
     return {
         "device_connected": connected,
         "device_wda_url": device.wda_url,
@@ -119,7 +122,9 @@ async def get_status():
         "fuel_count": cached_fuel,
         "antiban_active": getattr(device, "enable_human_touch", True),
         "active_stream_clients": get_active_stream_clients(),
+        "daemon": daemon_info,
     }
+
 
 
 @app.post("/api/antiban/toggle")
@@ -339,6 +344,24 @@ async def handle_quick_action(req: QuickActionRequest):
     return {"status": "ok", "action": act}
 
 
+@app.post("/api/app/activate_game")
+async def activate_game():
+    """Brings Honkai: Star Rail to foreground on iPad."""
+    ok = device.activate_game()
+    if ok:
+        broadcast_log("📱 Đã gửi lệnh đưa Honkai: Star Rail lên màn hình chính.", "info")
+        return {"status": "ok", "message": "Đang mở Honkai: Star Rail"}
+    return JSONResponse({"status": "error", "message": "Không thể kích hoạt game"}, status_code=500)
+
+
+@app.get("/api/app/current")
+async def current_app():
+    """Returns currently active app on iPad."""
+    app_id = device.get_current_app()
+    return {"current_app": app_id}
+
+
+
 @app.get("/api/inspect")
 async def inspect_screen():
     """Inspects screen and returns OCR results and energy metrics."""
@@ -522,6 +545,33 @@ async def resume_task():
         current_task.resume()
         return {"status": "resumed"}
     return {"status": "idle"}
+
+
+@app.get("/api/daemon/status")
+async def daemon_status():
+    daemon = get_global_daemon()
+    if daemon:
+        return daemon.health_check()
+    return {"daemon_running": False, "message": "Unified Daemon chưa được khởi tạo"}
+
+
+@app.post("/api/daemon/restart_wda")
+async def daemon_restart_wda():
+    daemon = get_global_daemon()
+    if not daemon:
+        return JSONResponse({"status": "error", "message": "Unified Daemon chưa chạy"}, status_code=400)
+    broadcast_log("🔄 Đang khởi động lại WebDriverAgent Runner...", "warning")
+    threading.Thread(target=daemon.restart_wda, daemon=True).start()
+    return {"status": "restarting"}
+
+
+@app.post("/api/daemon/safe_mode")
+async def daemon_safe_mode():
+    global current_task
+    if current_task and current_task.is_running:
+        current_task.stop()
+    broadcast_log("🛡️ Đã kích hoạt SAFE MODE: Dừng mọi tác vụ bot và thao tác cảm ứng.", "warning")
+    return {"status": "safe_mode_active"}
 
 
 @app.get("/api/logs")

@@ -227,7 +227,7 @@ btnRefreshStream.addEventListener('click', () => {
 });
 
 // Quick Action Shortcuts
-document.querySelectorAll('.btn-quick').forEach((btn) => {
+document.querySelectorAll('.btn-quick[data-action]').forEach((btn) => {
   btn.addEventListener('click', async () => {
     const action = btn.getAttribute('data-action');
     try {
@@ -241,6 +241,30 @@ document.querySelectorAll('.btn-quick').forEach((btn) => {
     }
   });
 });
+
+// Activate HSR Game
+const btnActivateHsr = document.getElementById('btn-activate-hsr');
+if (btnActivateHsr) {
+  btnActivateHsr.addEventListener('click', async () => {
+    btnActivateHsr.disabled = true;
+    btnActivateHsr.textContent = '⏳ Đang mở HSR...';
+    try {
+      const res = await fetch('/api/app/activate_game', { method: 'POST' });
+      const data = await res.json();
+      if (data.status === 'ok') {
+        appendLog('📱 Đã gửi lệnh mở Honkai: Star Rail trên iPad', 'info');
+      }
+    } catch (e) {
+      console.error('Lỗi activate game:', e);
+    } finally {
+      setTimeout(() => {
+        btnActivateHsr.disabled = false;
+        btnActivateHsr.textContent = '🎮 Mở Game HSR';
+      }, 2000);
+    }
+  });
+}
+
 
 // Click to Touch on iPad Screen
 screenWrapper.addEventListener('click', (e) => {
@@ -373,6 +397,21 @@ async function updateStatus() {
       deviceBadge.className = 'badge badge-offline';
       deviceStatusText.textContent = 'iPad M5 Offline (Chờ WDA)';
     }
+
+    // Update Daemon Status
+    const daemonBadge = document.getElementById('daemon-badge');
+    const daemonText = document.getElementById('daemon-status-text');
+    if (daemonBadge && daemonText && data.daemon) {
+      if (data.daemon.daemon_running) {
+        daemonBadge.className = 'badge badge-online';
+        const ready = data.daemon.wda_ready ? 'Ready' : 'Init';
+        daemonText.textContent = `Daemon: Active (${ready})`;
+      } else {
+        daemonBadge.className = 'badge badge-offline';
+        daemonText.textContent = 'Daemon: Standby';
+      }
+    }
+
 
     if (data.resolution) {
       resolutionInfo.textContent = `Độ phân giải: ${data.resolution.width} × ${data.resolution.height}`;
@@ -541,6 +580,40 @@ if (btnSolvePuzzle) {
     } finally {
       btnSolvePuzzle.disabled = false;
       btnSolvePuzzle.textContent = '🧩 Giải Ngay Câu Đố Màn Hình Này (AI VLM)';
+    }
+// Daemon Controls
+const btnDaemonRestart = document.getElementById('btn-daemon-restart');
+if (btnDaemonRestart) {
+  btnDaemonRestart.addEventListener('click', async () => {
+    if (confirm('Khởi động lại WebDriverAgent Runner và iproxy 8100?')) {
+      btnDaemonRestart.disabled = true;
+      btnDaemonRestart.textContent = '⏳ Đang khởi động...';
+      try {
+        await fetch('/api/daemon/restart_wda', { method: 'POST' });
+      } catch (e) {
+        console.error('Lỗi restart WDA:', e);
+      } finally {
+        setTimeout(() => {
+          btnDaemonRestart.disabled = false;
+          btnDaemonRestart.textContent = '🔄 WDA';
+          updateStatus();
+        }, 3000);
+      }
+    }
+  });
+}
+
+const btnDaemonSafeMode = document.getElementById('btn-daemon-safemode');
+if (btnDaemonSafeMode) {
+  btnDaemonSafeMode.addEventListener('click', async () => {
+    if (confirm('Kích hoạt SAFE MODE ngay lập tức? Thao tác này sẽ dừng mọi bot đang chạy và chuyển sang trạng thái an toàn tuyệt đối.')) {
+      try {
+        await fetch('/api/daemon/safe_mode', { method: 'POST' });
+        alert('🛡️ Safe Mode đã kích hoạt! Toàn bộ tác vụ đã dừng an toàn.');
+        updateStatus();
+      } catch (e) {
+        alert('Lỗi kích hoạt Safe Mode: ' + e.message);
+      }
     }
   });
 }

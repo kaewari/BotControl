@@ -535,3 +535,27 @@ class DeviceManager:
         logger.debug(f"🎥 Camera Pan: dx={dx:.3f}, dy={dy:.3f}, dur={dur:.2f}s")
         self.swipe(start_x, start_y, end_x, end_y, duration=dur, normalized=True)
 
+    def get_current_app(self) -> Optional[str]:
+        """Returns the bundleId of currently active foreground app."""
+        if not self.connected or not self._client:
+            return None
+        try:
+            curr = self._client.app_current()
+            return curr.get("bundleId")
+        except Exception as e:
+            logger.debug(f"Không thể lấy current app: {e}")
+            return None
+
+    def activate_game(self, bundle_id: str = "com.HoYoverse.hkrpgoversea") -> bool:
+        """Brings Honkai: Star Rail to foreground."""
+        if not self.connected or not self._client:
+            return False
+        try:
+            logger.info(f"📱 Đang kích hoạt game ({bundle_id}) lên màn hình chính...")
+            self._client.app_activate(bundle_id)
+            return True
+        except Exception as e:
+            logger.error(f"Lỗi kích hoạt game ({bundle_id}): {e}")
+            return False
+
+
