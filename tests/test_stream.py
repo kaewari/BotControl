@@ -296,6 +296,20 @@ class TestWebStreamAndDoubleBuffer(unittest.TestCase):
             f"Measured FPS {measured_fps:.1f} was below threshold (expected >= 18 FPS)",
         )
 
+    def test_websocket_stream_fps_and_disconnect(self):
+        """F-STREAM-07: Verifies WebSocket /ws/stream delivers frames at high FPS and handles client close."""
+        with self.client.websocket_connect("/ws/stream") as ws:
+            frames_recvd = 0
+            t0 = time.time()
+            for _ in range(10):
+                data = ws.receive_bytes()
+                self.assertTrue(data.startswith(b"\xff\xd8"))
+                frames_recvd += 1
+            dur = time.time() - t0
+            fps = frames_recvd / dur
+            self.assertEqual(frames_recvd, 10)
+            self.assertGreaterEqual(fps, 20.0)
+
 
 if __name__ == "__main__":
     unittest.main()

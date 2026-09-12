@@ -22,6 +22,7 @@ from bot.tasks.daily import DailyTask
 from bot.tasks.resin import ResinFarmTask
 from bot.tasks.dialogue import DialogueFastSkipTask
 from bot.tasks.simulated_universe import SimulatedUniverseTask
+from bot.tasks.smart_pipeline import SmartPipelineTask
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("BotControl.Web")
@@ -232,7 +233,7 @@ def mjpeg_frame_generator(max_frames: Optional[int] = None):
                     )
                     yield header + frame_bytes + b"\r\n"
                     frames_sent += 1
-                    time.sleep(0.045)  # ~22.2 FPS buttery smooth
+                    time.sleep(0.016)  # ~60 FPS buttery smooth cadence
                     continue
 
                 # Placeholder when not connected or no frame available
@@ -246,14 +247,14 @@ def mjpeg_frame_generator(max_frames: Optional[int] = None):
                 )
                 yield header + placeholder + b"\r\n"
                 frames_sent += 1
-                time.sleep(0.5)
+                time.sleep(0.2)
 
             except (GeneratorExit, asyncio.CancelledError, BrokenPipeError, ConnectionResetError):
                 logger.debug("Stream client connection closed by client.")
                 break
             except Exception as e:
                 logger.debug(f"Stream generation tick exception: {e}")
-                time.sleep(0.1)
+                time.sleep(0.05)
 
     except (GeneratorExit, asyncio.CancelledError):
         logger.debug("Stream generator exited cleanly.")
@@ -263,9 +264,37 @@ def mjpeg_frame_generator(max_frames: Optional[int] = None):
         logger.debug(f"Stream client disconnected. Total active clients: {active_stream_clients}")
 
 
+@app.websocket("/ws/stream")
+async def websocket_screen_stream(websocket: WebSocket):
+    """High-speed 60 FPS binary JPEG screen stream via WebSocket with zero DOM overhead."""
+    await websocket.accept()
+    global active_stream_clients
+    with active_stream_clients_lock:
+        active_stream_clients += 1
+    logger.info("WebSocket 60 FPS screen client connected.")
+    try:
+        while True:
+            frame_bytes = None
+            if device.connected:
+                vf = device.get_video_frame()
+                if vf is not None and vf.jpeg_bytes:
+                    frame_bytes = vf.jpeg_bytes
+                else:
+                    frame_bytes = device.get_screenshot_jpeg_bytes()
+            if frame_bytes:
+                await websocket.send_bytes(frame_bytes)
+            await asyncio.sleep(0.016)  # 60 FPS cadence
+    except (WebSocketDisconnect, ConnectionResetError, asyncio.CancelledError):
+        pass
+    finally:
+        with active_stream_clients_lock:
+            active_stream_clients = max(0, active_stream_clients - 1)
+        logger.info("WebSocket 60 FPS screen client disconnected.")
+
+
 @app.get("/api/stream")
 async def video_feed():
-    """MJPEG screen stream endpoint serving pre-encoded frames from RAM at 18-25 FPS."""
+    """MJPEG screen stream endpoint serving pre-encoded frames from RAM at up to 60 FPS."""
     return StreamingResponse(
         mjpeg_frame_generator(),
         media_type="multipart/x-mixed-replace; boundary=frame",
@@ -403,6 +432,17 @@ async def start_task(req: TaskStartRequest):
                 "mode": cfg.get("mode", "divergent"),
                 "preferred_path": cfg.get("preferred_path", "Ký Ức"),
                 "target_runs": int(cfg.get("runs", 1)),
+            },
+            daemon=True,
+        )
+    elif req.task == "smart_pipeline":
+        current_task = SmartPipelineTask(device, ocr, matcher, log_callback=broadcast_log)
+        task_thread = threading.Thread(
+            target=current_task.run,
+            kwargs={
+                "target_type": cfg.get("target_type", "relic"),
+                "runs": int(cfg.get("runs", 6)),
+                "skip_resin": bool(cfg.get("skip_resin", False)),
             },
             daemon=True,
         )

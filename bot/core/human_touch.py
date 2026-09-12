@@ -6,13 +6,55 @@ import math
 import random
 import time
 import logging
-from dataclasses import dataclass
-from typing import List, Optional, Tuple
+from enum import Enum
+from dataclasses import dataclass, field
+from typing import List, Optional, Tuple, Callable, Dict, Any
 import numpy as np
 
 from bot.core.coordinates import Point, BoundingBox
 
 logger = logging.getLogger("BotControl.HumanTouch")
+
+
+class ThreatType(str, Enum):
+    FATAL_SECURITY = "fatal_security"      # Captcha, Hoyoverse security check -> Kill-switch
+    RESOURCE_THREAT = "resource_threat"    # Jade/Pass spending prompt -> Instant reflex cancel (<0.5s) & strict veto
+
+
+@dataclass
+class ThreatEvent:
+    threat_type: ThreatType
+    keyword: str
+    timestamp: float
+    bbox: Optional[BoundingBox] = None
+    dismissed: bool = False
+    details: str = ""
+
+
+RESOURCE_KEYWORDS: List[str] = [
+    "Ngọc Ánh Sao",
+    "Ngoc Anh Sao",
+    "Stellar Jade",
+    "Vé Tinh Cầu",
+    "Ve Tinh Cau",
+    "Star Rail Pass",
+    "Star Rail Special Pass",
+    "Bước Nhảy",
+    "Warp",
+    "Quy đổi",
+    "Nạp",
+]
+
+VETO_KEYWORDS: List[str] = [
+    "Xác Nhận",
+    "Xac Nhan",
+    "Đồng Ý",
+    "Dong Y",
+    "Confirm",
+    "Agree",
+]
+
+CONFIRMATION_ZONE: BoundingBox = BoundingBox(0.55, 0.60, 0.75, 0.72)
 
 
 def generate_gaussian_point(

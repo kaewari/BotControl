@@ -64,7 +64,12 @@
         </div>
 
         <div class="screen-container" id="screen-wrapper">
-          <img id="stream-img" src="/api/stream" alt="Live Stream Màn hình iPad" />
+          <canvas id="stream-canvas" width="960" height="720" style="width: 100%; height: 100%; object-fit: contain; display: block; border-radius: 8px; cursor: crosshair;"></canvas>
+          <img id="stream-img" src="/api/stream" alt="Live Stream Màn hình iPad" style="display: none;" />
+          <div id="stream-fps-badge" class="stream-fps-badge" style="position: absolute; top: 12px; left: 12px; background: rgba(0,0,0,0.72); backdrop-filter: blur(6px); color: #10b981; font-family: monospace; font-size: 13px; font-weight: 700; padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(16, 185, 129, 0.4); z-index: 10; pointer-events: none; display: flex; align-items: center; gap: 6px;">
+            <span style="width: 8px; height: 8px; border-radius: 50%; background: #10b981; display: inline-block; box-shadow: 0 0 8px #10b981;"></span>
+            <span id="fps-display-text">60.0 FPS</span>
+          </div>
           <div id="touch-ripple" class="touch-ripple"></div>
         </div>
 
@@ -92,15 +97,56 @@
       <section class="control-section">
         <!-- Navigation Tabs -->
         <div class="tabs">
-          <button class="tab-btn active" data-tab="resin">🌾 Xả Nhựa Chi Tiết</button>
+          <button class="tab-btn active" data-tab="smart_pipeline">🚀 Smart-Pipeline (Tối Ưu)</button>
+          <button class="tab-btn" data-tab="resin">🌾 Xả Nhựa Chi Tiết</button>
           <button class="tab-btn" data-tab="simulated">🌀 Vũ Trụ Mô Phỏng</button>
           <button class="tab-btn" data-tab="daily">📅 Daily Routine</button>
           <button class="tab-btn" data-tab="dialogue">⏩ Skip Hội Thoại</button>
           <button class="tab-btn" data-tab="inspector">🔍 Soi Chi Tiết OCR</button>
         </div>
 
+        <!-- TAB: SMART PIPELINE (OPTIMAL UNIFIED ROUTE) -->
+        <div class="tab-content active" id="tab-smart_pipeline">
+          <div class="card-highlight" style="border-left: 4px solid #10b981;">
+            <div class="char-header">
+              <span class="badge-tag" style="background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid #10b981;">Lộ Trình Tối Ưu Siêu Tốc</span>
+              <h4>Smart-Pipeline HSR</h4>
+            </div>
+            <p class="hint-muted">Gom cụm: Xả Nhựa (≥120 Sức Mạnh Khai Phá) ➔ Fast-Chain 5 Mốc Rương (cùng phiên Sổ Tay) ➔ 4/4 Ủy Thác. Tiết kiệm &gt;35% thời gian chuyển cảnh.</p>
+            <div class="shield-badge" style="margin-top: 8px; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.4); border-radius: 6px; font-size: 13px; color: #60a5fa;">
+              <span>🛡️</span>
+              <span><strong>Zero-Spend Guard:</strong> Tuyệt đối không tiêu Ngọc Ánh Sao &amp; Vé Roll (Phản xạ hủy &lt; 0.5s)</span>
+            </div>
+          </div>
+          
+          <div class="form-group mt-2">
+            <label for="smart-target-type">Mục tiêu xả nhựa:</label>
+            <select id="smart-target-type" class="input-select">
+              <option value="relic" selected>Di Vật Hang Động (3 lần = 120 Nhựa)</option>
+              <option value="planar_1">Phụ Kiện Vị Diện (3 lần = 120 Nhựa)</option>
+              <option value="calyx_golden">Đài Hoa Nhân Tạo Vàng (6 lần = 120 Nhựa)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="smart-runs">Số lượt khiêu chiến:</label>
+            <select id="smart-runs" class="input-select">
+              <option value="6" selected>6 Lượt (120 Nhựa - Tự động kích hoạt tối đa 500 điểm Daily)</option>
+              <option value="3">3 Lượt (Phó bản 40 Nhựa)</option>
+              <option value="1">1 Lượt</option>
+            </select>
+          </div>
+
+          <div class="checkbox-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="smart-skip-resin" />
+              <span>Chỉ nhận 5 mốc rương + 4/4 Ủy thác (Bỏ qua xả nhựa)</span>
+            </label>
+          </div>
+        </div>
+
         <!-- TAB 1: RESIN FARMING -->
-        <div class="tab-content active" id="tab-resin">
+        <div class="tab-content" id="tab-resin">
           <!-- Mode Switcher -->
           <div class="mode-selector">
             <button type="button" class="btn-mode active" id="mode-char-target">⚡ Theo Mục Tiêu Bồi Dưỡng (Robin)</button>

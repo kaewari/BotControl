@@ -3,6 +3,7 @@ import base64
 import io
 import time
 import logging
+import socket
 import threading
 from dataclasses import dataclass
 from typing import Optional, Tuple, Union, Any
@@ -26,17 +27,47 @@ class VideoFrame:
     """Immutable video frame container stored in double-buffered RAM."""
     frame_id: int
     timestamp: float
-    bgr: np.ndarray
     jpeg_bytes: bytes
     width: int
     height: int
+    _bgr: Optional[np.ndarray] = None
+
+    def __init__(
+        self,
+        frame_id: int,
+        timestamp: float,
+        bgr: Optional[np.ndarray] = None,
+        jpeg_bytes: bytes = b"",
+        width: int = 2752,
+        height: int = 2064,
+        **kwargs,
+    ):
+        object.__setattr__(self, "frame_id", frame_id)
+        object.__setattr__(self, "timestamp", timestamp)
+        object.__setattr__(self, "jpeg_bytes", jpeg_bytes or kwargs.get("jpeg_bytes", b""))
+        object.__setattr__(self, "width", width)
+        object.__setattr__(self, "height", height)
+        object.__setattr__(self, "_bgr", bgr)
+
+    @property
+    def bgr(self) -> Optional[np.ndarray]:
+        val = self._bgr
+        if val is None and self.jpeg_bytes:
+            try:
+                nparr = np.frombuffer(self.jpeg_bytes, np.uint8)
+                val = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+                object.__setattr__(self, "_bgr", val)
+            except Exception:
+                pass
+        return val
 
 
 class DeviceManager:
     """Manages iPad device connection via WebDriverAgent and screen interactions."""
 
-    def __init__(self, wda_url: str = "http://127.0.0.1:8100", timeout: float = 30.0):
+    def __init__(self, wda_url: str = "http://127.0.0.1:8100", mjpeg_port: int = 9100, timeout: float = 30.0):
         self.wda_url = wda_url
+        self.mjpeg_port = mjpeg_port
         self.timeout = timeout
         self.connected = False
         self._client: Optional[wda.Client] = None
@@ -61,6 +92,9 @@ class DeviceManager:
         self._cached_bgr: Optional[np.ndarray] = None
         self._cached_jpeg: Optional[bytes] = None
         self._cached_time = 0.0
+
+        # Zero-Spend ResourceGuard
+        self.resource_guard: Optional[Any] = None
 
     @property
     def width(self) -> int:
@@ -204,8 +238,32 @@ class DeviceManager:
 
         return new_frame
 
+    def _update_front_frame_from_jpeg(self, jpeg_bytes: bytes) -> VideoFrame:
+        """Constructs VideoFrame directly from hardware JPEG bytes without decoding BGR upfront."""
+        now = time.time()
+        self._frame_id_counter += 1
+        new_frame = VideoFrame(
+            frame_id=self._frame_id_counter,
+            timestamp=now,
+            jpeg_bytes=jpeg_bytes,
+            width=self.pixel_width,
+            height=self.pixel_height,
+        )
+        self._front_frame = new_frame
+        with self._frame_lock:
+            self._cached_jpeg = jpeg_bytes
+            self._cached_time = now
+            self.last_screenshot_bytes = jpeg_bytes
+            self.last_screenshot_time = now
+            self._cached_bgr = None  # Invalidate cached BGR
+
+        with self._frame_condition:
+            self._frame_condition.notify_all()
+
+        return new_frame
+
     def _producer_loop(self):
-        """Continuous background loop capturing frames from WDA into double-buffered RAM."""
+        """Continuous background loop capturing frames from native WDA MJPEG socket or fallback."""
         logger.info("Frame Producer Loop started.")
         while self._producer_running:
             if not self.connected:
@@ -213,20 +271,67 @@ class DeviceManager:
                     time.sleep(1.0)
                     continue
 
-            # If an active swipe gesture is in progress, yield USB bandwidth to XCTest
-            if self._gesture_in_progress:
-                time.sleep(0.04)
-                continue
-
+            # Try native socket connection on port 9100 for hardware 40-60 FPS streaming
+            sock = None
             try:
-                bgr_arr = self._fetch_screenshot_bgr()
-                if bgr_arr is not None:
-                    self._update_front_frame(bgr_arr)
+                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                sock.settimeout(2.0)
+                sock.connect(("127.0.0.1", self.mjpeg_port))
+                sock.sendall(b"GET / HTTP/1.1\r\nHost: 127.0.0.1:9100\r\n\r\n")
+                boundary = b"--BoundaryString"
+                buf = b""
+                logger.info(f"Connected to native WDA hardware MJPEG stream on port {self.mjpeg_port} (High-Speed Direct)")
 
-                time.sleep(0.04)  # ~25 FPS target
+                while self._producer_running:
+                    if self._gesture_in_progress:
+                        time.sleep(0.01)
+                        continue
+
+                    chunk = sock.recv(32768)
+                    if not chunk:
+                        break
+                    buf += chunk
+                    while boundary in buf:
+                        idx = buf.find(boundary)
+                        header_end = buf.find(b"\r\n\r\n", idx)
+                        if header_end != -1:
+                            next_b = buf.find(boundary, header_end)
+                            if next_b != -1:
+                                raw_chunk = buf[header_end + 4 : next_b]
+                                soi = raw_chunk.find(b"\xff\xd8")
+                                eoi = raw_chunk.rfind(b"\xff\xd9")
+                                if soi != -1 and eoi != -1 and eoi > soi:
+                                    clean_jpeg = raw_chunk[soi : eoi + 2]
+                                    self._update_front_frame_from_jpeg(clean_jpeg)
+                                buf = buf[next_b:]
+                            else:
+                                break
+                        else:
+                            break
             except Exception as e:
-                logger.debug(f"Frame producer grab exception: {e}")
-                time.sleep(0.4)
+                logger.debug(f"Native MJPEG socket closed/unreachable ({e}). Falling back to HTTP capture.")
+            finally:
+                if sock:
+                    try:
+                        sock.close()
+                    except Exception:
+                        pass
+
+            # Fallback HTTP loop if native socket breaks or during unit/mock tests
+            while self._producer_running:
+                if self._gesture_in_progress:
+                    time.sleep(0.016)
+                    continue
+
+                try:
+                    bgr_arr = self._fetch_screenshot_bgr()
+                    if bgr_arr is not None:
+                        self._update_front_frame(bgr_arr)
+                    time.sleep(0.016)  # 60 FPS target in fallback
+                except Exception as e:
+                    logger.debug(f"Fallback frame grab exception: {e}")
+                    time.sleep(0.2)
+                    break
 
     def get_video_frame(self) -> Optional[VideoFrame]:
         """Returns the latest VideoFrame from memory (0.0ms lock-free access under GIL)."""
@@ -273,7 +378,7 @@ class DeviceManager:
                 return jpeg_bytes
         return self.last_screenshot_bytes
 
-    def tap(self, x: float, y: float, normalized: bool = True, box: Optional[BoundingBox] = None):
+    def tap(self, x: float, y: float, normalized: bool = True, box: Optional[BoundingBox] = None, label: str = ""):
         """Taps at coordinate with optional 2D Gaussian human dispersion and biological contact duration."""
         if not self.connected and not self.connect():
             logger.warning("Không thể gửi tap: WDA chưa kết nối")
@@ -285,6 +390,13 @@ class DeviceManager:
         else:
             norm_x = float(max(0.0, min(1.0, x / self.pixel_width)))
             norm_y = float(max(0.0, min(1.0, y / self.pixel_height)))
+
+        # ResourceGuard pre-tap veto check
+        if self.resource_guard is not None:
+            target_label = label or getattr(box, "label", "")
+            if self.resource_guard.is_vetoed_tap(norm_x, norm_y, label=target_label):
+                logger.critical(f"🚫 [VETO STRICT] Thao tác tap tại ({norm_x:.4f}, {norm_y:.4f}) với nhãn '{target_label}' bị chặn bởi ResourceGuard!")
+                return
 
         # Áp dụng mô phỏng chạm người thật (Human-like touch)
         if self.enable_human_touch:
@@ -304,7 +416,7 @@ class DeviceManager:
         except Exception as e:
             logger.error(f"Lỗi gửi tap: {e}")
 
-    def tap_hold(self, x: float, y: float, duration: float = 0.1, normalized: bool = True, box: Optional[BoundingBox] = None):
+    def tap_hold(self, x: float, y: float, duration: float = 0.1, normalized: bool = True, box: Optional[BoundingBox] = None, label: str = ""):
         """Taps and holds at coordinate for specified duration."""
         if not self.connected and not self.connect():
             logger.warning("Không thể gửi tap_hold: WDA chưa kết nối")
@@ -316,6 +428,13 @@ class DeviceManager:
         else:
             norm_x = float(max(0.0, min(1.0, x / self.pixel_width)))
             norm_y = float(max(0.0, min(1.0, y / self.pixel_height)))
+
+        # ResourceGuard pre-tap veto check
+        if self.resource_guard is not None:
+            target_label = label or getattr(box, "label", "")
+            if self.resource_guard.is_vetoed_tap(norm_x, norm_y, label=target_label):
+                logger.critical(f"🚫 [VETO STRICT] Thao tác tap_hold tại ({norm_x:.4f}, {norm_y:.4f}) với nhãn '{target_label}' bị chặn bởi ResourceGuard!")
+                return
 
         if self.enable_human_touch:
             hp = generate_gaussian_point(Point(norm_x, norm_y), box=box)

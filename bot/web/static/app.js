@@ -1,6 +1,6 @@
 // BotControl - Advanced Dashboard Logic, Dynamic Categories & Telemetry
 
-let currentTab = 'resin';
+let currentTab = 'smart_pipeline';
 let selectedRuns = 6;
 let currentResinMode = 'character_target'; // 'character_target' or 'category'
 let ws = null;
@@ -143,9 +143,87 @@ document.querySelectorAll('.btn-run').forEach((btn) => {
   });
 });
 
+// High-Performance 60 FPS WebSocket Canvas Stream Engine
+const streamCanvas = document.getElementById('stream-canvas');
+const streamCtx = streamCanvas ? streamCanvas.getContext('2d') : null;
+const fpsDisplayText = document.getElementById('fps-display-text');
+
+let streamWs = null;
+let pendingBitmap = null;
+let framesRendered = 0;
+let lastFpsCalc = performance.now();
+
+function init60FpsStream() {
+  if (!streamCanvas || !streamCtx) return;
+
+  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const wsUrl = `${protocol}//${window.location.host}/ws/stream`;
+
+  try {
+    streamWs = new WebSocket(wsUrl);
+    streamWs.binaryType = 'blob';
+
+    streamWs.onopen = () => {
+      console.log('60 FPS WebSocket screen stream connected.');
+      if (streamImg) streamImg.style.display = 'none';
+      if (streamCanvas) streamCanvas.style.display = 'block';
+    };
+
+    streamWs.onmessage = async (event) => {
+      if (event.data instanceof Blob) {
+        try {
+          const bitmap = await createImageBitmap(event.data);
+          if (pendingBitmap) pendingBitmap.close();
+          pendingBitmap = bitmap;
+        } catch (e) {
+          // ignore decode errors on dropped frames
+        }
+      }
+    };
+
+    streamWs.onclose = () => {
+      console.warn('WebSocket stream disconnected, falling back to HTTP stream.');
+      if (streamImg) {
+        streamImg.src = `/api/stream?t=${Date.now()}`;
+        streamImg.style.display = 'block';
+      }
+      setTimeout(init60FpsStream, 3000); // Reconnect
+    };
+
+    streamWs.onerror = () => {
+      if (streamWs) streamWs.close();
+    };
+  } catch (e) {
+    console.error('WebSocket stream init error:', e);
+  }
+}
+
+// Continuous requestAnimationFrame render loop locked to VSync (60Hz / 120Hz)
+function render60FpsLoop() {
+  if (pendingBitmap && streamCtx && streamCanvas) {
+    streamCtx.drawImage(pendingBitmap, 0, 0, streamCanvas.width, streamCanvas.height);
+  }
+  framesRendered++;
+  const now = performance.now();
+  if (now - lastFpsCalc >= 1000) {
+    const fps = ((framesRendered * 1000) / (now - lastFpsCalc)).toFixed(1);
+    if (fpsDisplayText) fpsDisplayText.textContent = `${fps} FPS`;
+    framesRendered = 0;
+    lastFpsCalc = now;
+  }
+  requestAnimationFrame(render60FpsLoop);
+}
+
+requestAnimationFrame(render60FpsLoop);
+init60FpsStream();
+
 // Refresh Stream
 btnRefreshStream.addEventListener('click', () => {
-  streamImg.src = `/api/stream?t=${Date.now()}`;
+  if (streamWs) {
+    streamWs.close();
+  } else {
+    init60FpsStream();
+  }
 });
 
 // Quick Action Shortcuts
@@ -356,7 +434,14 @@ btnStart.addEventListener('click', async () => {
   let taskName = currentTab;
   let config = {};
 
-  if (currentTab === 'resin') {
+  if (currentTab === 'smart_pipeline') {
+    taskName = 'smart_pipeline';
+    config = {
+      target_type: document.getElementById('smart-target-type') ? document.getElementById('smart-target-type').value : 'relic',
+      runs: document.getElementById('smart-runs') ? parseInt(document.getElementById('smart-runs').value, 10) : 6,
+      skip_resin: document.getElementById('smart-skip-resin') ? document.getElementById('smart-skip-resin').checked : false,
+    };
+  } else if (currentTab === 'resin') {
     config = {
       mode: currentResinMode,
       category: resinCategory.value,

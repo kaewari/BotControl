@@ -179,6 +179,7 @@ class MockDeviceManager:
         self._client = MockWDAClient(self.wda_url)
         self.tap_history: List[Dict[str, Any]] = []
         self.swipe_history: List[Dict[str, Any]] = []
+        self.resource_guard: Optional[Any] = None
 
         # RAM Double Buffering
         self._frame_lock = threading.Lock()
@@ -273,13 +274,23 @@ class MockDeviceManager:
             return self._cached_jpeg
         return self.last_screenshot_bytes
 
-    def tap(self, x: float, y: float, normalized: bool = True, box: Optional[BoundingBox] = None):
+    def tap(self, x: float, y: float, normalized: bool = True, box: Optional[BoundingBox] = None, label: str = ""):
         if normalized:
             norm_x = float(max(0.0, min(1.0, x)))
             norm_y = float(max(0.0, min(1.0, y)))
         else:
             norm_x = float(max(0.0, min(1.0, x / self.pixel_width)))
             norm_y = float(max(0.0, min(1.0, y / self.pixel_height)))
+
+        # ResourceGuard pre-tap veto check
+        if self.resource_guard is not None:
+            target_label = label or getattr(box, "label", "")
+            if self.resource_guard.is_vetoed_tap(norm_x, norm_y, label=target_label):
+                import logging
+                logging.getLogger("BotControl.MockDevice").critical(
+                    f"🚫 [MOCK VETO STRICT] Thao tác tap tại ({norm_x:.4f}, {norm_y:.4f}) với nhãn '{target_label}' bị chặn bởi ResourceGuard!"
+                )
+                return
 
         if self.enable_human_touch:
             hp = generate_gaussian_point(Point(norm_x, norm_y), box=box)
@@ -311,12 +322,23 @@ class MockDeviceManager:
         elif hasattr(box, "x") and hasattr(box, "y"):
             self.tap(box.x, box.y, normalized=normalized)
 
-    def tap_hold(self, x: float, y: float, duration: float = 0.1, normalized: bool = True, box: Optional[BoundingBox] = None):
+    def tap_hold(self, x: float, y: float, duration: float = 0.1, normalized: bool = True, box: Optional[BoundingBox] = None, label: str = ""):
         if normalized:
             norm_x, norm_y = x, y
         else:
             norm_x = x / self.pixel_width
             norm_y = y / self.pixel_height
+
+        # ResourceGuard pre-tap veto check
+        if self.resource_guard is not None:
+            target_label = label or getattr(box, "label", "")
+            if self.resource_guard.is_vetoed_tap(norm_x, norm_y, label=target_label):
+                import logging
+                logging.getLogger("BotControl.MockDevice").critical(
+                    f"🚫 [MOCK VETO STRICT] Thao tác tap_hold tại ({norm_x:.4f}, {norm_y:.4f}) với nhãn '{target_label}' bị chặn bởi ResourceGuard!"
+                )
+                return
+
         event = {
             "type": "tap_hold",
             "x": norm_x,

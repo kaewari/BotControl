@@ -1,17 +1,18 @@
-"""Event-driven Screen State Trigger and Fast Chain Executor for BotControl.
+"""Event-driven Screen State Trigger and Fresh Frame Guard for BotControl.
 
 Provides:
 - FreshFrameGuard: ensures actions evaluate only frames captured after the trigger was armed.
-- ScreenStateTrigger: micro-polling loop (< 40ms) evaluating screen conditions and Micro-ROI text.
-- FastChainExecutor: executes sequential taps with biological hold and Gaussian cadence.
+- ScreenStateTrigger: micro-polling loop (< 40ms) evaluating screen conditions, Micro-ROI text,
+  frame stability, and ROI changes.
+- FastChainExecutor: re-exported from bot.tasks.fast_chain for backward compatibility.
 """
 import time
-import random
 from typing import Any, Callable, List, Optional, Tuple
 import cv2
 import numpy as np
 
 from bot.core.coordinates import Point, BoundingBox
+from bot.tasks.fast_chain import FastChainExecutor
 
 
 class FreshFrameGuard:
@@ -31,9 +32,12 @@ class ScreenStateTrigger:
         self.device = device
         self.ocr = ocr
         self._last_action_time = 0.0
+        self.guard = FreshFrameGuard(0.0)
 
     def record_action(self):
+        """Records timestamp of the last dispatched touch action."""
         self._last_action_time = time.time()
+        self.guard = FreshFrameGuard(self._last_action_time)
 
     def wait_for_condition(
         self,
@@ -52,7 +56,7 @@ class ScreenStateTrigger:
             if img is not None:
                 vframe = getattr(self.device, "get_video_frame", lambda: None)()
                 if vframe is not None and self._last_action_time > 0:
-                    if vframe.timestamp <= self._last_action_time:
+                    if not self.guard.is_fresh(vframe.timestamp):
                         time.sleep(poll_interval)
                         continue
 
@@ -87,7 +91,7 @@ class ScreenStateTrigger:
                 return bool(self.ocr.verify_roi_text(img, box, keywords))
             return False
 
-        return self.wait_for_condition(check_roi, timeout=timeout, poll_interval=poll_interval)
+        return self.wait_for_condition(check_roi, timeout=timeout, poll_interval=poll_interval, min_delay=0.0)
 
     def wait_for_screen_stable(
         self,
@@ -139,36 +143,48 @@ class ScreenStateTrigger:
 
         return False
 
-
-class FastChainExecutor:
-    """Executes fast action chains with biological touch hold and Gaussian cadence."""
-
-    def __init__(self, device: Any, stop_predicate: Optional[Callable[[], bool]] = None):
-        self.device = device
-        self.stop_predicate = stop_predicate or (lambda: False)
-
-    def execute_chain(
+    def wait_for_roi_change(
         self,
-        targets: List[Tuple[Point, Optional[BoundingBox]]],
-        mean_cadence: float = 0.145,
-        std_cadence: float = 0.022,
+        region: Optional[BoundingBox] = None,
+        timeout: float = 3.0,
+        threshold: float = 0.05,
+        poll_interval: float = 0.04,
     ) -> bool:
-        """Executes sequential actions with Gaussian cadence and biological touch hold."""
-        if not targets:
-            return True
+        """Detects when an ROI region changes compared to initial baseline frame."""
+        start = time.time()
+        initial_crop: Optional[np.ndarray] = None
 
-        for i, (point, box) in enumerate(targets):
-            if self.stop_predicate():
-                return False
+        while time.time() - start < timeout:
+            img = self.device.get_screenshot()
+            if img is None:
+                time.sleep(poll_interval)
+                continue
 
-            if box is not None:
-                self.device.tap(point.x, point.y, normalized=True, box=box)
+            h, w = img.shape[:2]
+            if region is not None:
+                x1, y1 = max(0, int(region.x1 * w)), max(0, int(region.y1 * h))
+                x2, y2 = min(w, int(region.x2 * w)), min(h, int(region.y2 * h))
+                crop = img[y1:y2, x1:x2]
             else:
-                self.device.tap(point.x, point.y, normalized=True)
+                crop = img
 
-            if i < len(targets) - 1:
-                cadence = random.gauss(mean_cadence, std_cadence)
-                clamped_cadence = max(0.105, min(0.200, cadence))
-                time.sleep(clamped_cadence)
+            if crop.size == 0:
+                time.sleep(poll_interval)
+                continue
 
-        return True
+            gray = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY) if len(crop.shape) == 3 else crop
+            if initial_crop is None:
+                initial_crop = gray
+                time.sleep(poll_interval)
+                continue
+
+            if initial_crop.shape == gray.shape:
+                diff = cv2.absdiff(initial_crop, gray)
+                changed_pixels = np.count_nonzero(diff > 15)
+                ratio = changed_pixels / float(gray.size)
+                if ratio >= threshold:
+                    return True
+
+            time.sleep(poll_interval)
+
+        return False
