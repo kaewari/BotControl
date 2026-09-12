@@ -98,6 +98,7 @@
         <!-- Navigation Tabs -->
         <div class="tabs">
           <button class="tab-btn active" data-tab="smart_pipeline">🚀 Smart-Pipeline (Tối Ưu)</button>
+          <button class="tab-btn" data-tab="story">📖 Cốt Truyện & Event (AI)</button>
           <button class="tab-btn" data-tab="resin">🌾 Xả Nhựa Chi Tiết</button>
           <button class="tab-btn" data-tab="simulated">🌀 Vũ Trụ Mô Phỏng</button>
           <button class="tab-btn" data-tab="daily">📅 Daily Routine</button>
@@ -142,6 +143,47 @@
               <input type="checkbox" id="smart-skip-resin" />
               <span>Chỉ nhận 5 mốc rương + 4/4 Ủy thác (Bỏ qua xả nhựa)</span>
             </label>
+          </div>
+        </div>
+
+        <!-- TAB: STORY & EVENT AI -->
+        <div class="tab-content" id="tab-story">
+          <div class="card-highlight" style="border-left: 4px solid #8b5cf6;">
+            <div class="char-header">
+              <span class="badge-tag" style="background: rgba(139, 92, 246, 0.2); color: #a78bfa; border: 1px solid #8b5cf6;">Gemini 3.8 Flash + Local Vision</span>
+              <h4>Tự Động Cốt Truyện &amp; Sự Kiện (Story AI)</h4>
+            </div>
+            <p class="hint-muted">Tự động nhận diện Quest Marker 3D, điều khiển joystick &amp; camera xoay mượt mà với bộ phòng thủ Anti-Ban người thật, tự chọn nhánh hội thoại an toàn và gọi Gemini 3.8 Flash qua OmniRoute để giải câu đố/mini-game.</p>
+            <div class="shield-badge" style="margin-top: 8px; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.4); border-radius: 6px; font-size: 13px; color: #c4b5fd;">
+              <span>🤖</span>
+              <span><strong>OmniRoute VLM:</strong> Gemini 3.8 Flash Sẵn Sàng (Giải Puzzle / Mini-game tự động)</span>
+            </div>
+          </div>
+
+          <div class="checkbox-group mt-2">
+            <label class="checkbox-label">
+              <input type="checkbox" id="story-solve-puzzles" checked />
+              <span>Tự động kích hoạt AI Gemini 3.8 Flash giải khi gặp câu đố / mini-game</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="story-auto-sprint" checked />
+              <span>Kích hoạt lướt nhanh (Sprint) và nhịp điệu sinh học tự nhiên</span>
+            </label>
+          </div>
+
+          <div class="form-group mt-2">
+            <label for="story-max-duration">Thời gian chạy tối đa:</label>
+            <select id="story-max-duration" class="input-select">
+              <option value="300">5 Phút (Làm quest ngắn / đối thoại)</option>
+              <option value="600" selected>10 Phút (Chuỗi nhiệm vụ vừa)</option>
+              <option value="1200">20 Phút (Cốt truyện dài &amp; Event)</option>
+            </select>
+          </div>
+
+          <div class="mt-2" style="display: flex; gap: 10px;">
+            <button type="button" id="btn-solve-puzzle-now" class="btn btn-secondary" style="flex: 1;">
+              🧩 Giải Ngay Câu Đố Màn Hình Này (AI VLM)
+            </button>
           </div>
         </div>
 

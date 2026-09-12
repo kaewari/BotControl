@@ -6,6 +6,7 @@ from bot.tasks.resin import ResinFarmTask
 from bot.tasks.simulated_universe import SimulatedUniverseTask
 from bot.tasks.fast_chain import FastChainExecutor
 from bot.tasks.smart_pipeline import SmartPipelineTask
+from bot.tasks.story import StoryQuestTask
 
 __all__ = [
     "BaseTask",
@@ -15,4 +16,6 @@ __all__ = [
     "SimulatedUniverseTask",
     "FastChainExecutor",
     "SmartPipelineTask",
+    "StoryQuestTask",
 ]
+

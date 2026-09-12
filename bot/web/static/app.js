@@ -468,6 +468,13 @@ btnStart.addEventListener('click', async () => {
       interval: parseFloat(document.getElementById('dialogue-interval').value),
       auto_skip: document.getElementById('dialogue-auto-skip').checked,
     };
+  } else if (currentTab === 'story') {
+    taskName = 'story';
+    config = {
+      max_duration_s: parseFloat(document.getElementById('story-max-duration').value || 600),
+      solve_puzzles: document.getElementById('story-solve-puzzles').checked,
+      auto_sprint: document.getElementById('story-auto-sprint').checked,
+    };
   }
 
   btnStart.disabled = true;
@@ -515,7 +522,31 @@ if (antibanBadgeEl) {
   });
 }
 
+// Solve Puzzle via OmniRoute VLM
+const btnSolvePuzzle = document.getElementById('btn-solve-puzzle-now');
+if (btnSolvePuzzle) {
+  btnSolvePuzzle.addEventListener('click', async () => {
+    btnSolvePuzzle.disabled = true;
+    btnSolvePuzzle.textContent = '⏳ AI Đang Phân Tích & Giải...';
+    try {
+      const res = await fetch('/api/story/solve_puzzle', { method: 'POST' });
+      const data = await res.json();
+      if (data.status === 'ok') {
+        alert(`Đã giải câu đố: [${data.puzzle_type}]\nAI: ${data.reasoning}\nĐã thực thi: ${data.executed_count} bước`);
+      } else {
+        alert(`Lỗi giải đố: ${data.message || 'Không thành công'}`);
+      }
+    } catch (e) {
+      alert(`Lỗi kết nối AI VLM: ${e.message}`);
+    } finally {
+      btnSolvePuzzle.disabled = false;
+      btnSolvePuzzle.textContent = '🧩 Giải Ngay Câu Đố Màn Hình Này (AI VLM)';
+    }
+  });
+}
+
 // Bootstrap
 initWebSocket();
 updateStatus();
 setInterval(updateStatus, 1500);
+

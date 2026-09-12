@@ -23,6 +23,8 @@ from bot.tasks.resin import ResinFarmTask
 from bot.tasks.dialogue import DialogueFastSkipTask
 from bot.tasks.simulated_universe import SimulatedUniverseTask
 from bot.tasks.smart_pipeline import SmartPipelineTask
+from bot.tasks.story import StoryQuestTask
+from bot.cv.vlm_solver import OmniRouteVLMSolver
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("BotControl.Web")
@@ -446,12 +448,52 @@ async def start_task(req: TaskStartRequest):
             },
             daemon=True,
         )
+    elif req.task == "story":
+        current_task = StoryQuestTask(device, ocr, matcher, log_callback=broadcast_log)
+        task_thread = threading.Thread(
+            target=current_task.run,
+            kwargs={
+                "max_duration_s": float(cfg.get("max_duration_s", 600.0)),
+                "solve_puzzles": bool(cfg.get("solve_puzzles", True)),
+                "auto_sprint": bool(cfg.get("auto_sprint", True)),
+            },
+            daemon=True,
+        )
     else:
         return JSONResponse({"status": "error", "message": f"Tác vụ không hợp lệ: {req.task}"}, status_code=400)
 
     task_thread.start()
     broadcast_log(f"Đã khởi động tác vụ: {req.task}", "info")
     return {"status": "started", "task": req.task}
+
+
+@app.post("/api/story/solve_puzzle")
+async def solve_puzzle_api():
+    """Triggers on-demand VLM puzzle solving using Gemini 3.8 Flash via OmniRoute."""
+    frame = device.get_screenshot()
+    if frame is None:
+        return JSONResponse({"status": "error", "message": "Không có ảnh màn hình thiết bị"}, status_code=400)
+
+    vlm = OmniRouteVLMSolver()
+    broadcast_log("Đang phân tích và giải câu đố bằng Gemini 3.8 Flash qua OmniRoute...", "info")
+    plan = vlm.solve_puzzle(frame)
+    reasoning = plan.get("reasoning", "")
+    broadcast_log(f"🧠 AI Giải Đố: {reasoning}", "info")
+
+    actions = plan.get("actions", [])
+    executed = 0
+    if actions:
+        executed = vlm.execute_plan(plan, device)
+        broadcast_log(f"✅ Đã thực thi {executed} bước giải đố thành công!", "info")
+
+    return {
+        "status": "ok",
+        "puzzle_type": plan.get("puzzle_type", "unknown"),
+        "reasoning": reasoning,
+        "actions_count": len(actions),
+        "executed_count": executed,
+    }
+
 
 
 @app.post("/api/task/stop")

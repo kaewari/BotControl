@@ -134,3 +134,13 @@ class HSRZones:
     BATTLE_PAUSE_BUTTON = BoundingBox(0.95, 0.02, 0.99, 0.09)
     REPEAT_CHALLENGE_BUTTON = BoundingBox(0.55, 0.88, 0.88, 0.96)
     EXIT_BATTLE_BUTTON = BoundingBox(0.12, 0.88, 0.45, 0.96)
+
+    # 3D Overworld Navigation & Interaction (iPad Pro 13" M5 4:3)
+    MINIMAP_BOUNDS = BoundingBox(0.015, 0.025, 0.165, 0.225)
+    JOYSTICK_CENTER = Point(0.185, 0.765)
+    JOYSTICK_MAX_RADIUS = 0.080
+    CAMERA_SWIPE_ZONE = BoundingBox(0.40, 0.25, 0.85, 0.70)
+    INTERACTION_PROMPT_BOX = BoundingBox(0.60, 0.40, 0.82, 0.65)
+    SPRINT_BUTTON = Point(0.925, 0.890)
+    ATTACK_BUTTON = Point(0.835, 0.830)
+

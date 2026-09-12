@@ -306,6 +306,7 @@ class MockDeviceManager:
             "y": norm_y,
             "duration": hold_dur,
             "box": box,
+            "label": label,
             "timestamp": time.time(),
         }
         self.tap_history.append(event)
@@ -345,6 +346,7 @@ class MockDeviceManager:
             "y": norm_y,
             "duration": duration,
             "box": box,
+            "label": label,
             "timestamp": time.time(),
         }
         self.tap_history.append(event)
@@ -374,10 +376,39 @@ class MockDeviceManager:
     def stop_frame_producer(self):
         self._producer_running = False
 
+    @property
+    def taps(self) -> List[Dict[str, Any]]:
+        return self.tap_history
+
+    @property
+    def swipes(self) -> List[Dict[str, Any]]:
+        return self.swipe_history
+
+    def joystick_drag(self, angle_rad: float, magnitude: float = 1.0, duration: float = 0.5):
+        import math
+        from bot.core.coordinates import HSRZones
+        center = HSRZones.JOYSTICK_CENTER
+        max_r = HSRZones.JOYSTICK_MAX_RADIUS
+        mag = max(0.1, min(1.0, magnitude))
+        dist = max_r * mag
+        target_x = center.x + math.cos(angle_rad) * dist
+        target_y = center.y + math.sin(angle_rad) * dist
+        self.swipe(center.x, center.y, target_x, target_y, duration=duration, normalized=True)
+
+    def camera_pan(self, dx: float, dy: float, duration: float = 0.3):
+        from bot.core.coordinates import HSRZones
+        zone = HSRZones.CAMERA_SWIPE_ZONE
+        start_x = zone.center.x
+        start_y = zone.center.y
+        end_x = max(zone.x1, min(zone.x2, start_x + dx))
+        end_y = max(zone.y1, min(zone.y2, start_y + dy))
+        self.swipe(start_x, start_y, end_x, end_y, duration=duration, normalized=True)
+
     def clear_history(self):
         self.tap_history.clear()
         self.swipe_history.clear()
         self._client.clear_history()
+
 
 
 # =====================================================================
@@ -547,3 +578,42 @@ class ReferenceFastChainExecutor:
                 time.sleep(clamped_cadence)
 
         return True
+
+
+# Alias for backward and testing convenience
+MockDevice = MockDeviceManager
+
+
+class MockOCRService:
+    """Mock OCR Service for testing tasks without RapidOCR engine."""
+
+    def __init__(self):
+        self.results: List[Any] = []
+
+    def recognize(self, frame: np.ndarray, region: Optional[BoundingBox] = None) -> List[Any]:
+        return list(self.results)
+
+    def find_text(self, image: np.ndarray, target: str, region: Optional[BoundingBox] = None, min_similarity: float = 0.85):
+        for r in self.results:
+            if hasattr(r, "text") and target.lower() in r.text.lower():
+                return r
+        return None
+
+    def find_any_text(self, image: np.ndarray, targets: List[str], region: Optional[BoundingBox] = None, min_similarity: float = 0.85):
+        for t in targets:
+            for r in self.results:
+                if hasattr(r, "text") and t.lower() in r.text.lower():
+                    return t, r
+        return None
+
+
+class MockTemplateMatcher:
+    """Mock TemplateMatcher for testing tasks without OpenCV template files."""
+
+    def __init__(self):
+        self.matches: Dict[str, Optional[Tuple[BoundingBox, float]]] = {}
+
+    def match(self, image: np.ndarray, template_name: str, threshold: float = 0.8, region: Optional[BoundingBox] = None, scales: Tuple[float, ...] = (1.0, 0.9, 1.1)):
+        return self.matches.get(template_name, None)
+
+

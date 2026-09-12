@@ -496,3 +496,42 @@ class DeviceManager:
             logger.error(f"Lỗi gửi swipe: {e}")
         finally:
             self._gesture_in_progress = False
+
+    def joystick_drag(self, angle_rad: float, magnitude: float = 1.0, duration: float = 0.5):
+        """Simulates biological thumb drag on virtual joystick with ramp-up and micro-jitter."""
+        import math, random
+        from bot.core.coordinates import HSRZones
+        center = HSRZones.JOYSTICK_CENTER
+        max_r = HSRZones.JOYSTICK_MAX_RADIUS
+
+        mag = max(0.1, min(1.0, magnitude))
+        dist = max_r * mag
+        target_x = center.x + math.cos(angle_rad) * dist
+        target_y = center.y + math.sin(angle_rad) * dist
+
+        if self.enable_human_touch:
+            target_x += random.gauss(0, max_r * 0.025)
+            target_y += random.gauss(0, max_r * 0.025)
+            drag_dur = max(0.1, duration * random.uniform(0.95, 1.08))
+        else:
+            drag_dur = duration
+
+        logger.debug(f"🕹️ Joystick Drag: angle={math.degrees(angle_rad):.1f}° mag={mag:.2f} dur={drag_dur:.2f}s")
+        self.swipe(center.x, center.y, target_x, target_y, duration=drag_dur, normalized=True)
+
+    def camera_pan(self, dx: float, dy: float, duration: float = 0.3):
+        """Pans the 3D overworld camera within the safe right-screen swipe zone with human inertia."""
+        import random
+        from bot.core.coordinates import HSRZones
+        zone = HSRZones.CAMERA_SWIPE_ZONE
+
+        start_x = zone.center.x + random.uniform(-0.08, 0.08)
+        start_y = zone.center.y + random.uniform(-0.08, 0.08)
+
+        end_x = max(zone.x1 + 0.02, min(zone.x2 - 0.02, start_x + dx))
+        end_y = max(zone.y1 + 0.02, min(zone.y2 - 0.02, start_y + dy))
+
+        dur = max(0.15, duration * random.uniform(0.92, 1.12)) if self.enable_human_touch else duration
+        logger.debug(f"🎥 Camera Pan: dx={dx:.3f}, dy={dy:.3f}, dur={dur:.2f}s")
+        self.swipe(start_x, start_y, end_x, end_y, duration=dur, normalized=True)
+
