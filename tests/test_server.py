@@ -76,6 +76,31 @@ class TestWebServer(unittest.TestCase):
         self.assertEqual(r2.status_code, 200)
         self.assertIn("antiban_active", r2.json())
 
+    def test_ui_graph_endpoints(self):
+        """Tests /api/ui_graph/nodes, /api/ui_graph/route, and /api/ui_graph/navigate."""
+        # 1. /api/ui_graph/nodes
+        r_nodes = self.client.get("/api/ui_graph/nodes")
+        self.assertEqual(r_nodes.status_code, 200)
+        nodes_data = r_nodes.json()
+        self.assertIn("nodes", nodes_data)
+        self.assertGreaterEqual(len(nodes_data["nodes"]), 6)
+
+        # 2. /api/ui_graph/route
+        r_route = self.client.get("/api/ui_graph/route?start=Overworld&target=DivergentUniverse")
+        self.assertEqual(r_route.status_code, 200)
+        route_data = r_route.json()
+        self.assertEqual(route_data["status"], "ok")
+        self.assertEqual(route_data["step_count"], 2)
+        self.assertLess(route_data["calculation_ms"], 5.0)
+
+        # 3. /api/ui_graph/navigate
+        self.mock_device.clear_history()
+        r_nav = self.client.post("/api/ui_graph/navigate", json={"start": "Overworld", "target": "DivergentUniverse"})
+        self.assertEqual(r_nav.status_code, 200)
+        self.assertEqual(r_nav.json()["status"], "ok")
+        self.assertEqual(len(self.mock_device.tap_history), 2)
+
 
 if __name__ == "__main__":
     unittest.main()
+

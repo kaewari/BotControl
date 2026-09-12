@@ -50,7 +50,17 @@ class SimulatedUniverseTask(BaseTask):
             self.is_running = False
 
     def navigate_to_su_tab(self) -> bool:
-        """Opens Guidebook and selects Simulated Universe tab."""
+        """Opens Guidebook and selects Simulated Universe tab, or interacts with nearby portal."""
+        img = self.capture()
+        if img is not None:
+            prompt = self.ocr.find_any_text(img, ["Vũ Trụ Sai Phân", "Vu Tru Sai Phan", "Sai Phân"])
+            if prompt:
+                _, pres = prompt
+                self.log(f"Phát hiện biểu tượng tương tác '{pres.text}', bấm trực tiếp...")
+                self.device.tap(pres.center.x, pres.center.y, normalized=False)
+                self.sleep_cancellable(3.0)
+                return True
+
         self.log("Mở Sổ tay Hướng dẫn...")
         self.device.tap_box(HSRZones.GUIDEBOOK_ICON, normalized=True)
         self.sleep_cancellable(2.0)
@@ -71,7 +81,7 @@ class SimulatedUniverseTask(BaseTask):
             # Tìm Vũ Trụ Sai Phân
             du_btn = self.ocr.find_any_text(
                 img,
-                ["Vũ Trụ Sai Phân", "Vu Tru Sai Phan", "Sai Phân", "Divergent Universe"]
+                ["Vũ Trụ Sai Phân", "Vu Tru Sai Phan", "Sai Phân", "Khởi Động Tính Toán", "Tiếp Tục Tính Toán", "Divergent Universe"]
             )
             if du_btn:
                 _, res = du_btn
@@ -84,7 +94,7 @@ class SimulatedUniverseTask(BaseTask):
         if start_img is not None:
             btn = self.ocr.find_any_text(
                 start_img,
-                ["Bắt đầu", "Bat dau", "Khiêu chiến", "Khieu chien", "Tiếp tục", "Start", "Vào"]
+                ["Bắt đầu tính toán", "Bat dau tinh toan", "Khởi động tính toán", "Bắt đầu khiêu chiến", "Bắt đầu", "Bat dau", "Khiêu chiến", "Khieu chien", "Tiếp tục", "Start", "Vào"]
             )
             if btn:
                 _, b_res = btn
@@ -94,6 +104,7 @@ class SimulatedUniverseTask(BaseTask):
                 return True
 
         # Fallback bấm góc dưới bên phải
+        self.log("Bấm nút xác nhận góc dưới bên phải (0.85, 0.90)...")
         self.device.tap(0.85, 0.90, normalized=True)
         self.sleep_cancellable(3.0)
         return True
@@ -198,8 +209,22 @@ class SimulatedUniverseTask(BaseTask):
         ) is not None
 
     def move_forward_towards_portal(self):
-        """Pushes virtual joystick forward to navigate 3D room."""
-        # Kéo cần di chuyển ảo (ở góc dưới bên trái) hướng lên trên
-        self.device.swipe(0.18, 0.78, 0.18, 0.55, duration=1.2, normalized=True)
-        # Bấm phím tương tác nếu có biểu tượng xuất hiện
-        self.device.tap(0.70, 0.70, normalized=True)
+        """Pushes virtual joystick forward to navigate 3D room, sprints, and triggers combat/interaction."""
+        import math
+        # Kéo cần di chuyển ảo hướng lên trên (chạy thẳng phía trước)
+        if hasattr(self.device, "joystick_drag"):
+            self.device.joystick_drag(math.pi * 1.5, magnitude=1.0, duration=1.0)
+        else:
+            self.device.swipe(0.18, 0.78, 0.18, 0.55, duration=1.0, normalized=True)
+
+        # Bấm sprint lướt nhanh
+        self.device.tap(HSRZones.SPRINT_BUTTON.x, HSRZones.SPRINT_BUTTON.y, normalized=True)
+        self.sleep_cancellable(0.2)
+
+        # Tấn công kẻ địch hoặc vật thể trên đường đi
+        self.device.tap(HSRZones.ATTACK_BUTTON.x, HSRZones.ATTACK_BUTTON.y, normalized=True)
+        self.sleep_cancellable(0.2)
+
+        # Bấm phím tương tác nếu có cổng / vật thể xuất hiện
+        self.device.tap(0.70, 0.65, normalized=True)
+

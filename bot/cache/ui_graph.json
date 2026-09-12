@@ -1,0 +1,3925 @@
+{
+  "_meta": {
+    "version": "1.0.0",
+    "device": "iPad Pro 13-inch (M5)",
+    "screen_width": 2752,
+    "screen_height": 2064,
+    "updated_at": "2026-09-12 22:25:09",
+    "node_count": 56,
+    "edge_count": 145
+  },
+  "nodes": {
+    "Overworld": {
+      "node_id": "Overworld",
+      "name": "Thế Giới Mở 3D",
+      "anchor_texts": [
+        "UID",
+        "uid",
+        "Trạng Thái",
+        "trang thai",
+        "Nói chuyện",
+        "noi chuyen",
+        "Điều tra",
+        "dieu tra"
+      ],
+      "visual_fingerprint": "6be5a62ea8d9d4dd",
+      "visual_fingerprints": [
+        "6be5a62ea8d9d4dd"
+      ],
+      "metadata": {
+        "category": "main_world"
+      }
+    },
+    "PhoneMenu": {
+      "node_id": "PhoneMenu",
+      "name": "Menu Điện Thoại",
+      "anchor_texts": [
+        "Ủy Thác",
+        "uy thac",
+        "Tin Nhắn",
+        "tin nhan",
+        "Cài Đặt",
+        "cai dat",
+        "Điểm Danh",
+        "diem danh",
+        "Rời Khỏi Game",
+        "roi khoi game",
+        "Cấp Khai Phá",
+        "cap khai pha"
+      ],
+      "visual_fingerprint": "02a18dc2c4c895aa",
+      "visual_fingerprints": [
+        "02a18dc2c4c895aa"
+      ],
+      "metadata": {
+        "category": "phone_menu"
+      }
+    },
+    "Guidebook": {
+      "node_id": "Guidebook",
+      "name": "Sổ Tay Sinh Tồn",
+      "anchor_texts": [
+        "Hướng Dẫn Hành Tinh Hòa Bình",
+        "huong dan hanh tinh hoa binh",
+        "Sổ Tay Sinh Tồn",
+        "so tay sinh ton",
+        "Huấn Luyện Thường Ngày",
+        "huan luyen thuong ngay",
+        "Hướng Dẫn Sinh Tồn",
+        "huong dan sinh ton",
+        "Điểm Năng Động",
+        "diem nang dong"
+      ],
+      "visual_fingerprint": "dcda90c09284e9a3",
+      "visual_fingerprints": [
+        "dcda90c09284e9a3",
+        "d0f990c0928461a1",
+        "d9b890c0818442a1"
+      ],
+      "metadata": {
+        "category": "guidebook"
+      }
+    },
+    "SurvivalIndex": {
+      "node_id": "SurvivalIndex",
+      "name": "Hướng Dẫn Sinh Tồn",
+      "anchor_texts": [
+        "Mục Tiêu Bồi Dưỡng",
+        "muc tieu boi duong",
+        "Trích Xuất Phụ Kiện",
+        "trich xuat phu kien",
+        "Đài Hoa Nhân Tạo",
+        "dai hoa nhan tao",
+        "Hư Ảnh Ngưng Đọng",
+        "hu anh ngung dong",
+        "Vết Tích Xâm Thực",
+        "vet tich xam thuc",
+        "Hang Động Xâm Thực",
+        "hang dong xam thuc"
+      ],
+      "visual_fingerprint": "daf90000080000a1",
+      "visual_fingerprints": [
+        "daf90000080000a1"
+      ],
+      "metadata": {
+        "category": "survival_index"
+      }
+    },
+    "DailyTraining": {
+      "node_id": "DailyTraining",
+      "name": "Huấn Luyện Thường Ngày",
+      "anchor_texts": [
+        "Huấn Luyện Mỗi Ngày",
+        "huan luyen moi ngay",
+        "Huấn Luyện Thường Ngày",
+        "huan luyen thuong ngay",
+        "Điểm Năng Động",
+        "diem nang dong",
+        "100",
+        "200",
+        "300",
+        "400",
+        "500",
+        "Nhận",
+        "nhan"
+      ],
+      "visual_fingerprint": "d0f990c0928461a1",
+      "visual_fingerprints": [
+        "d0f990c0928461a1"
+      ],
+      "metadata": {
+        "category": "daily"
+      }
+    },
+    "Assignments": {
+      "node_id": "Assignments",
+      "name": "Quản Lý Ủy Thác",
+      "anchor_texts": [
+        "Ủy Thác",
+        "uy thac",
+        "Quy Tắc",
+        "quy tac",
+        "Nguyên Liệu Riêng",
+        "nguyen lieu rieng",
+        "Nguyên Liệu EXP",
+        "nguyen lieu exp",
+        "Nhận Tất Cả",
+        "nhan tat ca",
+        "Phái Lại Tất Cả",
+        "phai lai tat ca"
+      ],
+      "visual_fingerprint": "02a18dc2c4c895aa",
+      "visual_fingerprints": [
+        "02a18dc2c4c895aa"
+      ],
+      "metadata": {
+        "category": "routine"
+      }
+    },
+    "PhoneMessages": {
+      "node_id": "PhoneMessages",
+      "name": "Tin Nhắn Nhân Vật",
+      "anchor_texts": [
+        "Tin Nhắn",
+        "tin nhan",
+        "Đội Tàu Astral",
+        "doi tau astral",
+        "Liên lạc gần đây",
+        "lien lac gan day",
+        "Nhận Thưởng",
+        "nhan thuong",
+        "Lựa Chọn Trả Lời",
+        "lua chon tra loi"
+      ],
+      "visual_fingerprint": "12a38dc2c4c895ab",
+      "visual_fingerprints": [
+        "12a38dc2c4c895ab"
+      ],
+      "metadata": {
+        "category": "routine"
+      }
+    },
+    "DailyCheckinModal": {
+      "node_id": "DailyCheckinModal",
+      "name": "Điểm Danh Hàng Ngày",
+      "anchor_texts": [
+        "Điểm Danh",
+        "diem danh",
+        "Điểm Danh Ngày Thứ",
+        "diem danh ngay thu",
+        "Đã Điểm Danh",
+        "da diem danh",
+        "Phần Thưởng Điểm Danh",
+        "phan thuong diem danh"
+      ],
+      "visual_fingerprint": "24b58ec2d4c895bb",
+      "visual_fingerprints": [
+        "24b58ec2d4c895bb"
+      ],
+      "metadata": {
+        "category": "routine"
+      }
+    },
+    "GameSettings": {
+      "node_id": "GameSettings",
+      "name": "Cài Đặt Hệ Thống",
+      "anchor_texts": [
+        "Cài Đặt",
+        "cai dat",
+        "Đồ Họa",
+        "do hoa",
+        "Âm Thanh",
+        "am thanh",
+        "Ngôn Ngữ",
+        "ngon ngu",
+        "Điều Khiển",
+        "dieu khien",
+        "Khác",
+        "khac",
+        "Settings",
+        "settings"
+      ],
+      "visual_fingerprint": "34a59ec2d4c895bb",
+      "visual_fingerprints": [
+        "34a59ec2d4c895bb"
+      ],
+      "metadata": {
+        "category": "routine"
+      }
+    },
+    "QuestLog": {
+      "node_id": "QuestLog",
+      "name": "Bảng Nhiệm Vụ",
+      "anchor_texts": [
+        "Nhiệm Vụ Khai Phá",
+        "nhiem vu khai pha",
+        "Nhiệm Vụ Thám Hiểm",
+        "nhiem vu tham hiem",
+        "Nhiệm Vụ Đồng Hành",
+        "nhiem vu dong hanh",
+        "Theo Dõi",
+        "theo doi",
+        "Đang Theo Dõi",
+        "dang theo doi",
+        "Định Vị",
+        "dinh vi",
+        "Bỏ Theo Dõi",
+        "bo theo doi"
+      ],
+      "visual_fingerprint": "9a82643c788c9d96",
+      "visual_fingerprints": [
+        "9a82643c788c9d96"
+      ],
+      "metadata": {
+        "category": "story"
+      }
+    },
+    "NPCDialogue": {
+      "node_id": "NPCDialogue",
+      "name": "Hội Thoại NPC",
+      "anchor_texts": [
+        "Bỏ qua",
+        "bo qua",
+        "Tự động",
+        "tu dong",
+        "Lịch sử",
+        "lich su",
+        "Ẩn",
+        "an",
+        "Auto",
+        "auto",
+        "History",
+        "history",
+        "Review",
+        "review",
+        "Skip",
+        "skip"
+      ],
+      "visual_fingerprint": "e0e0f8fcf0f0e0c0",
+      "visual_fingerprints": [
+        "e0e0f8fcf0f0e0c0"
+      ],
+      "metadata": {
+        "category": "story"
+      }
+    },
+    "DialogueChoices": {
+      "node_id": "DialogueChoices",
+      "name": "Lựa Chọn Đối Thoại",
+      "anchor_texts": [
+        "?",
+        "...",
+        "!",
+        "Tôi",
+        "toi",
+        "Được",
+        "duoc",
+        "Đi thôi",
+        "di thoi",
+        "Rời đi",
+        "roi di",
+        "Nói cho tôi biết",
+        "noi cho toi biet",
+        "Đồng ý",
+        "dong y"
+      ],
+      "visual_fingerprint": "e2e0e4f8f0b0c4c4",
+      "visual_fingerprints": [
+        "e2e0e4f8f0b0c4c4"
+      ],
+      "metadata": {
+        "category": "story"
+      }
+    },
+    "DialogueSkipConfirm": {
+      "node_id": "DialogueSkipConfirm",
+      "name": "Xác Nhận Bỏ Qua Hội Thoại",
+      "anchor_texts": [
+        "Xác nhận bỏ qua",
+        "xac nhan bo qua",
+        "Bỏ qua phân cảnh",
+        "bo qua phan canh",
+        "Bỏ qua đối thoại",
+        "bo qua doi thoai",
+        "Xác nhận",
+        "xac nhan",
+        "Hủy",
+        "huy",
+        "Confirm",
+        "confirm",
+        "Cancel",
+        "cancel"
+      ],
+      "visual_fingerprint": "3c3c3c3c00003c3c",
+      "visual_fingerprints": [
+        "3c3c3c3c00003c3c"
+      ],
+      "metadata": {
+        "category": "story"
+      }
+    },
+    "Cutscene": {
+      "node_id": "Cutscene",
+      "name": "Phim Cắt Cảnh",
+      "anchor_texts": [
+        "Bỏ qua",
+        "bo qua",
+        "Skip",
+        "skip",
+        "Chạm vào màn hình",
+        "cham vao man hinh"
+      ],
+      "visual_fingerprint": "0000000000000000",
+      "visual_fingerprints": [
+        "0000000000000000"
+      ],
+      "metadata": {
+        "category": "story"
+      }
+    },
+    "StoryRewardModal": {
+      "node_id": "StoryRewardModal",
+      "name": "Nhận Thưởng Nhiệm Vụ",
+      "anchor_texts": [
+        "Nhiệm Vụ Hoàn Thành",
+        "nhiem vu hoan thanh",
+        "Phần Thưởng",
+        "phan thuong",
+        "Nhấp vào bất kỳ đâu để đóng",
+        "nhap vao bat ky dau de dong",
+        "Chạm vào bất cứ đâu để đóng",
+        "cham vao bat cu dau de dong"
+      ],
+      "visual_fingerprint": "f8f0e0d0c0c0e0f0",
+      "visual_fingerprints": [
+        "f8f0e0d0c0c0e0f0"
+      ],
+      "metadata": {
+        "category": "story"
+      }
+    },
+    "CompassPuzzle": {
+      "node_id": "CompassPuzzle",
+      "name": "La Bàn Thiên Cầu",
+      "anchor_texts": [
+        "La Bàn Thiên Cầu",
+        "la ban thien cau",
+        "Xoay",
+        "xoay",
+        "Chuyển Đổi Vòng",
+        "chuyen doi vong",
+        "Xác Nhận",
+        "xac nhan",
+        "Thoát",
+        "thoat",
+        "Làm Lại",
+        "lam lai"
+      ],
+      "visual_fingerprint": "7e3c180000183c7e",
+      "visual_fingerprints": [
+        "7e3c180000183c7e"
+      ],
+      "metadata": {
+        "category": "puzzle"
+      }
+    },
+    "ClockworkDial": {
+      "node_id": "ClockworkDial",
+      "name": "Bánh Răng Đồng Hồ",
+      "anchor_texts": [
+        "Bánh Răng Đồng Hồ",
+        "banh rang dong ho",
+        "Tâm Trạng",
+        "tam trang",
+        "Vui Vẻ",
+        "vui ve",
+        "Giận Dữ",
+        "gian du",
+        "Bi Thương",
+        "bi thuong",
+        "Thanh Thản",
+        "thanh than",
+        "Mở Khóa Cảm Xúc",
+        "mo khoa cam xuc"
+      ],
+      "visual_fingerprint": "3c4299a5a599423c",
+      "visual_fingerprints": [
+        "3c4299a5a599423c"
+      ],
+      "metadata": {
+        "category": "puzzle"
+      }
+    },
+    "AbacusCircuitry": {
+      "node_id": "AbacusCircuitry",
+      "name": "Nối Mạch Điện Bàn Tính",
+      "anchor_texts": [
+        "Mạch Bàn Tính",
+        "mach ban tinh",
+        "Nối Mạch Điện",
+        "noi mach dien",
+        "Xoay Theo Chiều Kim Đồng Hồ",
+        "xoay theo chieu kim dong ho",
+        "Xoay Ngược",
+        "xoay nguoc",
+        "Chọn Hạt",
+        "chon hat",
+        "Thoát",
+        "thoat"
+      ],
+      "visual_fingerprint": "183c7e7e7e7e3c18",
+      "visual_fingerprints": [
+        "183c7e7e7e7e3c18"
+      ],
+      "metadata": {
+        "category": "puzzle"
+      }
+    },
+    "LaserReflectorPuzzle": {
+      "node_id": "LaserReflectorPuzzle",
+      "name": "Đèn Laser & Kính Phản Chiếu",
+      "anchor_texts": [
+        "Kính Phản Chiếu",
+        "kinh phan chieu",
+        "Xoay Gương",
+        "xoay guong",
+        "Xoay",
+        "xoay",
+        "Bắn Laser",
+        "ban laser",
+        "Khởi Động",
+        "khoi dong",
+        "Thiết Bị Phát Quang",
+        "thiet bi phat quang",
+        "Thoát",
+        "thoat"
+      ],
+      "visual_fingerprint": "8142241818244281",
+      "visual_fingerprints": [
+        "8142241818244281"
+      ],
+      "metadata": {
+        "category": "puzzle"
+      }
+    },
+    "DreamTickerPuzzle": {
+      "node_id": "DreamTickerPuzzle",
+      "name": "Đồng Hồ Mộng Mị",
+      "anchor_texts": [
+        "Đồng Hồ Mộng Mị",
+        "dong ho mong mi",
+        "Kéo khối ghép",
+        "keo khoi ghep",
+        "Xoay",
+        "xoay",
+        "Đặt lại",
+        "dat lai",
+        "Thoát",
+        "thoat",
+        "Dream Ticker",
+        "dream ticker"
+      ],
+      "visual_fingerprint": "6666999999996666",
+      "visual_fingerprints": [
+        "6666999999996666"
+      ],
+      "metadata": {
+        "category": "puzzle"
+      }
+    },
+    "TreasureChestPopup": {
+      "node_id": "TreasureChestPopup",
+      "name": "Mở Rương Báu & Phần Thưởng",
+      "anchor_texts": [
+        "Rương Chiến Lợi Phẩm",
+        "ruong chien loi pham",
+        "Rương Quý Giá",
+        "ruong quy gia",
+        "Rương Thường",
+        "ruong thuong",
+        "Phần Thưởng Nhận Được",
+        "phan thuong nhan duoc",
+        "Nhấp vào bất kỳ đâu để đóng",
+        "nhap vao bat ky dau de dong"
+      ],
+      "visual_fingerprint": "0f1e3c78f0e1c387",
+      "visual_fingerprints": [
+        "0f1e3c78f0e1c387"
+      ],
+      "metadata": {
+        "category": "puzzle"
+      }
+    },
+    "MapMinigameHanu": {
+      "node_id": "MapMinigameHanu",
+      "name": "Mini-Game Thám Tử Hanu",
+      "anchor_texts": [
+        "Hanu",
+        "hanu",
+        "Anh Hanu",
+        "anh hanu",
+        "Bò",
+        "bo",
+        "Núp",
+        "nup",
+        "Bắn",
+        "ban",
+        "Thu Nhỏ",
+        "thu nho",
+        "Trở Về",
+        "tro ve"
+      ],
+      "visual_fingerprint": "aa55aa55aa55aa55",
+      "visual_fingerprints": [
+        "aa55aa55aa55aa55"
+      ],
+      "metadata": {
+        "category": "puzzle"
+      }
+    },
+    "MapMinigameOrigami": {
+      "node_id": "MapMinigameOrigami",
+      "name": "Chim Origami",
+      "anchor_texts": [
+        "Chim Origami",
+        "chim origami",
+        "Chim Giấy",
+        "chim giay",
+        "Kéo",
+        "keo",
+        "Tổ Chim",
+        "to chim",
+        "Phần Thưởng Lông Chim",
+        "phan thuong long chim"
+      ],
+      "visual_fingerprint": "55aa55aa55aa55aa",
+      "visual_fingerprints": [
+        "55aa55aa55aa55aa"
+      ],
+      "metadata": {
+        "category": "puzzle"
+      }
+    },
+    "DivergentUniverse": {
+      "node_id": "DivergentUniverse",
+      "name": "Vũ Trụ Sai Phân",
+      "anchor_texts": [
+        "Vũ Trụ Sai Phân",
+        "vu tru sai phan",
+        "Khởi Động Tính Toán",
+        "khoi dong tinh toan",
+        "Tiếp Tục Tính Toán",
+        "tiep tuc tinh toan",
+        "Cây Đồng Bộ",
+        "cay dong bo",
+        "Sổ Tay Khảo Sát",
+        "so tay khao sat",
+        "Độ Bền Thường",
+        "do ben thuong"
+      ],
+      "visual_fingerprint": "828353624b44a656",
+      "visual_fingerprints": [
+        "828353624b44a656",
+        "828357726b24e676",
+        "e2e9262ca891d4dd"
+      ],
+      "metadata": {
+        "category": "divergent_universe"
+      }
+    },
+    "SUClassicDashboard": {
+      "node_id": "SUClassicDashboard",
+      "name": "Vũ Trụ Mô Phỏng Cổ Điển",
+      "anchor_texts": [
+        "Vũ Trụ Mô Phỏng",
+        "vu tru mo phong",
+        "Thế Giới 1",
+        "the gioi 1",
+        "Thế Giới 2",
+        "the gioi 2",
+        "Thế Giới 3",
+        "the gioi 3",
+        "Cây Kỹ Năng",
+        "cay ky nang",
+        "Sổ Tay Chúc Phúc",
+        "so tay chuc phuc",
+        "Cửa Hàng Herta",
+        "cua hang herta"
+      ],
+      "visual_fingerprint": "1f2f4e8d8d4e2f1f",
+      "visual_fingerprints": [
+        "1f2f4e8d8d4e2f1f"
+      ],
+      "metadata": {
+        "category": "simulated_universe"
+      }
+    },
+    "SUDifficultySelect": {
+      "node_id": "SUDifficultySelect",
+      "name": "Chọn Độ Khó & Đội Hình SU/DU",
+      "anchor_texts": [
+        "Độ Khó",
+        "do kho",
+        "Cấp Đề Xuất",
+        "cap de xuat",
+        "Khởi Động",
+        "khoi dong",
+        "Bắt Đầu Khiêu Chiến",
+        "bat dau khieu chien",
+        "Xác Nhận Đội",
+        "xac nhan doi",
+        "Thay Đổi",
+        "thay doi"
+      ],
+      "visual_fingerprint": "3366cc993366cc99",
+      "visual_fingerprints": [
+        "3366cc993366cc99"
+      ],
+      "metadata": {
+        "category": "simulated_universe"
+      }
+    },
+    "SUDomainMap": {
+      "node_id": "SUDomainMap",
+      "name": "Bản Đồ Khu Vực / Cổng Không Gian",
+      "anchor_texts": [
+        "Khu Vực",
+        "khu vuc",
+        "Chiến Đấu",
+        "chien dau",
+        "Sự Kiện",
+        "su kien",
+        "Tinh Anh",
+        "tinh anh",
+        "Nghỉ Ngơi",
+        "nghi ngoi",
+        "Thủ Lĩnh",
+        "thu linh",
+        "Kho Báu",
+        "kho bau",
+        "Cửa Hàng",
+        "cua hang",
+        "Biến Cố",
+        "bien co",
+        "Tải Lại",
+        "tai lai"
+      ],
+      "visual_fingerprint": "8844221111224488",
+      "visual_fingerprints": [
+        "8844221111224488"
+      ],
+      "metadata": {
+        "category": "simulated_universe"
+      }
+    },
+    "SUOverworldRoom": {
+      "node_id": "SUOverworldRoom",
+      "name": "Sảnh Phòng 3D Vũ Trụ",
+      "anchor_texts": [
+        "UID",
+        "uid",
+        "Vũ Trụ Sai Phân",
+        "vu tru sai phan",
+        "Khu Vực",
+        "khu vuc",
+        "Vật Thể Phá Hủy",
+        "vat the pha huy",
+        "Điểm Tích Lũy",
+        "diem tich luy"
+      ],
+      "visual_fingerprint": "6be5a62ea8d9d4de",
+      "visual_fingerprints": [
+        "6be5a62ea8d9d4de"
+      ],
+      "metadata": {
+        "category": "simulated_universe"
+      }
+    },
+    "SUBlessingSelect": {
+      "node_id": "SUBlessingSelect",
+      "name": "Chọn Chúc Phúc",
+      "anchor_texts": [
+        "Chọn Chúc Phúc",
+        "chon chuc phuc",
+        "Chúc Phúc",
+        "chuc phuc",
+        "Làm Mới",
+        "lam moi",
+        "Bỏ Qua",
+        "bo qua",
+        "Xác Nhận",
+        "xac nhan",
+        "Vận Mệnh",
+        "van menh"
+      ],
+      "visual_fingerprint": "707070700f0f0f0f",
+      "visual_fingerprints": [
+        "707070700f0f0f0f"
+      ],
+      "metadata": {
+        "category": "simulated_universe"
+      }
+    },
+    "SUCurioSelect": {
+      "node_id": "SUCurioSelect",
+      "name": "Chọn Kỳ Vật",
+      "anchor_texts": [
+        "Chọn Kỳ Vật",
+        "chon ky vat",
+        "Kỳ Vật",
+        "ky vat",
+        "Vật Kỳ Lạ",
+        "vat ky la",
+        "Xác Nhận",
+        "xac nhan",
+        "Curio",
+        "curio",
+        "Hiệu Quả Kỳ Vật",
+        "hieu qua ky vat"
+      ],
+      "visual_fingerprint": "0f0f0f0f70707070",
+      "visual_fingerprints": [
+        "0f0f0f0f70707070"
+      ],
+      "metadata": {
+        "category": "simulated_universe"
+      }
+    },
+    "DUEquationSelect": {
+      "node_id": "DUEquationSelect",
+      "name": "Chọn Phương Trình DU",
+      "anchor_texts": [
+        "Phương Trình",
+        "phuong trinh",
+        "Khai Mở Phương Trình",
+        "khai mo phuong trinh",
+        "Hiện Thực Hóa",
+        "hien thuc hoa",
+        "Mở Rộng",
+        "mo rong",
+        "Xác Nhận",
+        "xac nhan",
+        "Equation",
+        "equation"
+      ],
+      "visual_fingerprint": "1c3870e0e070381c",
+      "visual_fingerprints": [
+        "1c3870e0e070381c"
+      ],
+      "metadata": {
+        "category": "divergent_universe"
+      }
+    },
+    "SUOccurrenceDialog": {
+      "node_id": "SUOccurrenceDialog",
+      "name": "Biến Cố / Sự Kiện Vũ Trụ",
+      "anchor_texts": [
+        "Sự Kiện",
+        "su kien",
+        "Biến Cố",
+        "bien co",
+        "Lựa Chọn",
+        "lua chon",
+        "Rời Khỏi",
+        "roi khoi",
+        "Tiếp Tục",
+        "tiep tuc",
+        "Occurrence",
+        "occurrence"
+      ],
+      "visual_fingerprint": "e4e4e4e41b1b1b1b",
+      "visual_fingerprints": [
+        "e4e4e4e41b1b1b1b"
+      ],
+      "metadata": {
+        "category": "simulated_universe"
+      }
+    },
+    "SURunTally": {
+      "node_id": "SURunTally",
+      "name": "Quyết Toán Vũ Trụ & Nhận Thưởng",
+      "anchor_texts": [
+        "Quyết Toán",
+        "quyet toan",
+        "Điểm Tích Lũy",
+        "diem tich luy",
+        "Hoàn Thành Khiêu Chiến",
+        "hoan thanh khieu chien",
+        "Thất Bại",
+        "that bai",
+        "Lưu Lại Dữ Liệu",
+        "luu lai du lieu",
+        "Rời Khỏi",
+        "roi khoi",
+        "Tiếp Tục",
+        "tiep tuc",
+        "Xác Nhận",
+        "xac nhan"
+      ],
+      "visual_fingerprint": "f0e1d2c3b4a59687",
+      "visual_fingerprints": [
+        "f0e1d2c3b4a59687"
+      ],
+      "metadata": {
+        "category": "simulated_universe"
+      }
+    },
+    "DUSynchronicityTree": {
+      "node_id": "DUSynchronicityTree",
+      "name": "Cây Đồng Bộ & Cấp Độ Sai Phân",
+      "anchor_texts": [
+        "Cây Đồng Bộ",
+        "cay dong bo",
+        "Cấp Đồng Bộ",
+        "cap dong bo",
+        "Nhận Tất Cả",
+        "nhan tat ca",
+        "Phần Thưởng Cấp",
+        "phan thuong cap",
+        "Đã Nhận",
+        "da nhan"
+      ],
+      "visual_fingerprint": "1234567887654321",
+      "visual_fingerprints": [
+        "1234567887654321"
+      ],
+      "metadata": {
+        "category": "divergent_universe"
+      }
+    },
+    "SUAbilityTree": {
+      "node_id": "SUAbilityTree",
+      "name": "Cây Kỹ Năng Vũ Trụ Mô Phỏng",
+      "anchor_texts": [
+        "Cây Kỹ Năng",
+        "cay ky nang",
+        "Điểm Kỹ Năng",
+        "diem ky nang",
+        "Nâng Cấp",
+        "nang cap",
+        "Đã Kích Hoạt",
+        "da kich hoat",
+        "Tăng Sức Mạnh",
+        "tang suc manh"
+      ],
+      "visual_fingerprint": "8765432112345678",
+      "visual_fingerprints": [
+        "8765432112345678"
+      ],
+      "metadata": {
+        "category": "simulated_universe"
+      }
+    },
+    "Farming_CalyxGolden": {
+      "node_id": "Farming_CalyxGolden",
+      "name": "Đài Hoa Nhân Tạo: Vàng",
+      "anchor_texts": [
+        "Đài Hoa Nhân Tạo (Vàng)",
+        "dai hoa nhan tao (vang)",
+        "Ký Ức",
+        "ky uc",
+        "Dị Thể Éther",
+        "di the ether",
+        "Kho Báu Nghìn Vàng",
+        "kho bau nghin vang",
+        "10/Đợt",
+        "10/dot",
+        "Calyx (Golden)",
+        "calyx (golden)"
+      ],
+      "visual_fingerprint": "dbd8c4c284a1e9a3",
+      "visual_fingerprints": [
+        "dbd8c4c284a1e9a3"
+      ],
+      "metadata": {
+        "category": "farming"
+      }
+    },
+    "Farming_CalyxCrimson": {
+      "node_id": "Farming_CalyxCrimson",
+      "name": "Đài Hoa Nhân Tạo: Đỏ",
+      "anchor_texts": [
+        "Đài Hoa Nhân Tạo (Đỏ)",
+        "dai hoa nhan tao (do)",
+        "Hủy Diệt",
+        "huy diet",
+        "Săn Bắn",
+        "san ban",
+        "Tri Thức",
+        "tri thuc",
+        "Hòa Hợp",
+        "hoa hop",
+        "Hư Vô",
+        "hu vo",
+        "Bảo Hộ",
+        "bao ho",
+        "Trù Phú",
+        "tru phu",
+        "Ký Ức",
+        "ky uc",
+        "Calyx (Crimson)",
+        "calyx (crimson)"
+      ],
+      "visual_fingerprint": "cbd9c0c08284e9b3",
+      "visual_fingerprints": [
+        "cbd9c0c08284e9b3"
+      ],
+      "metadata": {
+        "category": "farming"
+      }
+    },
+    "Farming_CavernOfCorrosion": {
+      "node_id": "Farming_CavernOfCorrosion",
+      "name": "Hang Động Xâm Thực",
+      "anchor_texts": [
+        "Hang Động Xâm Thực",
+        "hang dong xam thuc",
+        "Vết Tích Xâm Thực",
+        "vet tich xam thuc",
+        "Di Vật",
+        "di vat",
+        "Con Đường",
+        "con duong",
+        "40 Sức Mạnh Khai Phá",
+        "40 suc manh khai pha",
+        "Cavern of Corrosion",
+        "cavern of corrosion"
+      ],
+      "visual_fingerprint": "c8d9c0848084e9b1",
+      "visual_fingerprints": [
+        "c8d9c0848084e9b1"
+      ],
+      "metadata": {
+        "category": "farming"
+      }
+    },
+    "Farming_StagnantShadow": {
+      "node_id": "Farming_StagnantShadow",
+      "name": "Hư Ảnh Ngưng Đọng",
+      "anchor_texts": [
+        "Hư Ảnh Ngưng Đọng",
+        "hu anh ngung dong",
+        "Hình Dáng Băng Giá",
+        "hinh dang bang gia",
+        "Bốc Cháy",
+        "boc chay",
+        "30 Sức Mạnh Khai Phá",
+        "30 suc manh khai pha",
+        "Stagnant Shadow",
+        "stagnant shadow"
+      ],
+      "visual_fingerprint": "e0d990808080a9a1",
+      "visual_fingerprints": [
+        "e0d990808080a9a1"
+      ],
+      "metadata": {
+        "category": "farming"
+      }
+    },
+    "Farming_EchoOfWar": {
+      "node_id": "Farming_EchoOfWar",
+      "name": "Dư Âm Chiến Đấu",
+      "anchor_texts": [
+        "Dư Âm Chiến Đấu",
+        "du am chien dau",
+        "Vết Tích Vận Mệnh",
+        "vet tich van menh",
+        "Quái Thú Tận Thế",
+        "quai thu tan the",
+        "Cocolia",
+        "cocolia",
+        "Phantylia",
+        "phantylia",
+        "Chủ Nhật",
+        "chu nhat",
+        "Echo of War",
+        "echo of war"
+      ],
+      "visual_fingerprint": "b0d990808084a1a1",
+      "visual_fingerprints": [
+        "b0d990808084a1a1"
+      ],
+      "metadata": {
+        "category": "farming"
+      }
+    },
+    "Farming_PlanarOrnament": {
+      "node_id": "Farming_PlanarOrnament",
+      "name": "Trích Xuất Phụ Kiện",
+      "anchor_texts": [
+        "Trích Xuất Phụ Kiện",
+        "trich xuat phu kien",
+        "Phụ Kiện Vị Diện",
+        "phu kien vi dien",
+        "Vũ Trụ Sai Phân",
+        "vu tru sai phan",
+        "Trạm Phong Ấn",
+        "tram phong an",
+        "Đấu Trường",
+        "dau truong",
+        "Planar Ornament",
+        "planar ornament"
+      ],
+      "visual_fingerprint": "a0d990c09084a9a1",
+      "visual_fingerprints": [
+        "a0d990c09084a9a1"
+      ],
+      "metadata": {
+        "category": "farming"
+      }
+    },
+    "DungeonDetailModal": {
+      "node_id": "DungeonDetailModal",
+      "name": "Chuẩn Bị Phó Bản",
+      "anchor_texts": [
+        "Khiêu Chiến",
+        "khieu chien",
+        "Số Đợt",
+        "so dot",
+        "Sức Mạnh Khai Phá Tiêu Hao",
+        "suc manh khai pha tieu hao",
+        "Độ Khó",
+        "do kho",
+        "Chuẩn Bị Phó Bản",
+        "chuan bi pho ban"
+      ],
+      "visual_fingerprint": "a4d9b1c0c0e4b9a3",
+      "visual_fingerprints": [
+        "a4d9b1c0c0e4b9a3"
+      ],
+      "metadata": {
+        "category": "modal"
+      }
+    },
+    "ResinReplenishModal": {
+      "node_id": "ResinReplenishModal",
+      "name": "Bổ Sung Sức Mạnh Khai Phá",
+      "anchor_texts": [
+        "Bổ Sung Sức Mạnh Khai Phá",
+        "bo sung suc manh khai pha",
+        "Mời bạn chọn cách bổ sung",
+        "moi ban chon cach bo sung",
+        "Bình Năng Lượng",
+        "binh nang luong",
+        "Hủy",
+        "huy",
+        "Xác Nhận",
+        "xac nhan"
+      ],
+      "visual_fingerprint": "dcdad1f4cce4b9e3",
+      "visual_fingerprints": [
+        "dcdad1f4cce4b9e3"
+      ],
+      "metadata": {
+        "category": "threat_modal"
+      }
+    },
+    "TeamFormation": {
+      "node_id": "TeamFormation",
+      "name": "Xếp Đội Hình",
+      "anchor_texts": [
+        "Bắt Đầu Khiêu Chiến",
+        "bat dau khieu chien",
+        "Đội Hình Khiêu Chiến",
+        "doi hinh khieu chien",
+        "Trợ Chiến",
+        "tro chien",
+        "Xuất Phát",
+        "xuat phat",
+        "Xếp Đội",
+        "xep doi"
+      ],
+      "visual_fingerprint": "8b99c084d8d9b1c5",
+      "visual_fingerprints": [
+        "8b99c084d8d9b1c5"
+      ],
+      "metadata": {
+        "category": "team"
+      }
+    },
+    "Battle": {
+      "node_id": "Battle",
+      "name": "Chiến Đấu",
+      "anchor_texts": [
+        "Tự Động",
+        "tu dong",
+        "Tốc Độ",
+        "toc do",
+        "Rút Lui",
+        "rut lui",
+        "Thách Đấu Lại",
+        "thach dau lai",
+        "Tự Động Chiến Đấu",
+        "tu dong chien dau",
+        "Auto",
+        "auto",
+        "Speed",
+        "speed"
+      ],
+      "visual_fingerprint": "d898f0dbdbf1d4b5",
+      "visual_fingerprints": [
+        "d898f0dbdbf1d4b5"
+      ],
+      "metadata": {
+        "category": "combat"
+      }
+    },
+    "BattleResult": {
+      "node_id": "BattleResult",
+      "name": "Kết Quả Trận Đấu",
+      "anchor_texts": [
+        "Chiến Thắng",
+        "chien thang",
+        "Thất Bại",
+        "that bai",
+        "Thách Đấu Lại",
+        "thach dau lai",
+        "Rút Lui",
+        "rut lui",
+        "Thoát",
+        "thoat",
+        "Kết Quả",
+        "ket qua"
+      ],
+      "visual_fingerprint": "9889f0db8bf1b4b5",
+      "visual_fingerprints": [
+        "9889f0db8bf1b4b5"
+      ],
+      "metadata": {
+        "category": "combat_result"
+      }
+    },
+    "EndGameHub": {
+      "node_id": "EndGameHub",
+      "name": "Trung Tâm Sảnh Đường & Kỷ Sự",
+      "anchor_texts": [
+        "Sảnh Đường Lãng Quên",
+        "sanh duong lang quen",
+        "Hồi Ức Hỗn Độn",
+        "hoi uc hon don",
+        "Kể Chuyện Hư Cấu",
+        "ke chuyen hu cau",
+        "Ảo Ảnh Tận Thế",
+        "ao anh tan the",
+        "Kỷ Sự",
+        "ky su",
+        "Sảnh Đường",
+        "sanh duong"
+      ],
+      "visual_fingerprint": "7291a1a5b2c4b9a8",
+      "visual_fingerprints": [
+        "7291a1a5b2c4b9a8"
+      ],
+      "metadata": {
+        "category": "endgame"
+      }
+    },
+    "MoC_StageSelect": {
+      "node_id": "MoC_StageSelect",
+      "name": "Hồi Ức Hỗn Độn - Chọn Tầng",
+      "anchor_texts": [
+        "Hồi Ức Hỗn Độn",
+        "hoi uc hon don",
+        "Ký Ức Hỗn Độn",
+        "ky uc hon don",
+        "Tầng",
+        "tang",
+        "Số Vòng Tiêu Hao",
+        "so vong tieu hao",
+        "Nửa Đầu",
+        "nua dau",
+        "Nửa Sau",
+        "nua sau",
+        "Memory of Chaos",
+        "memory of chaos"
+      ],
+      "visual_fingerprint": "519183a5b2c4e9a2",
+      "visual_fingerprints": [
+        "519183a5b2c4e9a2"
+      ],
+      "metadata": {
+        "category": "endgame"
+      }
+    },
+    "PF_StageSelect": {
+      "node_id": "PF_StageSelect",
+      "name": "Kể Chuyện Hư Cấu - Chọn Giai Thoại",
+      "anchor_texts": [
+        "Kể Chuyện Hư Cấu",
+        "ke chuyen hu cau",
+        "Giai Thoại",
+        "giai thoai",
+        "Hoang Đường Đầy Cảm Xúc",
+        "hoang duong day cam xuc",
+        "Điểm Tích Lũy",
+        "diem tich luy",
+        "Pure Fiction",
+        "pure fiction"
+      ],
+      "visual_fingerprint": "5391a3a1b2c4e9b1",
+      "visual_fingerprints": [
+        "5391a3a1b2c4e9b1"
+      ],
+      "metadata": {
+        "category": "endgame"
+      }
+    },
+    "PF_BuffSelection": {
+      "node_id": "PF_BuffSelection",
+      "name": "PF - Chọn Cơ Chế Bổ Trợ",
+      "anchor_texts": [
+        "Chọn Cơ Chế",
+        "chon co che",
+        "Hoang Đường Đầy Cảm Xúc",
+        "hoang duong day cam xuc",
+        "Cơ Chế Đội 1",
+        "co che doi 1",
+        "Cơ Chế Đội 2",
+        "co che doi 2",
+        "Tiếp Tục",
+        "tiep tuc",
+        "Cacophony",
+        "cacophony"
+      ],
+      "visual_fingerprint": "6393b3a1b2c4e9b3",
+      "visual_fingerprints": [
+        "6393b3a1b2c4e9b3"
+      ],
+      "metadata": {
+        "category": "endgame"
+      }
+    },
+    "AS_StageSelect": {
+      "node_id": "AS_StageSelect",
+      "name": "Ảo Ảnh Tận Thế - Chọn Độ Khó",
+      "anchor_texts": [
+        "Ảo Ảnh Tận Thế",
+        "ao anh tan the",
+        "Độ Khó",
+        "do kho",
+        "Tàn Tích Sụp Đổ",
+        "tan tich sup do",
+        "Điểm Hành Động",
+        "diem hanh dong",
+        "Khiêu Chiến",
+        "khieu chien",
+        "Apocalyptic Shadow",
+        "apocalyptic shadow"
+      ],
+      "visual_fingerprint": "7391b1a1b2c4e8b5",
+      "visual_fingerprints": [
+        "7391b1a1b2c4e8b5"
+      ],
+      "metadata": {
+        "category": "endgame"
+      }
+    },
+    "AS_BuffSelection": {
+      "node_id": "AS_BuffSelection",
+      "name": "AS - Chọn Đặc Tính",
+      "anchor_texts": [
+        "Chọn Đặc Tính",
+        "chon dac tinh",
+        "Đặc Tính Đội 1",
+        "dac tinh doi 1",
+        "Đặc Tính Đội 2",
+        "dac tinh doi 2",
+        "Sụp Đổ Điểm Yếu",
+        "sup do diem yeu",
+        "Tiếp Tục",
+        "tiep tuc"
+      ],
+      "visual_fingerprint": "7591b3a1a2c4e8b7",
+      "visual_fingerprints": [
+        "7591b3a1a2c4e8b7"
+      ],
+      "metadata": {
+        "category": "endgame"
+      }
+    },
+    "EndGame_TeamFormation": {
+      "node_id": "EndGame_TeamFormation",
+      "name": "Xếp Đội 2 Nửa End-Game",
+      "anchor_texts": [
+        "Nửa Đầu",
+        "nua dau",
+        "Nửa Sau",
+        "nua sau",
+        "Đội 1",
+        "doi 1",
+        "Đội 2",
+        "doi 2",
+        "Hoán Đổi Đội Hình",
+        "hoan doi doi hinh",
+        "Bắt Đầu Khiêu Chiến",
+        "bat dau khieu chien"
+      ],
+      "visual_fingerprint": "8b99c084d8d9b1e7",
+      "visual_fingerprints": [
+        "8b99c084d8d9b1e7"
+      ],
+      "metadata": {
+        "category": "endgame_team"
+      }
+    },
+    "EndGame_Battle_Node1": {
+      "node_id": "EndGame_Battle_Node1",
+      "name": "Trận Đấu Nửa Đầu (Node 1)",
+      "anchor_texts": [
+        "Nửa Đầu",
+        "nua dau",
+        "Tự Động",
+        "tu dong",
+        "Tốc Độ",
+        "toc do",
+        "Vòng Còn Lại",
+        "vong con lai",
+        "Điểm Tích Lũy",
+        "diem tich luy",
+        "Điểm Còn Lại",
+        "diem con lai"
+      ],
+      "visual_fingerprint": "d898f0dbdbf1d4f1",
+      "visual_fingerprints": [
+        "d898f0dbdbf1d4f1"
+      ],
+      "metadata": {
+        "category": "endgame_combat"
+      }
+    },
+    "EndGame_Battle_Node2": {
+      "node_id": "EndGame_Battle_Node2",
+      "name": "Trận Đấu Nửa Sau (Node 2)",
+      "anchor_texts": [
+        "Nửa Sau",
+        "nua sau",
+        "Tự Động",
+        "tu dong",
+        "Tốc Độ",
+        "toc do",
+        "Vòng Còn Lại",
+        "vong con lai",
+        "Điểm Tích Lũy",
+        "diem tich luy"
+      ],
+      "visual_fingerprint": "d898f0dbdbf1d4f2",
+      "visual_fingerprints": [
+        "d898f0dbdbf1d4f2"
+      ],
+      "metadata": {
+        "category": "endgame_combat"
+      }
+    },
+    "EndGame_BattleResult": {
+      "node_id": "EndGame_BattleResult",
+      "name": "Tổng Kết Điểm End-Game",
+      "anchor_texts": [
+        "Chiến Thắng",
+        "chien thang",
+        "Đạt Được",
+        "dat duoc",
+        "Điểm Nửa Đầu",
+        "diem nua dau",
+        "Điểm Nửa Sau",
+        "diem nua sau",
+        "Tổng Điểm",
+        "tong diem",
+        "Thách Đấu Lại",
+        "thach dau lai",
+        "Quay Lại",
+        "quay lai"
+      ],
+      "visual_fingerprint": "9889f0db8bf1b4e5",
+      "visual_fingerprints": [
+        "9889f0db8bf1b4e5"
+      ],
+      "metadata": {
+        "category": "endgame_result"
+      }
+    }
+  },
+  "edges": [
+    {
+      "from_node": "Overworld",
+      "to_node": "Guidebook",
+      "action_type": "tap",
+      "x": 0.79,
+      "y": 0.05,
+      "label": "Mở Sổ Tay",
+      "cost": 1.0,
+      "post_wait": 0.35,
+      "element_key": "guidebook_icon",
+      "metadata": {},
+      "box": [
+        0.76,
+        0.025,
+        0.82,
+        0.075
+      ]
+    },
+    {
+      "from_node": "Overworld",
+      "to_node": "PhoneMenu",
+      "action_type": "tap",
+      "x": 0.04,
+      "y": 0.05,
+      "label": "Mở Menu Điện Thoại",
+      "cost": 1.0,
+      "post_wait": 0.3,
+      "element_key": "phone_menu_icon",
+      "metadata": {},
+      "box": [
+        0.015,
+        0.025,
+        0.065,
+        0.075
+      ]
+    },
+    {
+      "from_node": "Overworld",
+      "to_node": "QuestLog",
+      "action_type": "tap",
+      "x": 0.11,
+      "y": 0.06,
+      "label": "Mở Bảng Nhiệm Vụ",
+      "cost": 1.0,
+      "post_wait": 0.4,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.08,
+        0.035,
+        0.14,
+        0.085
+      ]
+    },
+    {
+      "from_node": "Overworld",
+      "to_node": "NPCDialogue",
+      "action_type": "tap",
+      "x": 0.71,
+      "y": 0.52,
+      "label": "Tương Tác Bắt Đầu Hội Thoại NPC",
+      "cost": 1.0,
+      "post_wait": 0.6,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.66,
+        0.47,
+        0.76,
+        0.57
+      ]
+    },
+    {
+      "from_node": "Overworld",
+      "to_node": "CompassPuzzle",
+      "action_type": "tap",
+      "x": 0.71,
+      "y": 0.52,
+      "label": "Mở La Bàn Thiên Cầu",
+      "cost": 1.0,
+      "post_wait": 0.5,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.66,
+        0.47,
+        0.76,
+        0.57
+      ]
+    },
+    {
+      "from_node": "Overworld",
+      "to_node": "ClockworkDial",
+      "action_type": "tap",
+      "x": 0.71,
+      "y": 0.52,
+      "label": "Mở Bánh Răng Đồng Hồ",
+      "cost": 1.0,
+      "post_wait": 0.5,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.66,
+        0.47,
+        0.76,
+        0.57
+      ]
+    },
+    {
+      "from_node": "Overworld",
+      "to_node": "AbacusCircuitry",
+      "action_type": "tap",
+      "x": 0.71,
+      "y": 0.52,
+      "label": "Mở Nối Mạch Điện Bàn Tính",
+      "cost": 1.0,
+      "post_wait": 0.5,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.66,
+        0.47,
+        0.76,
+        0.57
+      ]
+    },
+    {
+      "from_node": "Overworld",
+      "to_node": "LaserReflectorPuzzle",
+      "action_type": "tap",
+      "x": 0.71,
+      "y": 0.52,
+      "label": "Mở Kính Phản Chiếu Đèn Laser",
+      "cost": 1.0,
+      "post_wait": 0.5,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.66,
+        0.47,
+        0.76,
+        0.57
+      ]
+    },
+    {
+      "from_node": "Overworld",
+      "to_node": "DreamTickerPuzzle",
+      "action_type": "tap",
+      "x": 0.71,
+      "y": 0.52,
+      "label": "Mở Đồng Hồ Mộng Mị",
+      "cost": 1.0,
+      "post_wait": 0.5,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.66,
+        0.47,
+        0.76,
+        0.57
+      ]
+    },
+    {
+      "from_node": "Overworld",
+      "to_node": "TreasureChestPopup",
+      "action_type": "tap",
+      "x": 0.71,
+      "y": 0.52,
+      "label": "Mở Rương Báu Bản Đồ",
+      "cost": 1.0,
+      "post_wait": 0.6,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.66,
+        0.47,
+        0.76,
+        0.57
+      ]
+    },
+    {
+      "from_node": "Overworld",
+      "to_node": "MapMinigameHanu",
+      "action_type": "tap",
+      "x": 0.71,
+      "y": 0.52,
+      "label": "Biến Hình Thám Tử Hanu",
+      "cost": 1.5,
+      "post_wait": 1.0,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.66,
+        0.47,
+        0.76,
+        0.57
+      ]
+    },
+    {
+      "from_node": "Overworld",
+      "to_node": "MapMinigameOrigami",
+      "action_type": "tap",
+      "x": 0.71,
+      "y": 0.52,
+      "label": "Tương Tác Chim Origami",
+      "cost": 1.0,
+      "post_wait": 0.5,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.66,
+        0.47,
+        0.76,
+        0.57
+      ]
+    },
+    {
+      "from_node": "PhoneMenu",
+      "to_node": "Overworld",
+      "action_type": "tap",
+      "x": 0.045,
+      "y": 0.055,
+      "label": "Quay Lại Thế Giới",
+      "cost": 1.0,
+      "post_wait": 0.3,
+      "element_key": "back_button",
+      "metadata": {},
+      "box": [
+        0.02,
+        0.03,
+        0.07,
+        0.08
+      ]
+    },
+    {
+      "from_node": "PhoneMenu",
+      "to_node": "Assignments",
+      "action_type": "tap",
+      "x": 0.887,
+      "y": 0.354,
+      "label": "Mở Quản Lý Ủy Thác",
+      "cost": 1.0,
+      "post_wait": 0.4,
+      "element_key": "phone_assignments",
+      "metadata": {},
+      "box": [
+        0.85,
+        0.32,
+        0.92,
+        0.38
+      ]
+    },
+    {
+      "from_node": "PhoneMenu",
+      "to_node": "PhoneMessages",
+      "action_type": "tap",
+      "x": 0.76,
+      "y": 0.354,
+      "label": "Mở Tin Nhắn Nhân Vật",
+      "cost": 1.0,
+      "post_wait": 0.4,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.72,
+        0.32,
+        0.8,
+        0.38
+      ]
+    },
+    {
+      "from_node": "PhoneMenu",
+      "to_node": "DailyCheckinModal",
+      "action_type": "tap",
+      "x": 0.887,
+      "y": 0.485,
+      "label": "Mở Điểm Danh Hàng Ngày",
+      "cost": 1.0,
+      "post_wait": 0.5,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.85,
+        0.45,
+        0.92,
+        0.52
+      ]
+    },
+    {
+      "from_node": "PhoneMenu",
+      "to_node": "GameSettings",
+      "action_type": "tap",
+      "x": 0.94,
+      "y": 0.92,
+      "label": "Mở Cài Đặt Hệ Thống",
+      "cost": 1.0,
+      "post_wait": 0.4,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.91,
+        0.89,
+        0.97,
+        0.95
+      ]
+    },
+    {
+      "from_node": "Guidebook",
+      "to_node": "Overworld",
+      "action_type": "tap",
+      "x": 0.963,
+      "y": 0.065,
+      "label": "Đóng Sổ Tay",
+      "cost": 1.0,
+      "post_wait": 0.3,
+      "element_key": "guidebook_close",
+      "metadata": {},
+      "box": [
+        0.94,
+        0.04,
+        0.985,
+        0.09
+      ]
+    },
+    {
+      "from_node": "Guidebook",
+      "to_node": "DailyTraining",
+      "action_type": "tap",
+      "x": 0.148,
+      "y": 0.245,
+      "label": "Tab Huấn Luyện Thường Ngày",
+      "cost": 1.0,
+      "post_wait": 0.25,
+      "element_key": "tab_daily_training",
+      "metadata": {},
+      "box": [
+        0.11,
+        0.22,
+        0.185,
+        0.27
+      ]
+    },
+    {
+      "from_node": "Guidebook",
+      "to_node": "SurvivalIndex",
+      "action_type": "tap",
+      "x": 0.218,
+      "y": 0.245,
+      "label": "Tab Hướng Dẫn Sinh Tồn",
+      "cost": 1.0,
+      "post_wait": 0.25,
+      "element_key": "tab_survival_index",
+      "metadata": {},
+      "box": [
+        0.18,
+        0.22,
+        0.255,
+        0.27
+      ]
+    },
+    {
+      "from_node": "Guidebook",
+      "to_node": "DivergentUniverse",
+      "action_type": "tap",
+      "x": 0.288,
+      "y": 0.245,
+      "label": "Tab Vũ Trụ Mô Phỏng",
+      "cost": 1.0,
+      "post_wait": 0.35,
+      "element_key": "tab_simulated_universe",
+      "metadata": {},
+      "box": [
+        0.25,
+        0.22,
+        0.32,
+        0.27
+      ]
+    },
+    {
+      "from_node": "Guidebook",
+      "to_node": "EndGameHub",
+      "action_type": "tap",
+      "x": 0.358,
+      "y": 0.245,
+      "label": "Tab Sảnh Đường Kỷ Sự",
+      "cost": 1.0,
+      "post_wait": 0.35,
+      "element_key": "tab_endgame_challenge",
+      "metadata": {},
+      "box": [
+        0.32,
+        0.22,
+        0.395,
+        0.27
+      ]
+    },
+    {
+      "from_node": "SurvivalIndex",
+      "to_node": "Guidebook",
+      "action_type": "tap",
+      "x": 0.148,
+      "y": 0.245,
+      "label": "Tab Huấn Luyện Thường Ngày",
+      "cost": 1.0,
+      "post_wait": 0.25,
+      "element_key": "tab_daily_training",
+      "metadata": {},
+      "box": [
+        0.11,
+        0.22,
+        0.185,
+        0.27
+      ]
+    },
+    {
+      "from_node": "SurvivalIndex",
+      "to_node": "Overworld",
+      "action_type": "tap",
+      "x": 0.963,
+      "y": 0.065,
+      "label": "Đóng Sổ Tay",
+      "cost": 1.0,
+      "post_wait": 0.3,
+      "element_key": "guidebook_close",
+      "metadata": {},
+      "box": [
+        0.94,
+        0.04,
+        0.985,
+        0.09
+      ]
+    },
+    {
+      "from_node": "SurvivalIndex",
+      "to_node": "Farming_CalyxGolden",
+      "action_type": "tap",
+      "x": 0.2,
+      "y": 0.55,
+      "label": "Chọn Đài Hoa Vàng",
+      "cost": 1.0,
+      "post_wait": 0.35,
+      "element_key": "left_nav_calyx_golden",
+      "metadata": {},
+      "box": [
+        0.15,
+        0.52,
+        0.25,
+        0.58
+      ]
+    },
+    {
+      "from_node": "SurvivalIndex",
+      "to_node": "Farming_CalyxCrimson",
+      "action_type": "tap",
+      "x": 0.2,
+      "y": 0.65,
+      "label": "Chọn Đài Hoa Đỏ",
+      "cost": 1.0,
+      "post_wait": 0.35,
+      "element_key": "left_nav_calyx_crimson",
+      "metadata": {},
+      "box": [
+        0.15,
+        0.62,
+        0.25,
+        0.68
+      ]
+    },
+    {
+      "from_node": "SurvivalIndex",
+      "to_node": "Farming_StagnantShadow",
+      "action_type": "tap",
+      "x": 0.2,
+      "y": 0.75,
+      "label": "Chọn Hư Ảnh Ngưng Đọng",
+      "cost": 1.0,
+      "post_wait": 0.35,
+      "element_key": "left_nav_stagnant_shadow",
+      "metadata": {},
+      "box": [
+        0.15,
+        0.72,
+        0.25,
+        0.78
+      ]
+    },
+    {
+      "from_node": "SurvivalIndex",
+      "to_node": "Farming_CavernOfCorrosion",
+      "action_type": "tap",
+      "x": 0.2,
+      "y": 0.82,
+      "label": "Chọn Hang Động Xâm Thực",
+      "cost": 1.0,
+      "post_wait": 0.35,
+      "element_key": "left_nav_cavern_corrosion",
+      "metadata": {},
+      "box": [
+        0.15,
+        0.79,
+        0.25,
+        0.85
+      ]
+    },
+    {
+      "from_node": "SurvivalIndex",
+      "to_node": "Farming_EchoOfWar",
+      "action_type": "tap",
+      "x": 0.2,
+      "y": 0.9,
+      "label": "Chọn Dư Âm Chiến Đấu",
+      "cost": 1.0,
+      "post_wait": 0.35,
+      "element_key": "left_nav_echo_of_war",
+      "metadata": {},
+      "box": [
+        0.15,
+        0.87,
+        0.25,
+        0.93
+      ]
+    },
+    {
+      "from_node": "SurvivalIndex",
+      "to_node": "Farming_PlanarOrnament",
+      "action_type": "tap",
+      "x": 0.2,
+      "y": 0.45,
+      "label": "Chọn Trích Xuất Phụ Kiện",
+      "cost": 1.0,
+      "post_wait": 0.35,
+      "element_key": "left_nav_planar",
+      "metadata": {},
+      "box": [
+        0.15,
+        0.42,
+        0.25,
+        0.48
+      ]
+    },
+    {
+      "from_node": "SurvivalIndex",
+      "to_node": "DungeonDetailModal",
+      "action_type": "tap",
+      "x": 0.8545,
+      "y": 0.3991,
+      "label": "Vào Khiêu Chiến Phó Bản",
+      "cost": 1.0,
+      "post_wait": 0.5,
+      "element_key": "enter_row_1",
+      "metadata": {},
+      "box": [
+        0.8389,
+        0.3867,
+        0.8701,
+        0.4115
+      ]
+    },
+    {
+      "from_node": "SurvivalIndex",
+      "to_node": "Battle",
+      "action_type": "tap",
+      "x": 0.8545,
+      "y": 0.3991,
+      "label": "Vào Khiêu Chiến Trực Tiếp",
+      "cost": 2.0,
+      "post_wait": 1.5,
+      "element_key": "enter_row_1",
+      "metadata": {},
+      "box": [
+        0.8389,
+        0.3867,
+        0.8701,
+        0.4115
+      ]
+    },
+    {
+      "from_node": "DailyTraining",
+      "to_node": "Guidebook",
+      "action_type": "tap",
+      "x": 0.218,
+      "y": 0.245,
+      "label": "Tab Hướng Dẫn Sinh Tồn",
+      "cost": 1.0,
+      "post_wait": 0.25,
+      "element_key": "tab_survival_index",
+      "metadata": {},
+      "box": [
+        0.18,
+        0.22,
+        0.255,
+        0.27
+      ]
+    },
+    {
+      "from_node": "DailyTraining",
+      "to_node": "Overworld",
+      "action_type": "tap",
+      "x": 0.963,
+      "y": 0.065,
+      "label": "Đóng Sổ Tay",
+      "cost": 1.0,
+      "post_wait": 0.3,
+      "element_key": "guidebook_close",
+      "metadata": {},
+      "box": [
+        0.94,
+        0.04,
+        0.985,
+        0.09
+      ]
+    },
+    {
+      "from_node": "Assignments",
+      "to_node": "PhoneMenu",
+      "action_type": "tap",
+      "x": 0.045,
+      "y": 0.055,
+      "label": "Đóng Quản Lý Ủy Thác",
+      "cost": 1.0,
+      "post_wait": 0.3,
+      "element_key": "back_button",
+      "metadata": {},
+      "box": [
+        0.02,
+        0.03,
+        0.07,
+        0.08
+      ]
+    },
+    {
+      "from_node": "PhoneMessages",
+      "to_node": "PhoneMenu",
+      "action_type": "tap",
+      "x": 0.045,
+      "y": 0.055,
+      "label": "Đóng Tin Nhắn",
+      "cost": 1.0,
+      "post_wait": 0.3,
+      "element_key": "back_button",
+      "metadata": {},
+      "box": [
+        0.02,
+        0.03,
+        0.07,
+        0.08
+      ]
+    },
+    {
+      "from_node": "DailyCheckinModal",
+      "to_node": "PhoneMenu",
+      "action_type": "tap",
+      "x": 0.045,
+      "y": 0.055,
+      "label": "Đóng Điểm Danh",
+      "cost": 1.0,
+      "post_wait": 0.3,
+      "element_key": "back_button",
+      "metadata": {},
+      "box": [
+        0.02,
+        0.03,
+        0.07,
+        0.08
+      ]
+    },
+    {
+      "from_node": "GameSettings",
+      "to_node": "PhoneMenu",
+      "action_type": "tap",
+      "x": 0.045,
+      "y": 0.055,
+      "label": "Đóng Cài Đặt",
+      "cost": 1.0,
+      "post_wait": 0.3,
+      "element_key": "back_button",
+      "metadata": {},
+      "box": [
+        0.02,
+        0.03,
+        0.07,
+        0.08
+      ]
+    },
+    {
+      "from_node": "QuestLog",
+      "to_node": "Overworld",
+      "action_type": "tap",
+      "x": 0.045,
+      "y": 0.055,
+      "label": "Đóng Bảng Nhiệm Vụ",
+      "cost": 1.0,
+      "post_wait": 0.35,
+      "element_key": "back_button",
+      "metadata": {},
+      "box": [
+        0.025,
+        0.035,
+        0.075,
+        0.085
+      ]
+    },
+    {
+      "from_node": "NPCDialogue",
+      "to_node": "DialogueChoices",
+      "action_type": "tap",
+      "x": 0.85,
+      "y": 0.7,
+      "label": "Tiến Độ Hội Thoại Tới Lựa Chọn",
+      "cost": 0.8,
+      "post_wait": 0.25,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.8,
+        0.65,
+        0.9,
+        0.75
+      ]
+    },
+    {
+      "from_node": "NPCDialogue",
+      "to_node": "DialogueSkipConfirm",
+      "action_type": "tap",
+      "x": 0.92,
+      "y": 0.06,
+      "label": "Bấm Bỏ Qua Hội Thoại",
+      "cost": 1.0,
+      "post_wait": 0.4,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.86,
+        0.03,
+        0.98,
+        0.09
+      ]
+    },
+    {
+      "from_node": "NPCDialogue",
+      "to_node": "Cutscene",
+      "action_type": "wait",
+      "x": 0.0,
+      "y": 0.0,
+      "label": "Chuyển Hoạt Cảnh Cutscene",
+      "cost": 2.0,
+      "post_wait": 1.5,
+      "element_key": null,
+      "metadata": {}
+    },
+    {
+      "from_node": "NPCDialogue",
+      "to_node": "Battle",
+      "action_type": "wait",
+      "x": 0.0,
+      "y": 0.0,
+      "label": "Vào Trận Chiến Cốt Truyện",
+      "cost": 2.5,
+      "post_wait": 2.0,
+      "element_key": null,
+      "metadata": {}
+    },
+    {
+      "from_node": "NPCDialogue",
+      "to_node": "StoryRewardModal",
+      "action_type": "wait",
+      "x": 0.0,
+      "y": 0.0,
+      "label": "Hoàn Thành Cốt Truyện Nhận Thưởng",
+      "cost": 1.5,
+      "post_wait": 1.0,
+      "element_key": null,
+      "metadata": {}
+    },
+    {
+      "from_node": "NPCDialogue",
+      "to_node": "Overworld",
+      "action_type": "tap",
+      "x": 0.85,
+      "y": 0.7,
+      "label": "Kết Thúc Hội Thoại Về Thế Giới Mở",
+      "cost": 1.0,
+      "post_wait": 0.6,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.8,
+        0.65,
+        0.9,
+        0.75
+      ]
+    },
+    {
+      "from_node": "DialogueChoices",
+      "to_node": "NPCDialogue",
+      "action_type": "tap",
+      "x": 0.74,
+      "y": 0.45,
+      "label": "Chọn Nhánh Hội Thoại 1",
+      "cost": 1.0,
+      "post_wait": 0.5,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.58,
+        0.42,
+        0.9,
+        0.48
+      ]
+    },
+    {
+      "from_node": "DialogueSkipConfirm",
+      "to_node": "NPCDialogue",
+      "action_type": "tap",
+      "x": 0.39,
+      "y": 0.64,
+      "label": "Hủy Bỏ Qua Quay Lại Hội Thoại",
+      "cost": 1.0,
+      "post_wait": 0.3,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.32,
+        0.6,
+        0.46,
+        0.68
+      ]
+    },
+    {
+      "from_node": "DialogueSkipConfirm",
+      "to_node": "Overworld",
+      "action_type": "wait",
+      "x": 0.0,
+      "y": 0.0,
+      "label": "Bỏ Qua Hội Thoại Về Thế Giới Mở",
+      "cost": 1.2,
+      "post_wait": 0.8,
+      "element_key": null,
+      "metadata": {}
+    },
+    {
+      "from_node": "Cutscene",
+      "to_node": "DialogueSkipConfirm",
+      "action_type": "tap",
+      "x": 0.93,
+      "y": 0.06,
+      "label": "Bấm Bỏ Qua Cutscene",
+      "cost": 1.0,
+      "post_wait": 0.4,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.88,
+        0.03,
+        0.98,
+        0.09
+      ]
+    },
+    {
+      "from_node": "Cutscene",
+      "to_node": "NPCDialogue",
+      "action_type": "wait",
+      "x": 0.0,
+      "y": 0.0,
+      "label": "Hết Cutscene Tiếp Tục Hội Thoại",
+      "cost": 2.0,
+      "post_wait": 1.5,
+      "element_key": null,
+      "metadata": {}
+    },
+    {
+      "from_node": "Cutscene",
+      "to_node": "Battle",
+      "action_type": "wait",
+      "x": 0.0,
+      "y": 0.0,
+      "label": "Hết Cutscene Vào Trận Đánh",
+      "cost": 2.5,
+      "post_wait": 2.0,
+      "element_key": null,
+      "metadata": {}
+    },
+    {
+      "from_node": "Cutscene",
+      "to_node": "Overworld",
+      "action_type": "wait",
+      "x": 0.0,
+      "y": 0.0,
+      "label": "Hết Cutscene Trở Về Map",
+      "cost": 2.0,
+      "post_wait": 1.5,
+      "element_key": null,
+      "metadata": {}
+    },
+    {
+      "from_node": "StoryRewardModal",
+      "to_node": "Overworld",
+      "action_type": "tap",
+      "x": 0.5,
+      "y": 0.88,
+      "label": "Đóng Nhận Thưởng Cốt Truyện",
+      "cost": 1.0,
+      "post_wait": 0.5,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.4,
+        0.84,
+        0.6,
+        0.92
+      ]
+    },
+    {
+      "from_node": "CompassPuzzle",
+      "to_node": "Overworld",
+      "action_type": "tap",
+      "x": 0.045,
+      "y": 0.055,
+      "label": "Thoát La Bàn Thiên Cầu",
+      "cost": 1.0,
+      "post_wait": 0.4,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.025,
+        0.035,
+        0.075,
+        0.085
+      ]
+    },
+    {
+      "from_node": "CompassPuzzle",
+      "to_node": "TreasureChestPopup",
+      "action_type": "wait",
+      "x": 0.0,
+      "y": 0.0,
+      "label": "Giải Xong La Bàn Xuất Hiện Rương",
+      "cost": 2.0,
+      "post_wait": 1.2,
+      "element_key": null,
+      "metadata": {}
+    },
+    {
+      "from_node": "ClockworkDial",
+      "to_node": "Overworld",
+      "action_type": "tap",
+      "x": 0.045,
+      "y": 0.055,
+      "label": "Đóng Bánh Răng Đồng Hồ",
+      "cost": 1.0,
+      "post_wait": 0.35,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.025,
+        0.035,
+        0.075,
+        0.085
+      ]
+    },
+    {
+      "from_node": "ClockworkDial",
+      "to_node": "NPCDialogue",
+      "action_type": "tap",
+      "x": 0.5,
+      "y": 0.86,
+      "label": "Mở Khóa Cảm Xúc Tiếp Tục Hội Thoại",
+      "cost": 1.2,
+      "post_wait": 0.8,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.42,
+        0.82,
+        0.58,
+        0.9
+      ]
+    },
+    {
+      "from_node": "AbacusCircuitry",
+      "to_node": "Overworld",
+      "action_type": "tap",
+      "x": 0.045,
+      "y": 0.055,
+      "label": "Thoát Nối Mạch Điện",
+      "cost": 1.0,
+      "post_wait": 0.4,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.025,
+        0.035,
+        0.075,
+        0.085
+      ]
+    },
+    {
+      "from_node": "AbacusCircuitry",
+      "to_node": "TreasureChestPopup",
+      "action_type": "wait",
+      "x": 0.0,
+      "y": 0.0,
+      "label": "Giải Xong Nối Mạch Mở Rương",
+      "cost": 2.0,
+      "post_wait": 1.2,
+      "element_key": null,
+      "metadata": {}
+    },
+    {
+      "from_node": "LaserReflectorPuzzle",
+      "to_node": "Overworld",
+      "action_type": "tap",
+      "x": 0.045,
+      "y": 0.055,
+      "label": "Thoát Kính Phản Chiếu",
+      "cost": 1.0,
+      "post_wait": 0.4,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.025,
+        0.035,
+        0.075,
+        0.085
+      ]
+    },
+    {
+      "from_node": "LaserReflectorPuzzle",
+      "to_node": "TreasureChestPopup",
+      "action_type": "wait",
+      "x": 0.0,
+      "y": 0.0,
+      "label": "Kích Hoạt Laser Nhận Rương",
+      "cost": 2.0,
+      "post_wait": 1.2,
+      "element_key": null,
+      "metadata": {}
+    },
+    {
+      "from_node": "DreamTickerPuzzle",
+      "to_node": "Overworld",
+      "action_type": "tap",
+      "x": 0.045,
+      "y": 0.055,
+      "label": "Thoát Đồng Hồ Mộng Mị",
+      "cost": 1.0,
+      "post_wait": 0.4,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.025,
+        0.035,
+        0.075,
+        0.085
+      ]
+    },
+    {
+      "from_node": "DreamTickerPuzzle",
+      "to_node": "TreasureChestPopup",
+      "action_type": "wait",
+      "x": 0.0,
+      "y": 0.0,
+      "label": "Giải Xong Đồng Hồ Mộng Mị Nhận Rương",
+      "cost": 2.0,
+      "post_wait": 1.5,
+      "element_key": null,
+      "metadata": {}
+    },
+    {
+      "from_node": "TreasureChestPopup",
+      "to_node": "Overworld",
+      "action_type": "tap",
+      "x": 0.5,
+      "y": 0.88,
+      "label": "Đóng Nhận Thưởng Rương Báu",
+      "cost": 1.0,
+      "post_wait": 0.5,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.4,
+        0.84,
+        0.6,
+        0.92
+      ]
+    },
+    {
+      "from_node": "MapMinigameHanu",
+      "to_node": "Overworld",
+      "action_type": "tap",
+      "x": 0.71,
+      "y": 0.52,
+      "label": "Tương Tác TV Biến Trở Lại Nhân Vật",
+      "cost": 1.5,
+      "post_wait": 1.0,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.66,
+        0.47,
+        0.76,
+        0.57
+      ]
+    },
+    {
+      "from_node": "MapMinigameOrigami",
+      "to_node": "Overworld",
+      "action_type": "tap",
+      "x": 0.71,
+      "y": 0.52,
+      "label": "Kéo Hoàn Thành Chim Origami",
+      "cost": 1.0,
+      "post_wait": 0.5,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.66,
+        0.47,
+        0.76,
+        0.57
+      ]
+    },
+    {
+      "from_node": "DivergentUniverse",
+      "to_node": "Guidebook",
+      "action_type": "tap",
+      "x": 0.045,
+      "y": 0.055,
+      "label": "Quay Lại",
+      "cost": 1.0,
+      "post_wait": 0.3,
+      "element_key": "back_button",
+      "metadata": {},
+      "box": [
+        0.02,
+        0.03,
+        0.07,
+        0.08
+      ]
+    },
+    {
+      "from_node": "DivergentUniverse",
+      "to_node": "Overworld",
+      "action_type": "tap",
+      "x": 0.045,
+      "y": 0.055,
+      "label": "Thoát Về Thế Giới Mở",
+      "cost": 1.0,
+      "post_wait": 0.3,
+      "element_key": "back_button",
+      "metadata": {},
+      "box": [
+        0.02,
+        0.03,
+        0.07,
+        0.08
+      ]
+    },
+    {
+      "from_node": "DivergentUniverse",
+      "to_node": "SUDifficultySelect",
+      "action_type": "tap",
+      "x": 0.85,
+      "y": 0.9,
+      "label": "Khởi Động Tính Toán DU",
+      "cost": 1.2,
+      "post_wait": 0.8,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.75,
+        0.86,
+        0.95,
+        0.94
+      ]
+    },
+    {
+      "from_node": "DivergentUniverse",
+      "to_node": "DUSynchronicityTree",
+      "action_type": "tap",
+      "x": 0.13,
+      "y": 0.9,
+      "label": "Mở Cây Đồng Bộ DU",
+      "cost": 1.0,
+      "post_wait": 0.45,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.05,
+        0.86,
+        0.22,
+        0.94
+      ]
+    },
+    {
+      "from_node": "DivergentUniverse",
+      "to_node": "SUClassicDashboard",
+      "action_type": "tap",
+      "x": 0.9,
+      "y": 0.06,
+      "label": "Chuyển Sang Vũ Trụ Mô Phỏng Cổ Điển",
+      "cost": 1.0,
+      "post_wait": 0.5,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.85,
+        0.035,
+        0.95,
+        0.085
+      ]
+    },
+    {
+      "from_node": "SUClassicDashboard",
+      "to_node": "DivergentUniverse",
+      "action_type": "tap",
+      "x": 0.9,
+      "y": 0.06,
+      "label": "Chuyển Sang Vũ Trụ Sai Phân",
+      "cost": 1.0,
+      "post_wait": 0.5,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.85,
+        0.035,
+        0.95,
+        0.085
+      ]
+    },
+    {
+      "from_node": "SUClassicDashboard",
+      "to_node": "Overworld",
+      "action_type": "tap",
+      "x": 0.045,
+      "y": 0.055,
+      "label": "Thoát Về Thế Giới Mở",
+      "cost": 1.0,
+      "post_wait": 0.5,
+      "element_key": "back_button",
+      "metadata": {},
+      "box": [
+        0.025,
+        0.035,
+        0.075,
+        0.085
+      ]
+    },
+    {
+      "from_node": "SUClassicDashboard",
+      "to_node": "SUDifficultySelect",
+      "action_type": "tap",
+      "x": 0.865,
+      "y": 0.915,
+      "label": "Vào Thế Giới SU Đã Chọn",
+      "cost": 1.2,
+      "post_wait": 0.8,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.78,
+        0.88,
+        0.95,
+        0.95
+      ]
+    },
+    {
+      "from_node": "SUClassicDashboard",
+      "to_node": "SUAbilityTree",
+      "action_type": "tap",
+      "x": 0.12,
+      "y": 0.9,
+      "label": "Mở Cây Kỹ Năng SU",
+      "cost": 1.0,
+      "post_wait": 0.45,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.05,
+        0.86,
+        0.2,
+        0.94
+      ]
+    },
+    {
+      "from_node": "SUDifficultySelect",
+      "to_node": "DivergentUniverse",
+      "action_type": "tap",
+      "x": 0.045,
+      "y": 0.055,
+      "label": "Quay Lại Dashboard DU",
+      "cost": 1.0,
+      "post_wait": 0.4,
+      "element_key": "back_button",
+      "metadata": {},
+      "box": [
+        0.025,
+        0.035,
+        0.075,
+        0.085
+      ]
+    },
+    {
+      "from_node": "SUDifficultySelect",
+      "to_node": "SUOverworldRoom",
+      "action_type": "tap",
+      "x": 0.85,
+      "y": 0.915,
+      "label": "Bắt Đầu Khởi Động Khiêu Chiến SU",
+      "cost": 2.5,
+      "post_wait": 2.5,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.75,
+        0.88,
+        0.94,
+        0.95
+      ]
+    },
+    {
+      "from_node": "SUDifficultySelect",
+      "to_node": "SUDomainMap",
+      "action_type": "tap",
+      "x": 0.85,
+      "y": 0.915,
+      "label": "Khởi Động Vào Bản Đồ Cổng",
+      "cost": 2.5,
+      "post_wait": 2.5,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.75,
+        0.88,
+        0.94,
+        0.95
+      ]
+    },
+    {
+      "from_node": "SUDomainMap",
+      "to_node": "SUOverworldRoom",
+      "action_type": "tap",
+      "x": 0.86,
+      "y": 0.915,
+      "label": "Vào Khu Vực Đã Chọn",
+      "cost": 2.0,
+      "post_wait": 2.0,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.78,
+        0.88,
+        0.94,
+        0.95
+      ]
+    },
+    {
+      "from_node": "SUOverworldRoom",
+      "to_node": "Battle",
+      "action_type": "tap",
+      "x": 0.835,
+      "y": 0.83,
+      "label": "Tấn Công Địch Vào Trận Chiến SU",
+      "cost": 1.5,
+      "post_wait": 1.8,
+      "element_key": "attack_button",
+      "metadata": {},
+      "box": [
+        0.79,
+        0.79,
+        0.88,
+        0.87
+      ]
+    },
+    {
+      "from_node": "SUOverworldRoom",
+      "to_node": "SUBlessingSelect",
+      "action_type": "tap",
+      "x": 0.71,
+      "y": 0.52,
+      "label": "Mở Bục Chọn Chúc Phúc",
+      "cost": 1.0,
+      "post_wait": 0.8,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.66,
+        0.47,
+        0.76,
+        0.57
+      ]
+    },
+    {
+      "from_node": "SUOverworldRoom",
+      "to_node": "SUCurioSelect",
+      "action_type": "tap",
+      "x": 0.71,
+      "y": 0.52,
+      "label": "Mở Bục Chọn Kỳ Vật",
+      "cost": 1.0,
+      "post_wait": 0.8,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.66,
+        0.47,
+        0.76,
+        0.57
+      ]
+    },
+    {
+      "from_node": "SUOverworldRoom",
+      "to_node": "DUEquationSelect",
+      "action_type": "tap",
+      "x": 0.71,
+      "y": 0.52,
+      "label": "Mở Bục Mở Rộng Phương Trình",
+      "cost": 1.0,
+      "post_wait": 0.8,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.66,
+        0.47,
+        0.76,
+        0.57
+      ]
+    },
+    {
+      "from_node": "SUOverworldRoom",
+      "to_node": "SUOccurrenceDialog",
+      "action_type": "tap",
+      "x": 0.71,
+      "y": 0.52,
+      "label": "Tương Tác Biến Cố Sự Kiện",
+      "cost": 1.0,
+      "post_wait": 0.8,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.66,
+        0.47,
+        0.76,
+        0.57
+      ]
+    },
+    {
+      "from_node": "SUOverworldRoom",
+      "to_node": "SUDomainMap",
+      "action_type": "tap",
+      "x": 0.71,
+      "y": 0.52,
+      "label": "Bước Vào Cổng Chuyển Khu Vực",
+      "cost": 1.5,
+      "post_wait": 1.5,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.66,
+        0.47,
+        0.76,
+        0.57
+      ]
+    },
+    {
+      "from_node": "SUOverworldRoom",
+      "to_node": "SURunTally",
+      "action_type": "tap",
+      "x": 0.95,
+      "y": 0.055,
+      "label": "Tạm Dừng Quyết Toán Sớm",
+      "cost": 1.2,
+      "post_wait": 1.0,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.92,
+        0.03,
+        0.98,
+        0.08
+      ]
+    },
+    {
+      "from_node": "SUBlessingSelect",
+      "to_node": "SUOverworldRoom",
+      "action_type": "tap",
+      "x": 0.835,
+      "y": 0.895,
+      "label": "Chọn Nhận Chúc Phúc",
+      "cost": 1.0,
+      "post_wait": 0.8,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.75,
+        0.86,
+        0.92,
+        0.93
+      ]
+    },
+    {
+      "from_node": "SUCurioSelect",
+      "to_node": "SUOverworldRoom",
+      "action_type": "tap",
+      "x": 0.835,
+      "y": 0.895,
+      "label": "Chọn Nhận Kỳ Vật",
+      "cost": 1.0,
+      "post_wait": 0.8,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.75,
+        0.86,
+        0.92,
+        0.93
+      ]
+    },
+    {
+      "from_node": "DUEquationSelect",
+      "to_node": "SUOverworldRoom",
+      "action_type": "tap",
+      "x": 0.835,
+      "y": 0.895,
+      "label": "Chọn Phương Trình Mở Rộng",
+      "cost": 1.0,
+      "post_wait": 0.8,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.75,
+        0.86,
+        0.92,
+        0.93
+      ]
+    },
+    {
+      "from_node": "SUOccurrenceDialog",
+      "to_node": "SUOverworldRoom",
+      "action_type": "tap",
+      "x": 0.835,
+      "y": 0.89,
+      "label": "Tiếp Tục Rời Sự Kiện",
+      "cost": 1.0,
+      "post_wait": 0.8,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.75,
+        0.85,
+        0.92,
+        0.93
+      ]
+    },
+    {
+      "from_node": "SUOccurrenceDialog",
+      "to_node": "Battle",
+      "action_type": "wait",
+      "x": 0.0,
+      "y": 0.0,
+      "label": "Sự Kiện Kích Hoạt Chiến Đấu",
+      "cost": 2.0,
+      "post_wait": 2.0,
+      "element_key": null,
+      "metadata": {}
+    },
+    {
+      "from_node": "SURunTally",
+      "to_node": "DivergentUniverse",
+      "action_type": "tap",
+      "x": 0.765,
+      "y": 0.88,
+      "label": "Rời Khỏi Quyết Toán Về DU",
+      "cost": 1.5,
+      "post_wait": 1.2,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.65,
+        0.84,
+        0.88,
+        0.92
+      ]
+    },
+    {
+      "from_node": "SURunTally",
+      "to_node": "Overworld",
+      "action_type": "tap",
+      "x": 0.765,
+      "y": 0.88,
+      "label": "Rời Khỏi Quyết Toán Về Thế Giới Mở",
+      "cost": 2.0,
+      "post_wait": 1.5,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.65,
+        0.84,
+        0.88,
+        0.92
+      ]
+    },
+    {
+      "from_node": "DUSynchronicityTree",
+      "to_node": "DivergentUniverse",
+      "action_type": "tap",
+      "x": 0.045,
+      "y": 0.055,
+      "label": "Trở Về Trang Chủ DU",
+      "cost": 1.0,
+      "post_wait": 0.4,
+      "element_key": "back_button",
+      "metadata": {},
+      "box": [
+        0.025,
+        0.035,
+        0.075,
+        0.085
+      ]
+    },
+    {
+      "from_node": "SUAbilityTree",
+      "to_node": "SUClassicDashboard",
+      "action_type": "tap",
+      "x": 0.045,
+      "y": 0.055,
+      "label": "Trở Về Dashboard SU",
+      "cost": 1.0,
+      "post_wait": 0.4,
+      "element_key": "back_button",
+      "metadata": {},
+      "box": [
+        0.025,
+        0.035,
+        0.075,
+        0.085
+      ]
+    },
+    {
+      "from_node": "Farming_CalyxGolden",
+      "to_node": "SurvivalIndex",
+      "action_type": "tap",
+      "x": 0.045,
+      "y": 0.055,
+      "label": "Quay Lại Mục Lục",
+      "cost": 1.0,
+      "post_wait": 0.3,
+      "element_key": "back_button",
+      "metadata": {},
+      "box": [
+        0.02,
+        0.03,
+        0.07,
+        0.08
+      ]
+    },
+    {
+      "from_node": "Farming_CalyxGolden",
+      "to_node": "DungeonDetailModal",
+      "action_type": "tap",
+      "x": 0.854,
+      "y": 0.399,
+      "label": "Mở Chi Tiết Phó Bản",
+      "cost": 1.0,
+      "post_wait": 0.5,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.8,
+        0.36,
+        0.91,
+        0.44
+      ]
+    },
+    {
+      "from_node": "Farming_CalyxCrimson",
+      "to_node": "SurvivalIndex",
+      "action_type": "tap",
+      "x": 0.045,
+      "y": 0.055,
+      "label": "Quay Lại Mục Lục",
+      "cost": 1.0,
+      "post_wait": 0.3,
+      "element_key": "back_button",
+      "metadata": {},
+      "box": [
+        0.02,
+        0.03,
+        0.07,
+        0.08
+      ]
+    },
+    {
+      "from_node": "Farming_CalyxCrimson",
+      "to_node": "DungeonDetailModal",
+      "action_type": "tap",
+      "x": 0.854,
+      "y": 0.399,
+      "label": "Mở Chi Tiết Phó Bản",
+      "cost": 1.0,
+      "post_wait": 0.5,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.8,
+        0.36,
+        0.91,
+        0.44
+      ]
+    },
+    {
+      "from_node": "Farming_CavernOfCorrosion",
+      "to_node": "SurvivalIndex",
+      "action_type": "tap",
+      "x": 0.045,
+      "y": 0.055,
+      "label": "Quay Lại Mục Lục",
+      "cost": 1.0,
+      "post_wait": 0.3,
+      "element_key": "back_button",
+      "metadata": {},
+      "box": [
+        0.02,
+        0.03,
+        0.07,
+        0.08
+      ]
+    },
+    {
+      "from_node": "Farming_CavernOfCorrosion",
+      "to_node": "DungeonDetailModal",
+      "action_type": "tap",
+      "x": 0.854,
+      "y": 0.399,
+      "label": "Mở Chi Tiết Phó Bản",
+      "cost": 1.0,
+      "post_wait": 0.5,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.8,
+        0.36,
+        0.91,
+        0.44
+      ]
+    },
+    {
+      "from_node": "Farming_StagnantShadow",
+      "to_node": "SurvivalIndex",
+      "action_type": "tap",
+      "x": 0.045,
+      "y": 0.055,
+      "label": "Quay Lại Mục Lục",
+      "cost": 1.0,
+      "post_wait": 0.3,
+      "element_key": "back_button",
+      "metadata": {},
+      "box": [
+        0.02,
+        0.03,
+        0.07,
+        0.08
+      ]
+    },
+    {
+      "from_node": "Farming_StagnantShadow",
+      "to_node": "DungeonDetailModal",
+      "action_type": "tap",
+      "x": 0.854,
+      "y": 0.399,
+      "label": "Mở Chi Tiết Phó Bản",
+      "cost": 1.0,
+      "post_wait": 0.5,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.8,
+        0.36,
+        0.91,
+        0.44
+      ]
+    },
+    {
+      "from_node": "Farming_EchoOfWar",
+      "to_node": "SurvivalIndex",
+      "action_type": "tap",
+      "x": 0.045,
+      "y": 0.055,
+      "label": "Quay Lại Mục Lục",
+      "cost": 1.0,
+      "post_wait": 0.3,
+      "element_key": "back_button",
+      "metadata": {},
+      "box": [
+        0.02,
+        0.03,
+        0.07,
+        0.08
+      ]
+    },
+    {
+      "from_node": "Farming_EchoOfWar",
+      "to_node": "DungeonDetailModal",
+      "action_type": "tap",
+      "x": 0.854,
+      "y": 0.399,
+      "label": "Mở Chi Tiết Phó Bản",
+      "cost": 1.0,
+      "post_wait": 0.5,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.8,
+        0.36,
+        0.91,
+        0.44
+      ]
+    },
+    {
+      "from_node": "Farming_PlanarOrnament",
+      "to_node": "SurvivalIndex",
+      "action_type": "tap",
+      "x": 0.045,
+      "y": 0.055,
+      "label": "Quay Lại Mục Lục",
+      "cost": 1.0,
+      "post_wait": 0.3,
+      "element_key": "back_button",
+      "metadata": {},
+      "box": [
+        0.02,
+        0.03,
+        0.07,
+        0.08
+      ]
+    },
+    {
+      "from_node": "Farming_PlanarOrnament",
+      "to_node": "DungeonDetailModal",
+      "action_type": "tap",
+      "x": 0.854,
+      "y": 0.399,
+      "label": "Mở Chi Tiết Phó Bản",
+      "cost": 1.0,
+      "post_wait": 0.5,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.8,
+        0.36,
+        0.91,
+        0.44
+      ]
+    },
+    {
+      "from_node": "DungeonDetailModal",
+      "to_node": "SurvivalIndex",
+      "action_type": "tap",
+      "x": 0.045,
+      "y": 0.055,
+      "label": "Đóng Chi Tiết Phó Bản",
+      "cost": 1.0,
+      "post_wait": 0.3,
+      "element_key": "back_button",
+      "metadata": {},
+      "box": [
+        0.02,
+        0.03,
+        0.07,
+        0.08
+      ]
+    },
+    {
+      "from_node": "DungeonDetailModal",
+      "to_node": "TeamFormation",
+      "action_type": "tap",
+      "x": 0.841,
+      "y": 0.909,
+      "label": "Chuyển Sang Xếp Đội Hình",
+      "cost": 1.2,
+      "post_wait": 0.8,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.78,
+        0.88,
+        0.92,
+        0.94
+      ]
+    },
+    {
+      "from_node": "DungeonDetailModal",
+      "to_node": "ResinReplenishModal",
+      "action_type": "wait",
+      "x": 0.0,
+      "y": 0.0,
+      "label": "Cảnh Báo Thiếu Nhựa",
+      "cost": 1.0,
+      "post_wait": 0.5,
+      "element_key": null,
+      "metadata": {}
+    },
+    {
+      "from_node": "ResinReplenishModal",
+      "to_node": "DungeonDetailModal",
+      "action_type": "tap",
+      "x": 0.376,
+      "y": 0.667,
+      "label": "Hủy Bổ Sung Nhựa",
+      "cost": 1.0,
+      "post_wait": 0.4,
+      "element_key": "resin_popup_cancel",
+      "metadata": {},
+      "box": [
+        0.32,
+        0.645,
+        0.435,
+        0.69
+      ]
+    },
+    {
+      "from_node": "ResinReplenishModal",
+      "to_node": "SurvivalIndex",
+      "action_type": "tap",
+      "x": 0.376,
+      "y": 0.667,
+      "label": "Hủy Bổ Sung Nhựa Về Mục Lục",
+      "cost": 1.0,
+      "post_wait": 0.4,
+      "element_key": "resin_popup_cancel",
+      "metadata": {},
+      "box": [
+        0.32,
+        0.645,
+        0.435,
+        0.69
+      ]
+    },
+    {
+      "from_node": "TeamFormation",
+      "to_node": "DungeonDetailModal",
+      "action_type": "tap",
+      "x": 0.045,
+      "y": 0.055,
+      "label": "Quay Lại Chi Tiết",
+      "cost": 1.0,
+      "post_wait": 0.3,
+      "element_key": "back_button",
+      "metadata": {},
+      "box": [
+        0.02,
+        0.03,
+        0.07,
+        0.08
+      ]
+    },
+    {
+      "from_node": "TeamFormation",
+      "to_node": "Battle",
+      "action_type": "tap",
+      "x": 0.841,
+      "y": 0.909,
+      "label": "Bắt Đầu Khiêu Chiến Vào Trận Đấu",
+      "cost": 2.0,
+      "post_wait": 2.0,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.78,
+        0.88,
+        0.92,
+        0.94
+      ]
+    },
+    {
+      "from_node": "Battle",
+      "to_node": "SUBlessingSelect",
+      "action_type": "wait",
+      "x": 0.0,
+      "y": 0.0,
+      "label": "Thắng Trận Trong SU Nhận Chúc Phúc",
+      "cost": 2.0,
+      "post_wait": 2.0,
+      "element_key": null,
+      "metadata": {}
+    },
+    {
+      "from_node": "Battle",
+      "to_node": "SURunTally",
+      "action_type": "wait",
+      "x": 0.0,
+      "y": 0.0,
+      "label": "Quyết Toán Khiêu Chiến SU",
+      "cost": 2.5,
+      "post_wait": 2.5,
+      "element_key": null,
+      "metadata": {}
+    },
+    {
+      "from_node": "Battle",
+      "to_node": "BattleResult",
+      "action_type": "wait",
+      "x": 0.0,
+      "y": 0.0,
+      "label": "Kết Thúc Trận Đấu Sang Kết Quả",
+      "cost": 2.0,
+      "post_wait": 2.0,
+      "element_key": null,
+      "metadata": {}
+    },
+    {
+      "from_node": "Battle",
+      "to_node": "Overworld",
+      "action_type": "tap",
+      "x": 0.35,
+      "y": 0.9,
+      "label": "Rút Lui Về Thế Giới",
+      "cost": 1.5,
+      "post_wait": 1.0,
+      "element_key": "battle_retreat_btn",
+      "metadata": {},
+      "box": [
+        0.25,
+        0.87,
+        0.45,
+        0.93
+      ]
+    },
+    {
+      "from_node": "Battle",
+      "to_node": "SurvivalIndex",
+      "action_type": "tap",
+      "x": 0.35,
+      "y": 0.9,
+      "label": "Rút Lui Về Sổ Tay",
+      "cost": 1.5,
+      "post_wait": 1.0,
+      "element_key": "battle_retreat_btn",
+      "metadata": {},
+      "box": [
+        0.25,
+        0.87,
+        0.45,
+        0.93
+      ]
+    },
+    {
+      "from_node": "BattleResult",
+      "to_node": "SurvivalIndex",
+      "action_type": "tap",
+      "x": 0.285,
+      "y": 0.92,
+      "label": "Rút Lui Về Mục Lục",
+      "cost": 1.5,
+      "post_wait": 1.0,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.22,
+        0.89,
+        0.35,
+        0.95
+      ]
+    },
+    {
+      "from_node": "BattleResult",
+      "to_node": "Overworld",
+      "action_type": "tap",
+      "x": 0.285,
+      "y": 0.92,
+      "label": "Rút Lui Về Thế Giới",
+      "cost": 1.5,
+      "post_wait": 1.0,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.22,
+        0.89,
+        0.35,
+        0.95
+      ]
+    },
+    {
+      "from_node": "BattleResult",
+      "to_node": "TeamFormation",
+      "action_type": "tap",
+      "x": 0.715,
+      "y": 0.92,
+      "label": "Thách Đấu Lại Đội Hình",
+      "cost": 1.5,
+      "post_wait": 1.0,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.65,
+        0.89,
+        0.78,
+        0.95
+      ]
+    },
+    {
+      "from_node": "EndGameHub",
+      "to_node": "Guidebook",
+      "action_type": "tap",
+      "x": 0.045,
+      "y": 0.055,
+      "label": "Quay Lại Sổ Tay",
+      "cost": 1.0,
+      "post_wait": 0.3,
+      "element_key": "back_button",
+      "metadata": {},
+      "box": [
+        0.02,
+        0.03,
+        0.07,
+        0.08
+      ]
+    },
+    {
+      "from_node": "EndGameHub",
+      "to_node": "Overworld",
+      "action_type": "tap",
+      "x": 0.963,
+      "y": 0.065,
+      "label": "Đóng Sổ Tay",
+      "cost": 1.0,
+      "post_wait": 0.3,
+      "element_key": "guidebook_close",
+      "metadata": {},
+      "box": [
+        0.94,
+        0.04,
+        0.985,
+        0.09
+      ]
+    },
+    {
+      "from_node": "EndGameHub",
+      "to_node": "MoC_StageSelect",
+      "action_type": "tap",
+      "x": 0.25,
+      "y": 0.55,
+      "label": "Chọn Hồi Ức Hỗn Độn",
+      "cost": 1.0,
+      "post_wait": 0.4,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.18,
+        0.45,
+        0.32,
+        0.65
+      ]
+    },
+    {
+      "from_node": "EndGameHub",
+      "to_node": "PF_StageSelect",
+      "action_type": "tap",
+      "x": 0.49,
+      "y": 0.54,
+      "label": "Chọn Kể Chuyện Hư Cấu",
+      "cost": 1.0,
+      "post_wait": 0.4,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.44,
+        0.48,
+        0.54,
+        0.58
+      ]
+    },
+    {
+      "from_node": "EndGameHub",
+      "to_node": "AS_StageSelect",
+      "action_type": "tap",
+      "x": 0.81,
+      "y": 0.54,
+      "label": "Chọn Ảo Ảnh Tận Thế",
+      "cost": 1.0,
+      "post_wait": 0.4,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.76,
+        0.48,
+        0.86,
+        0.58
+      ]
+    },
+    {
+      "from_node": "MoC_StageSelect",
+      "to_node": "EndGameHub",
+      "action_type": "tap",
+      "x": 0.045,
+      "y": 0.055,
+      "label": "Quay Lại Sảnh Đường",
+      "cost": 1.0,
+      "post_wait": 0.3,
+      "element_key": "back_button",
+      "metadata": {},
+      "box": [
+        0.02,
+        0.03,
+        0.07,
+        0.08
+      ]
+    },
+    {
+      "from_node": "MoC_StageSelect",
+      "to_node": "EndGame_TeamFormation",
+      "action_type": "tap",
+      "x": 0.869,
+      "y": 0.91,
+      "label": "Khiêu Chiến MoC Xếp Đội",
+      "cost": 1.2,
+      "post_wait": 0.8,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.8,
+        0.88,
+        0.94,
+        0.94
+      ]
+    },
+    {
+      "from_node": "PF_StageSelect",
+      "to_node": "EndGameHub",
+      "action_type": "tap",
+      "x": 0.045,
+      "y": 0.055,
+      "label": "Quay Lại Sảnh Đường",
+      "cost": 1.0,
+      "post_wait": 0.3,
+      "element_key": "back_button",
+      "metadata": {},
+      "box": [
+        0.02,
+        0.03,
+        0.07,
+        0.08
+      ]
+    },
+    {
+      "from_node": "PF_StageSelect",
+      "to_node": "PF_BuffSelection",
+      "action_type": "tap",
+      "x": 0.869,
+      "y": 0.91,
+      "label": "Chọn Giai Thoại PF Sang Buff",
+      "cost": 1.0,
+      "post_wait": 0.5,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.8,
+        0.88,
+        0.94,
+        0.94
+      ]
+    },
+    {
+      "from_node": "PF_BuffSelection",
+      "to_node": "PF_StageSelect",
+      "action_type": "tap",
+      "x": 0.045,
+      "y": 0.055,
+      "label": "Quay Lại Giai Thoại",
+      "cost": 1.0,
+      "post_wait": 0.3,
+      "element_key": "back_button",
+      "metadata": {},
+      "box": [
+        0.02,
+        0.03,
+        0.07,
+        0.08
+      ]
+    },
+    {
+      "from_node": "PF_BuffSelection",
+      "to_node": "EndGame_TeamFormation",
+      "action_type": "tap",
+      "x": 0.841,
+      "y": 0.909,
+      "label": "Tiếp Tục Xếp Đội PF",
+      "cost": 1.2,
+      "post_wait": 0.8,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.78,
+        0.88,
+        0.92,
+        0.94
+      ]
+    },
+    {
+      "from_node": "AS_StageSelect",
+      "to_node": "EndGameHub",
+      "action_type": "tap",
+      "x": 0.045,
+      "y": 0.055,
+      "label": "Quay Lại Sảnh Đường",
+      "cost": 1.0,
+      "post_wait": 0.3,
+      "element_key": "back_button",
+      "metadata": {},
+      "box": [
+        0.02,
+        0.03,
+        0.07,
+        0.08
+      ]
+    },
+    {
+      "from_node": "AS_StageSelect",
+      "to_node": "AS_BuffSelection",
+      "action_type": "tap",
+      "x": 0.869,
+      "y": 0.91,
+      "label": "Chọn Độ Khó AS Sang Đặc Tính",
+      "cost": 1.0,
+      "post_wait": 0.5,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.8,
+        0.88,
+        0.94,
+        0.94
+      ]
+    },
+    {
+      "from_node": "AS_BuffSelection",
+      "to_node": "AS_StageSelect",
+      "action_type": "tap",
+      "x": 0.045,
+      "y": 0.055,
+      "label": "Quay Lại Độ Khó AS",
+      "cost": 1.0,
+      "post_wait": 0.3,
+      "element_key": "back_button",
+      "metadata": {},
+      "box": [
+        0.02,
+        0.03,
+        0.07,
+        0.08
+      ]
+    },
+    {
+      "from_node": "AS_BuffSelection",
+      "to_node": "EndGame_TeamFormation",
+      "action_type": "tap",
+      "x": 0.841,
+      "y": 0.909,
+      "label": "Tiếp Tục Xếp Đội AS",
+      "cost": 1.2,
+      "post_wait": 0.8,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.78,
+        0.88,
+        0.92,
+        0.94
+      ]
+    },
+    {
+      "from_node": "EndGame_TeamFormation",
+      "to_node": "EndGameHub",
+      "action_type": "tap",
+      "x": 0.045,
+      "y": 0.055,
+      "label": "Thoát Xếp Đội Về Sảnh",
+      "cost": 1.0,
+      "post_wait": 0.3,
+      "element_key": "back_button",
+      "metadata": {},
+      "box": [
+        0.02,
+        0.03,
+        0.07,
+        0.08
+      ]
+    },
+    {
+      "from_node": "EndGame_TeamFormation",
+      "to_node": "EndGame_Battle_Node1",
+      "action_type": "tap",
+      "x": 0.841,
+      "y": 0.909,
+      "label": "Bắt Đầu Khiêu Chiến Nửa Đầu",
+      "cost": 2.0,
+      "post_wait": 2.0,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.78,
+        0.88,
+        0.92,
+        0.94
+      ]
+    },
+    {
+      "from_node": "EndGame_Battle_Node1",
+      "to_node": "EndGame_Battle_Node2",
+      "action_type": "wait",
+      "x": 0.0,
+      "y": 0.0,
+      "label": "Vượt Nửa Đầu Sang Nửa Sau",
+      "cost": 2.0,
+      "post_wait": 2.0,
+      "element_key": null,
+      "metadata": {}
+    },
+    {
+      "from_node": "EndGame_Battle_Node1",
+      "to_node": "EndGameHub",
+      "action_type": "tap",
+      "x": 0.045,
+      "y": 0.055,
+      "label": "Rút Lui Nửa Đầu Về Sảnh Đường",
+      "cost": 1.5,
+      "post_wait": 1.0,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.02,
+        0.03,
+        0.07,
+        0.08
+      ]
+    },
+    {
+      "from_node": "EndGame_Battle_Node2",
+      "to_node": "EndGame_BattleResult",
+      "action_type": "wait",
+      "x": 0.0,
+      "y": 0.0,
+      "label": "Kết Thúc Nửa Sau Sang Tổng Kết",
+      "cost": 2.0,
+      "post_wait": 2.0,
+      "element_key": null,
+      "metadata": {}
+    },
+    {
+      "from_node": "EndGame_Battle_Node2",
+      "to_node": "EndGameHub",
+      "action_type": "tap",
+      "x": 0.045,
+      "y": 0.055,
+      "label": "Rút Lui Nửa Sau Về Sảnh Đường",
+      "cost": 1.5,
+      "post_wait": 1.0,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.02,
+        0.03,
+        0.07,
+        0.08
+      ]
+    },
+    {
+      "from_node": "EndGame_BattleResult",
+      "to_node": "EndGameHub",
+      "action_type": "tap",
+      "x": 0.75,
+      "y": 0.92,
+      "label": "Quay Lại Sảnh Đường",
+      "cost": 1.5,
+      "post_wait": 1.0,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.68,
+        0.89,
+        0.82,
+        0.95
+      ]
+    },
+    {
+      "from_node": "EndGame_BattleResult",
+      "to_node": "EndGame_TeamFormation",
+      "action_type": "tap",
+      "x": 0.35,
+      "y": 0.92,
+      "label": "Thách Đấu Lại End-Game",
+      "cost": 1.5,
+      "post_wait": 1.0,
+      "element_key": null,
+      "metadata": {},
+      "box": [
+        0.28,
+        0.89,
+        0.42,
+        0.95
+      ]
+    }
+  ]
+}

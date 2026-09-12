@@ -74,7 +74,6 @@ class DeviceManager:
         self.pixel_width = 2752
         self.pixel_height = 2064
         self.coords = CoordinateSystem(self.pixel_width, self.pixel_height)
-        self.last_screenshot = None
         self.last_screenshot_time = 0.0
         self.last_screenshot_bytes = None
         self.enable_human_touch = True
@@ -95,6 +94,48 @@ class DeviceManager:
 
         # Zero-Spend ResourceGuard
         self.resource_guard: Optional[Any] = None
+        self._touch_engine: Optional[Any] = None
+        self._ui_graph: Optional[Any] = None
+
+    @property
+    def touch_engine(self):
+        if self._touch_engine is None:
+            from bot.core.touch_engine import FastTouchEngine
+            self._touch_engine = FastTouchEngine(device=self, resource_guard=self.resource_guard)
+        return self._touch_engine
+
+    @property
+    def ui_graph(self):
+        if self._ui_graph is None:
+            from bot.core.ui_graph import UIStateGraph
+            self._ui_graph = UIStateGraph(device=self, resource_guard=self.resource_guard, touch_engine=self.touch_engine)
+        return self._ui_graph
+
+    def fast_tap(self, target: Any, y: Optional[float] = None, box: Optional[BoundingBox] = None, label: str = "", **kwargs) -> Any:
+        """Executes sub-200ms human-like tap via FastTouchEngine."""
+        return self.touch_engine.execute_fast_tap(target, y=y, box=box, label=label, **kwargs)
+
+    def navigate(self, target_screen: str, start_screen: Optional[str] = None) -> bool:
+        """Navigates to target screen along UI State Graph."""
+        return self.ui_graph.navigate(
+            start_screen,
+            target_screen,
+            device=self,
+            resource_guard=self.resource_guard,
+            touch_engine=self.touch_engine,
+        )
+
+    @property
+    def last_screenshot(self) -> Optional[np.ndarray]:
+        if self._front_frame is not None:
+            bgr = self._front_frame.bgr
+            if bgr is not None:
+                return bgr
+        return self._cached_bgr
+
+    @last_screenshot.setter
+    def last_screenshot(self, val: Optional[np.ndarray]):
+        self._cached_bgr = val
 
     @property
     def width(self) -> int:
@@ -342,22 +383,25 @@ class DeviceManager:
         now = time.time()
         frame = self._front_frame
         if not force_fresh and frame is not None and (now - frame.timestamp) < max_age:
-            return frame.bgr
+            bgr = frame.bgr
+            if bgr is not None:
+                return bgr
 
         # Legacy cache fallback
         if not force_fresh and self._cached_bgr is not None and (now - self._cached_time) < max_age:
             return self._cached_bgr
 
         # Fallback to direct capture if producer is not running or cache stale
-        if not self.connected and not self.connect():
-            return None
+        if self.connected or self.connect():
+            bgr_arr = self._fetch_screenshot_bgr()
+            if bgr_arr is not None:
+                self._update_front_frame(bgr_arr)
+                return bgr_arr
 
-        bgr_arr = self._fetch_screenshot_bgr()
-        if bgr_arr is not None:
-            self._update_front_frame(bgr_arr)
-            return bgr_arr
+        if frame is not None and frame.bgr is not None:
+            return frame.bgr
 
-        return None
+        return self._cached_bgr
 
     def get_screenshot_jpeg_bytes(self) -> Optional[bytes]:
         """Returns pre-encoded JPEG bytes directly from RAM in 0.0ms for zero-latency video streaming."""
@@ -378,7 +422,7 @@ class DeviceManager:
                 return jpeg_bytes
         return self.last_screenshot_bytes
 
-    def tap(self, x: float, y: float, normalized: bool = True, box: Optional[BoundingBox] = None, label: str = ""):
+    def tap(self, x: float, y: float, normalized: bool = True, box: Optional[BoundingBox] = None, label: str = "", apply_human_touch: bool = True):
         """Taps at coordinate with optional 2D Gaussian human dispersion and biological contact duration."""
         if not self.connected and not self.connect():
             logger.warning("Không thể gửi tap: WDA chưa kết nối")
@@ -398,17 +442,21 @@ class DeviceManager:
             norm_y = float(max(0.0, min(1.0, y / target_h)))
 
         # ResourceGuard pre-tap veto check
+        target_label = label or getattr(box, "label", "")
         if self.resource_guard is not None:
-            target_label = label or getattr(box, "label", "")
             if self.resource_guard.is_vetoed_tap(norm_x, norm_y, label=target_label):
                 logger.critical(f"🚫 [VETO STRICT] Thao tác tap tại ({norm_x:.4f}, {norm_y:.4f}) với nhãn '{target_label}' bị chặn bởi ResourceGuard!")
                 return
 
         # Áp dụng mô phỏng chạm người thật (Human-like touch)
-        if self.enable_human_touch:
+        if apply_human_touch and self.enable_human_touch:
             hp = generate_gaussian_point(Point(norm_x, norm_y), box=box)
-            norm_x = float(max(0.005, min(0.995, hp.x)))
-            norm_y = float(max(0.005, min(0.995, hp.y)))
+            cand_x = float(max(0.005, min(0.995, hp.x)))
+            cand_y = float(max(0.005, min(0.995, hp.y)))
+            if self.resource_guard is not None and self.resource_guard.is_vetoed_tap(cand_x, cand_y, label=target_label):
+                pass
+            else:
+                norm_x, norm_y = cand_x, cand_y
             hold_dur = random_touch_duration()
         else:
             hold_dur = 0.0
@@ -422,7 +470,7 @@ class DeviceManager:
         except Exception as e:
             logger.error(f"Lỗi gửi tap: {e}")
 
-    def tap_hold(self, x: float, y: float, duration: float = 0.1, normalized: bool = True, box: Optional[BoundingBox] = None, label: str = ""):
+    def tap_hold(self, x: float, y: float, duration: float = 0.1, normalized: bool = True, box: Optional[BoundingBox] = None, label: str = "", apply_human_touch: bool = True):
         """Taps and holds at coordinate for specified duration."""
         if not self.connected and not self.connect():
             logger.warning("Không thể gửi tap_hold: WDA chưa kết nối")
@@ -442,16 +490,20 @@ class DeviceManager:
             norm_y = float(max(0.0, min(1.0, y / target_h)))
 
         # ResourceGuard pre-tap veto check
+        target_label = label or getattr(box, "label", "")
         if self.resource_guard is not None:
-            target_label = label or getattr(box, "label", "")
             if self.resource_guard.is_vetoed_tap(norm_x, norm_y, label=target_label):
                 logger.critical(f"🚫 [VETO STRICT] Thao tác tap_hold tại ({norm_x:.4f}, {norm_y:.4f}) với nhãn '{target_label}' bị chặn bởi ResourceGuard!")
                 return
 
-        if self.enable_human_touch:
+        if apply_human_touch and self.enable_human_touch:
             hp = generate_gaussian_point(Point(norm_x, norm_y), box=box)
-            norm_x = float(max(0.005, min(0.995, hp.x)))
-            norm_y = float(max(0.005, min(0.995, hp.y)))
+            cand_x = float(max(0.005, min(0.995, hp.x)))
+            cand_y = float(max(0.005, min(0.995, hp.y)))
+            if self.resource_guard is not None and self.resource_guard.is_vetoed_tap(cand_x, cand_y, label=target_label):
+                pass
+            else:
+                norm_x, norm_y = cand_x, cand_y
 
         logger.info(f"Thực hiện tap_hold tại ({norm_x:.4f}, {norm_y:.4f}) [giữ {duration*1000:.0f}ms]")
         try:
@@ -481,13 +533,26 @@ class DeviceManager:
             nx2 = x2 / self.pixel_width
             ny2 = y2 / self.pixel_height
 
+        # ResourceGuard safety check
+        if self.resource_guard is not None:
+            if (
+                self.resource_guard.is_vetoed_tap(nx1, ny1)
+                or self.resource_guard.is_vetoed_tap(nx2, ny2)
+            ):
+                logger.critical(f"🚫 [VETO STRICT] Thao tác swipe từ ({nx1:.4f}, {ny1:.4f}) đến ({nx2:.4f}, {ny2:.4f}) bị chặn bởi ResourceGuard!")
+                return
+
         # Bổ sung jitter thời gian và vị trí điểm vuốt
         if self.enable_human_touch:
             import random
             duration = duration * random.uniform(0.92, 1.15)
             sp = generate_gaussian_point(Point(nx1, ny1))
             ep = generate_gaussian_point(Point(nx2, ny2))
-            nx1, ny1, nx2, ny2 = sp.x, sp.y, ep.x, ep.y
+            if self.resource_guard is not None:
+                if not (self.resource_guard.is_vetoed_tap(sp.x, sp.y) or self.resource_guard.is_vetoed_tap(ep.x, ep.y)):
+                    nx1, ny1, nx2, ny2 = sp.x, sp.y, ep.x, ep.y
+            else:
+                nx1, ny1, nx2, ny2 = sp.x, sp.y, ep.x, ep.y
 
         self._gesture_in_progress = True
         try:

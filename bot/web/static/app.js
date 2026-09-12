@@ -165,8 +165,6 @@ function init60FpsStream() {
 
     streamWs.onopen = () => {
       console.log('60 FPS WebSocket screen stream connected.');
-      if (streamImg) streamImg.style.display = 'none';
-      if (streamCanvas) streamCanvas.style.display = 'block';
     };
 
     streamWs.onmessage = async (event) => {
@@ -175,6 +173,10 @@ function init60FpsStream() {
           const bitmap = await createImageBitmap(event.data);
           if (pendingBitmap) pendingBitmap.close();
           pendingBitmap = bitmap;
+          if (streamCanvas && streamCanvas.style.display === 'none') {
+            streamCanvas.style.display = 'block';
+            if (streamImg) streamImg.style.display = 'none';
+          }
         } catch (e) {
           // ignore decode errors on dropped frames
         }
@@ -183,6 +185,7 @@ function init60FpsStream() {
 
     streamWs.onclose = () => {
       console.warn('WebSocket stream disconnected, falling back to HTTP stream.');
+      if (streamCanvas) streamCanvas.style.display = 'none';
       if (streamImg) {
         streamImg.src = `/api/stream?t=${Date.now()}`;
         streamImg.style.display = 'block';
@@ -195,6 +198,11 @@ function init60FpsStream() {
     };
   } catch (e) {
     console.error('WebSocket stream init error:', e);
+    if (streamCanvas) streamCanvas.style.display = 'none';
+    if (streamImg) {
+      streamImg.src = `/api/stream?t=${Date.now()}`;
+      streamImg.style.display = 'block';
+    }
   }
 }
 
@@ -202,12 +210,18 @@ function init60FpsStream() {
 function render60FpsLoop() {
   if (pendingBitmap && streamCtx && streamCanvas) {
     streamCtx.drawImage(pendingBitmap, 0, 0, streamCanvas.width, streamCanvas.height);
+    framesRendered++;
   }
-  framesRendered++;
   const now = performance.now();
   if (now - lastFpsCalc >= 1000) {
     const fps = ((framesRendered * 1000) / (now - lastFpsCalc)).toFixed(1);
-    if (fpsDisplayText) fpsDisplayText.textContent = `${fps} FPS`;
+    if (fpsDisplayText) {
+      if (framesRendered > 0) {
+        fpsDisplayText.textContent = `${fps} FPS`;
+      } else {
+        fpsDisplayText.textContent = 'Live Direct';
+      }
+    }
     framesRendered = 0;
     lastFpsCalc = now;
   }
@@ -418,11 +432,16 @@ async function updateStatus() {
     }
 
     // Telemetry
-    if (data.trailblaze_power) {
+    if (data.trailblaze_power && data.trailblaze_power.current !== null && data.trailblaze_power.current !== undefined) {
       updatePowerDisplay(data.trailblaze_power.current, data.trailblaze_power.max);
+    } else {
+      powerVal.textContent = '-- / 300';
+      powerProgressFill.style.width = '0%';
     }
     if (data.fuel_count !== null && data.fuel_count !== undefined) {
       fuelVal.textContent = `${data.fuel_count} bình`;
+    } else {
+      fuelVal.textContent = '-- bình';
     }
 
     // Anti-Ban Status Badge
@@ -581,6 +600,9 @@ if (btnSolvePuzzle) {
       btnSolvePuzzle.disabled = false;
       btnSolvePuzzle.textContent = '🧩 Giải Ngay Câu Đố Màn Hình Này (AI VLM)';
     }
+  });
+}
+
 // Daemon Controls
 const btnDaemonRestart = document.getElementById('btn-daemon-restart');
 if (btnDaemonRestart) {

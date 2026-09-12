@@ -180,6 +180,8 @@ class MockDeviceManager:
         self.tap_history: List[Dict[str, Any]] = []
         self.swipe_history: List[Dict[str, Any]] = []
         self.resource_guard: Optional[Any] = None
+        self._touch_engine: Optional[Any] = None
+        self._ui_graph: Optional[Any] = None
 
         # RAM Double Buffering
         self._frame_lock = threading.Lock()
@@ -198,6 +200,33 @@ class MockDeviceManager:
 
         # Initialize with an initial test frame
         self._init_default_frame()
+
+    @property
+    def touch_engine(self):
+        if self._touch_engine is None:
+            from bot.core.touch_engine import FastTouchEngine
+            self._touch_engine = FastTouchEngine(device=self, resource_guard=self.resource_guard)
+        return self._touch_engine
+
+    @property
+    def ui_graph(self):
+        if self._ui_graph is None:
+            from bot.core.ui_graph import UIStateGraph
+            self._ui_graph = UIStateGraph(device=self, resource_guard=self.resource_guard, touch_engine=self.touch_engine)
+        return self._ui_graph
+
+    def fast_tap(self, target: Any, y: Optional[float] = None, box: Optional[BoundingBox] = None, label: str = "", **kwargs) -> Any:
+        return self.touch_engine.execute_fast_tap(target, y=y, box=box, label=label, **kwargs)
+
+    def navigate(self, target_screen: str, start_screen: Optional[str] = None) -> bool:
+        return self.ui_graph.navigate(
+            start_screen,
+            target_screen,
+            device=self,
+            resource_guard=self.resource_guard,
+            touch_engine=self.touch_engine,
+        )
+
 
     def _init_default_frame(self):
         bgr = np.zeros((self.pixel_height, self.pixel_width, 3), dtype=np.uint8)
@@ -283,8 +312,8 @@ class MockDeviceManager:
             norm_y = float(max(0.0, min(1.0, y / self.pixel_height)))
 
         # ResourceGuard pre-tap veto check
+        target_label = label or getattr(box, "label", "")
         if self.resource_guard is not None:
-            target_label = label or getattr(box, "label", "")
             if self.resource_guard.is_vetoed_tap(norm_x, norm_y, label=target_label):
                 import logging
                 logging.getLogger("BotControl.MockDevice").critical(
@@ -294,8 +323,12 @@ class MockDeviceManager:
 
         if self.enable_human_touch:
             hp = generate_gaussian_point(Point(norm_x, norm_y), box=box)
-            norm_x = float(max(0.005, min(0.995, hp.x)))
-            norm_y = float(max(0.005, min(0.995, hp.y)))
+            cand_x = float(max(0.005, min(0.995, hp.x)))
+            cand_y = float(max(0.005, min(0.995, hp.y)))
+            if self.resource_guard is not None and self.resource_guard.is_vetoed_tap(cand_x, cand_y, label=target_label):
+                pass
+            else:
+                norm_x, norm_y = cand_x, cand_y
             hold_dur = random_touch_duration()
         else:
             hold_dur = 0.0
@@ -331,8 +364,8 @@ class MockDeviceManager:
             norm_y = y / self.pixel_height
 
         # ResourceGuard pre-tap veto check
+        target_label = label or getattr(box, "label", "")
         if self.resource_guard is not None:
-            target_label = label or getattr(box, "label", "")
             if self.resource_guard.is_vetoed_tap(norm_x, norm_y, label=target_label):
                 import logging
                 logging.getLogger("BotControl.MockDevice").critical(
@@ -357,6 +390,17 @@ class MockDeviceManager:
             nx1, ny1, nx2, ny2 = x1, y1, x2, y2
         else:
             nx1, ny1, nx2, ny2 = x1 / self.pixel_width, y1 / self.pixel_height, x2 / self.pixel_width, y2 / self.pixel_height
+
+        if self.resource_guard is not None:
+            if (
+                self.resource_guard.is_vetoed_tap(nx1, ny1)
+                or self.resource_guard.is_vetoed_tap(nx2, ny2)
+            ):
+                import logging
+                logging.getLogger("BotControl.MockDevice").critical(
+                    f"🚫 [MOCK VETO STRICT] Thao tác swipe từ ({nx1:.4f}, {ny1:.4f}) đến ({nx2:.4f}, {ny2:.4f}) bị chặn bởi ResourceGuard!"
+                )
+                return
 
         event = {
             "type": "swipe",

@@ -205,3 +205,8 @@ class ThreatDetector:
                     logger.critical(f"🚨 PHÁT HIỆN DẤU HIỆU BẢO MẬT / CAPTCHA: '{raw_text}' (Từ khóa: '{kw}')")
                     return True, f"Phát hiện cảnh báo bảo mật: '{raw_text}'"
         return False, None
+
+
+# Re-export FastTouchEngine components
+from bot.core.touch_engine import FastTouchEngine, TouchResult, TouchLatencyBreakdown
+

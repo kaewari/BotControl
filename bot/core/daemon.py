@@ -56,7 +56,7 @@ class UnifiedDaemon:
 
     @staticmethod
     def auto_detect_udid() -> str:
-        """Attempts to discover connected physical iOS device via idevice_id."""
+        """Attempts to discover connected physical iOS device (prioritizing iPad) via idevice_id."""
         try:
             res = subprocess.run(
                 ["idevice_id", "-l"],
@@ -67,6 +67,21 @@ class UnifiedDaemon:
             )
             devices = [line.strip() for line in res.stdout.strip().splitlines() if line.strip()]
             if devices:
+                # If multiple devices connected, prioritize iPad
+                for d in devices:
+                    try:
+                        info = subprocess.run(
+                            ["ideviceinfo", "-u", d, "-k", "DeviceClass"],
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE,
+                            text=True,
+                            timeout=2.0,
+                        )
+                        if "iPad" in info.stdout:
+                            logger.info(f"📱 Tự động phát hiện iPad: {d}")
+                            return d
+                    except Exception:
+                        pass
                 logger.info(f"📱 Tự động phát hiện thiết bị iOS: {devices[0]}")
                 return devices[0]
         except Exception as e:
@@ -83,14 +98,15 @@ class UnifiedDaemon:
             return s.connect_ex(("127.0.0.1", port)) == 0
 
     def clean_orphaned_ports(self):
-        """Terminates any stale iproxy processes holding ports 8100 or 9100."""
+        """Terminates any stale iproxy processes and xcodebuild runners holding ports 8100 or 9100."""
         if self.mock_mode:
             return
-        logger.debug("Dọn dẹp các tiến trình iproxy cũ nếu đang chiếm cổng...")
+        logger.debug("Dọn dẹp các tiến trình iproxy và xcodebuild cũ nếu đang chiếm cổng...")
         try:
             subprocess.run(["pkill", "-f", f"iproxy.*{self.wda_port}"], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
             subprocess.run(["pkill", "-f", f"iproxy.*{self.mjpeg_port}"], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
-            time.sleep(0.3)
+            subprocess.run(["pkill", "-f", "xcodebuild.*WebDriverAgent"], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+            time.sleep(0.5)
         except Exception as e:
             logger.debug(f"Lỗi khi dọn dẹp port: {e}")
 
@@ -153,11 +169,12 @@ class UnifiedDaemon:
             "-allowProvisioningUpdates",
         ]
         try:
+            log_out = open("/tmp/wda_runner.log", "w")
             proc = subprocess.Popen(
                 cmd,
                 cwd=str(self.wda_dir),
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
+                stdout=log_out,
+                stderr=subprocess.STDOUT,
                 preexec_fn=os.setsid if sys.platform != "win32" else None,
             )
             self.processes["wda_runner"] = proc

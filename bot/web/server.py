@@ -26,6 +26,8 @@ from bot.tasks.smart_pipeline import SmartPipelineTask
 from bot.tasks.story import StoryQuestTask
 from bot.cv.vlm_solver import OmniRouteVLMSolver
 from bot.core.daemon import get_global_daemon
+from bot.core.ui_graph import ui_state_graph
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("BotControl.Web")
@@ -105,7 +107,7 @@ async def get_index():
 
 
 @app.get("/api/status")
-async def get_status():
+def get_status():
     connected = device.check_connection()
     is_task_running = current_task.is_running if current_task else False
     task_name = current_task.task_name if current_task else None
@@ -312,6 +314,22 @@ async def video_feed():
             "Connection": "close",
         },
     )
+
+
+@app.get("/api/screenshot/current")
+def get_current_screenshot(save: bool = False, path: str = "assets/screenshots/current.png"):
+    """Returns the latest screenshot from RAM cache, optionally saving to disk."""
+    frame = device.get_screenshot()
+    if frame is None:
+        return JSONResponse({"status": "error", "message": "No frame in memory"}, status_code=503)
+    if save:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        cv2.imwrite(path, frame)
+    ret, buf = cv2.imencode(".jpg", frame, [cv2.IMWRITE_JPEG_QUALITY, 85])
+    if not ret:
+        return JSONResponse({"status": "error", "message": "Failed to encode frame"}, status_code=500)
+    from fastapi.responses import Response
+    return Response(content=buf.tobytes(), media_type="image/jpeg")
 
 
 @app.post("/api/touch")
@@ -548,7 +566,7 @@ async def resume_task():
 
 
 @app.get("/api/daemon/status")
-async def daemon_status():
+def daemon_status():
     daemon = get_global_daemon()
     if daemon:
         return daemon.health_check()
@@ -574,7 +592,47 @@ async def daemon_safe_mode():
     return {"status": "safe_mode_active"}
 
 
+class NavigateRequest(BaseModel):
+    target: str
+    start: Optional[str] = None
+
+
+@app.get("/api/ui_graph/nodes")
+def get_ui_graph_nodes():
+    return {
+        "metadata": ui_state_graph.metadata,
+        "nodes": [n.to_dict() for n in ui_state_graph.nodes.values()],
+        "edge_count": ui_state_graph.edge_count,
+    }
+
+
+@app.get("/api/ui_graph/route")
+def get_ui_graph_route(start: str, target: str):
+    t0 = time.perf_counter()
+    path = ui_state_graph.find_shortest_path(start, target)
+    dur_ms = (time.perf_counter() - t0) * 1000.0
+    if path is None:
+        return JSONResponse({"status": "no_route", "message": f"Không tìm thấy đường từ {start} đến {target}"}, status_code=404)
+    return {
+        "status": "ok",
+        "start": start,
+        "target": target,
+        "steps": [e.to_dict() for e in path],
+        "step_count": len(path),
+        "calculation_ms": round(dur_ms, 3),
+    }
+
+
+@app.post("/api/ui_graph/navigate")
+async def execute_ui_graph_navigation(req: NavigateRequest):
+    success = device.navigate(req.target, start_screen=req.start)
+    if success:
+        return {"status": "ok", "message": f"Đã điều hướng thành công đến {req.target}"}
+    return JSONResponse({"status": "error", "message": f"Không thể điều hướng đến {req.target}"}, status_code=400)
+
+
 @app.get("/api/logs")
+
 async def get_logs():
     with lock:
         return list(log_history)
