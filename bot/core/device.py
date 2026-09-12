@@ -6,7 +6,7 @@ from typing import Optional, Tuple
 import cv2
 import numpy as np
 from PIL import Image
-import requests
+import wda
 
 from bot.core.coordinates import Point, BoundingBox, CoordinateSystem
 
@@ -16,46 +16,50 @@ logger = logging.getLogger("BotControl.Device")
 class DeviceManager:
     """Manages WebDriverAgent connection, touch input, and screen streaming."""
 
-    def __init__(self, wda_url: str = "http://localhost:8100", udid: Optional[str] = None):
+    def __init__(self, wda_url: str = "http://localhost:8100", udid: str = "00008142-001C64982E09401C"):
         self.wda_url = wda_url.rstrip("/")
         self.udid = udid
-        self._client = None
-        self._session = None
+        self._client: Optional[wda.Client] = None
         self.connected = False
-        self.width = 2752
-        self.height = 2064
-        self.coords = CoordinateSystem(self.width, self.height)
+        self.pixel_width = 2752    # Pixels for CV & OCR
+        self.pixel_height = 2064
+        self.coords = CoordinateSystem(self.pixel_width, self.pixel_height)
         self.last_screenshot: Optional[np.ndarray] = None
         self.last_screenshot_bytes: Optional[bytes] = None
         self.last_screenshot_time: float = 0.0
 
+    @property
+    def width(self) -> int:
+        return self.pixel_width
+
+    @property
+    def height(self) -> int:
+        return self.pixel_height
+
     def connect(self) -> bool:
         """Connects to WebDriverAgent and retrieves device dimensions."""
         try:
-            resp = requests.get(f"{self.wda_url}/status", timeout=2.0)
-            if resp.status_code == 200:
-                import wda
-                self._client = wda.Client(self.wda_url)
-                # Query window size
-                window_size = self._client.window_size()
-                self.width = int(window_size.width)
-                self.height = int(window_size.height)
-                self.coords.update_resolution(self.width, self.height)
+            self._client = wda.Client(self.wda_url)
+            status = self._client.status()
+            if status.get("state") == "success" or "ready" in str(status):
                 self.connected = True
-                logger.info(f"Kết nối WDA thành công: iPad resolution {self.width}x{self.height}")
+                logger.info(f"Kết nối WDA thành công: {self.wda_url}")
                 return True
         except Exception as e:
-            logger.warning(f"Chưa thể kết nối tới WDA tại {self.wda_url}: {e}")
+            logger.debug(f"Chưa kết nối được WDA tại {self.wda_url}: {e}")
             self.connected = False
         return False
 
     def check_connection(self) -> bool:
         """Lightweight check to see if WDA endpoint is alive."""
+        if self._client is None:
+            return self.connect()
         try:
-            resp = requests.get(f"{self.wda_url}/status", timeout=1.0)
-            self.connected = (resp.status_code == 200)
+            status = self._client.status()
+            self.connected = (status.get("state") == "success" or "ready" in str(status))
         except Exception:
             self.connected = False
+            self._client = None
         return self.connected
 
     def get_screenshot(self) -> Optional[np.ndarray]:
@@ -65,23 +69,19 @@ class DeviceManager:
                 return None
 
         try:
-            # First attempt: standard WDA screenshot endpoint
-            resp = requests.get(f"{self.wda_url}/screenshot", timeout=3.0)
-            if resp.status_code == 200:
-                img_bytes = resp.content
-                self.last_screenshot_bytes = img_bytes
+            pil_img = self._client.screenshot()
+            if pil_img is not None:
+                pw, ph = pil_img.size
+                if pw != self.pixel_width or ph != self.pixel_height:
+                    self.pixel_width = pw
+                    self.pixel_height = ph
+                    self.coords.update_resolution(pw, ph)
+
+                rgb_arr = np.array(pil_img)
+                bgr_arr = cv2.cvtColor(rgb_arr, cv2.COLOR_RGB2BGR)
+                self.last_screenshot = bgr_arr
                 self.last_screenshot_time = time.time()
-                nparr = np.frombuffer(img_bytes, np.uint8)
-                img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-                if img is not None:
-                    # Update dimensions if changed
-                    h, w = img.shape[:2]
-                    if w != self.width or h != self.height:
-                        self.width = w
-                        self.height = h
-                        self.coords.update_resolution(w, h)
-                    self.last_screenshot = img
-                    return img
+                return bgr_arr
         except Exception as e:
             logger.error(f"Lỗi chụp ảnh màn hình từ WDA: {e}")
             self.connected = False
@@ -91,29 +91,29 @@ class DeviceManager:
         """Returns JPEG bytes directly for live video streaming."""
         img = self.get_screenshot()
         if img is not None:
-            ret, buf = cv2.imencode(".jpg", img, [cv2.IMWRITE_JPEG_QUALITY, 75])
+            small = cv2.resize(img, (1024, 768), interpolation=cv2.INTER_AREA)
+            ret, buf = cv2.imencode(".jpg", small, [cv2.IMWRITE_JPEG_QUALITY, 75])
             if ret:
-                return buf.tobytes()
+                self.last_screenshot_bytes = buf.tobytes()
+                return self.last_screenshot_bytes
         return self.last_screenshot_bytes
 
     def tap(self, x: float, y: float, normalized: bool = True):
-        """Taps at coordinate. If normalized=True, x,y are in [0.0 - 1.0]."""
+        """Taps at coordinate. WDA accepts floats (0.0 - 1.0) as percentages."""
         if not self.connected and not self.connect():
             logger.warning("Không thể gửi tap: WDA chưa kết nối")
             return
 
         if normalized:
-            abs_x = int(round(x * self.width))
-            abs_y = int(round(y * self.height))
+            norm_x = float(max(0.0, min(1.0, x)))
+            norm_y = float(max(0.0, min(1.0, y)))
         else:
-            abs_x = int(round(x))
-            abs_y = int(round(y))
+            norm_x = float(max(0.0, min(1.0, x / self.pixel_width)))
+            norm_y = float(max(0.0, min(1.0, y / self.pixel_height)))
 
-        logger.debug(f"Tap tại ({abs_x}, {abs_y}) [norm: {x:.3f}, {y:.3f}]")
+        logger.info(f"Thực hiện chạm tại tọa độ: ({norm_x:.3f}, {norm_y:.3f})")
         try:
-            # Call WDA tap API directly
-            payload = {"x": abs_x, "y": abs_y}
-            requests.post(f"{self.wda_url}/wda/tap/nil", json=payload, timeout=2.0)
+            self._client.click(norm_x, norm_y)
         except Exception as e:
             logger.error(f"Lỗi gửi tap: {e}")
 
@@ -130,21 +130,14 @@ class DeviceManager:
             return
 
         if normalized:
-            from_x = int(round(x1 * self.width))
-            from_y = int(round(y1 * self.height))
-            to_x = int(round(x2 * self.width))
-            to_y = int(round(y2 * self.height))
+            nx1, ny1, nx2, ny2 = x1, y1, x2, y2
         else:
-            from_x, from_y, to_x, to_y = int(x1), int(y1), int(x2), int(y2)
+            nx1 = x1 / self.pixel_width
+            ny1 = y1 / self.pixel_height
+            nx2 = x2 / self.pixel_width
+            ny2 = y2 / self.pixel_height
 
         try:
-            payload = {
-                "fromX": from_x,
-                "fromY": from_y,
-                "toX": to_x,
-                "toY": to_y,
-                "duration": duration,
-            }
-            requests.post(f"{self.wda_url}/wda/dragfromtoforduration", json=payload, timeout=duration + 2.0)
+            self._client.swipe(float(nx1), float(ny1), float(nx2), float(ny2), duration=duration)
         except Exception as e:
             logger.error(f"Lỗi gửi swipe: {e}")

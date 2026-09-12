@@ -3,7 +3,7 @@ set -e
 
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 WDA_DIR="$DIR/WebDriverAgent"
-TEAM_ID="N2NT9NJMU5"
+TEAM_ID="44T7Y77WAJ"
 DEVICE_ID="A5AE3F5C-F3CB-5152-AF24-043877300989"
 
 if [ ! -d "$WDA_DIR" ]; then
