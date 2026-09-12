@@ -114,6 +114,11 @@ class UnifiedDaemon:
         """Spawns iproxy bridge for WDA command channel (port 8100)."""
         if self.mock_mode:
             return True
+        try:
+            subprocess.run(["pkill", "-f", f"iproxy.*{self.wda_port}"], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+            time.sleep(0.3)
+        except Exception:
+            pass
         cmd = ["iproxy", f"{self.wda_port}:{self.wda_port}", "-u", self.udid]
         try:
             proc = subprocess.Popen(
@@ -133,6 +138,11 @@ class UnifiedDaemon:
         """Spawns iproxy bridge for WDA native MJPEG video stream (port 9100)."""
         if self.mock_mode:
             return True
+        try:
+            subprocess.run(["pkill", "-f", f"iproxy.*{self.mjpeg_port}"], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+            time.sleep(0.3)
+        except Exception:
+            pass
         cmd = ["iproxy", f"{self.mjpeg_port}:{self.mjpeg_port}", "-u", self.udid]
         try:
             proc = subprocess.Popen(
@@ -345,6 +355,18 @@ class UnifiedDaemon:
                     logger.warning(f"⚠️ [WATCHDOG] WDA Runner đã thoát (code: {p_run.poll()}). Đang tự khởi động lại...")
                     self.start_wda_runner()
                     self._restart_counts["wda_runner"] += 1
+
+                # Health check: If WDA runner is running but WDA HTTP endpoint is unresponsive, recycle iproxy
+                if p_run and p_run.poll() is None and p_wda and p_wda.poll() is None:
+                    if not self.is_wda_ready():
+                        self._unready_count = getattr(self, "_unready_count", 0) + 1
+                        if self._unready_count >= 3:
+                            logger.warning("⚠️ [WATCHDOG] WDA không phản hồi qua iproxy 8100. Đang tự khôi phục iproxy bridge...")
+                            self.start_iproxy_wda()
+                            self._restart_counts["iproxy_wda"] += 1
+                            self._unready_count = 0
+                    else:
+                        self._unready_count = 0
 
     def health_check(self) -> Dict[str, Any]:
         """Returns comprehensive status dictionary for API and dashboard reporting."""
