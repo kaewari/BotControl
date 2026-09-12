@@ -4,7 +4,10 @@ set -e
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 WDA_DIR="$DIR/WebDriverAgent"
 TEAM_ID="44T7Y77WAJ"
-DEVICE_ID="A5AE3F5C-F3CB-5152-AF24-043877300989"
+if command -v idevice_id &> /dev/null; then
+    DETECTED_ID=$(idevice_id -l | head -n 1)
+fi
+DEVICE_ID="${DETECTED_ID:-00008142-001C64982E09401C}"
 
 if [ ! -d "$WDA_DIR" ]; then
     echo "Chưa có thư mục WebDriverAgent. Đang clone..."
